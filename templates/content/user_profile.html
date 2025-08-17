@@ -1,0 +1,28 @@
+{%extends 'base.html' %} {%block content %}
+<!-- templates/_profile_content.html -->
+<div class="content">
+  <div class="user_content">
+    <div class="profile_image">
+      <img src="/static/profile.png" alt="" width="200px" />
+    </div>
+    <h2>Profile</h2>
+    {% if user_data %}
+    <p><strong>Username:</strong> @{{ user_data.username }}</p>
+    <p><strong>Bio:</strong> {{ user_data.bio }}</p>
+    <p><strong>Followers:</strong> {{ user_data.follower_count }}</p>
+
+    <h3>Recent Posts</h3>
+    {% if user_data.posts %}
+    <ul>
+      {% for post in user_data.posts %}
+      <li><strong>{{ post.title }}</strong>: {{ post.content }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No posts yet.</p>
+    {% endif %} {% else %}
+    <p>No user data available.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

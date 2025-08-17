@@ -7,32 +7,38 @@
   <div class="version">
     <h5>version 0.1</h5>
   </div>
-  <div class="iconwrapper">
-    <div class="icon icon1"></div>
-    <div class="icon icon2"></div>
-    <div class="icon icon3"></div>
-    <div class="icon icon4"></div>
-    <div class="icon icon5">
-      <!-- <p>Support</p> -->
+  <div class="content">
+    <div class="iconwrapper">
+      <div class="icon icon1"></div>
+      <div class="icon icon2"></div>
+      <div class="icon icon3"></div>
+      <div class="icon icon4"></div>
+      <div class="icon icon5">
+        <!-- <p>Support</p> -->
+      </div>
+      <div class="icon icon6"></div>
     </div>
-    <div class="icon icon6"></div>
   </div>
   <footer>
-    <hr class="seperatline">
+    <hr class="seperatline" />
     <div class="bottom_menu">
-      <div class="b_icons">
+      <div class="b_icons" id="home-icon" onclick="loadpage('home')">
         <img src="/static/home-line.svg" alt="" width="20px" />
       </div>
-      <div class="b_icons">
+      <div class="b_icons" id="search-icon" onclick="loadpage('search')">
         <img src="/static/search-line.svg" alt="" width="20px" />
       </div>
-      <div class="b_icons">
+      <div class="b_icons" id="create-icon" onclick="loadpage('create')">
         <img src="/static/add-fill.svg" alt="" width="20px" />
       </div>
-      <div class="b_icons">
+      <div
+        class="b_icons"
+        id="notifications-icon"
+        onclick="loadpage('notifications')"
+      >
         <img src="/static/notification-2-line.svg" alt="" width="20px" />
       </div>
-      <div class="b_icons">
+      <div class="b_icons" id="profile-icon" onclick="loadpage('user_profile')">
         <img src="/static/user-line.svg" alt="" width="20px" />
       </div>
     </div>
