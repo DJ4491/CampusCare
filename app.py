@@ -11,36 +11,32 @@ def home():
 #! Partial content routes
 
 
-@app.route("/content/home")
+@app.route("/contenthome")
 def content_home():
     return render_template("content/home.html")
 
 
-@app.route("/content/search")
+@app.route("/search")
 def content_search():
     return render_template("content/search.html")
 
 
-@app.route("/content/create")
+@app.route("/create")
 def content_create():
     return render_template("content/create.html")
 
 
-@app.route("/content/notifications")
+@app.route("/notifications")
 def content_notifications():
     return render_template("content/notifications.html")
 
 
-@app.route("/content/user_profile")
+@app.route("/user_profile")
 def content_profile():
     user_data = {
+        "AboutMe": "Hi I am John Doe and I'm just going...",
         "username": "john_doe",
-        "bio": "Software engineer passionate about web development.",
-        "posts": [
-            {"title": "My First Post", "content": "Hello world!"},
-            {"title": "Flask Tips", "content": "Using Jinja for dynamic rendering."},
-        ],
-        "follower_count": 150,
+        "email":"Johndoe@gmail.com"
     }
     return render_template("content/user_profile.html", user_data=user_data)
 

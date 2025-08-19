@@ -4,10 +4,42 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Campus Connect</title>
-    <link rel="stylesheet" href="/static/css/home.css">
+    <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
     {% block content %}{% endblock %}
     <script src="static/script.js"></script>
+    <footer>
+      <hr class="seperatline" />
+      <div class="bottom_menu">
+        <a href="/">
+          <div class="b_icons" id="home-icon" onclick="loadpage('home')">
+            <img src="/static/home-line.svg" alt="" width="20px" />
+          </div>
+        </a>
+        <div class="b_icons" id="search-icon" onclick="loadpage('search')">
+          <img src="/static/search-line.svg" alt="" width="20px" />
+        </div>
+        <div class="b_icons" id="create-icon" onclick="loadpage('create')">
+          <img src="/static/add-fill.svg" alt="" width="20px" />
+        </div>
+        <div
+          class="b_icons"
+          id="notifications-icon"
+          onclick="loadpage('notifications')"
+        >
+          <img src="/static/notification-2-line.svg" alt="" width="20px" />
+        </div>
+        <a href="/user_profile">
+          <div
+            class="b_icons"
+            id="profile-icon"
+            onclick="loadpage('user_profile')"
+          >
+            <img src="/static/user-line.svg" alt="" width="20px" />
+          </div>
+        </a>
+      </div>
+    </footer>
   </body>
 </html>
