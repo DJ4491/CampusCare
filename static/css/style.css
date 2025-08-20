@@ -8,8 +8,25 @@
         box-sizing: border-box;
     }
 
+    /* ===== Base HTML & Body Setup ===== */
+
+    #main-content {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .fade-out {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    .fade-in {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
     /* Body styling */
     body {
+        width: 100%;
         margin: 0;
         padding: 0;
         min-height: 100vh;
@@ -17,6 +34,7 @@
         -moz-osx-font-smoothing: grayscale;
         background: linear-gradient(135deg, #f9fafb, #eef2f3);
         background-blend-mode: normal, color-burn;
+        overflow: hidden;
         background-repeat: no-repeat;
         background-size: cover;
         height: 100%;
@@ -179,7 +197,7 @@
         width: 100%;
         box-sizing: border-box;
         height: 100%;
-        background: linear-gradient(135deg, #3B82F6 0%, #6366F1 100%);
+        background: linear-gradient(135deg, #3b83f6e0 0%, #6365f1d7 100%);
         display: flex;
         justify-content: center;
     }
@@ -231,7 +249,7 @@
         margin-right: 20px;
         width: 40%;
         height: 150px;
-        border-radius: 20%;
+        border-radius: 25%;
         background-image: url("/static/profile.png");
         background-size: cover;
     }
@@ -266,3 +284,83 @@
     }
 
     /**###########################notifications###############################*/
+
+    #notifycontent {
+        width: 100%;
+        height: 100vh;
+        /* full screen height */
+        box-sizing: border-box;
+        background-image: url("/static/noti_bg.png");
+        background-size: cover;
+        /* makes it cover whole screen */
+        background-repeat: no-repeat;
+        /* prevents tiling */
+        background-position: center;
+    }
+
+    .NotifyPanel {
+        display: flex;
+        color: white;
+        align-items: center;
+        justify-content: space-between;
+        /* spreads left - center - right */
+        font-family: 'SF Pro Display', sans-serif;
+        font-size: large;
+        position: relative;
+        width: 100%;
+        height: 50px;
+        padding: 7px;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(135deg, #3b83f6e0 0%, #6365f1d7 100%);
+        box-sizing: border-box;
+        letter-spacing: 1px;
+    }
+
+    .back-icon {
+        position: absolute;
+        align-self: center;
+        top: 13px;
+        width: 24px;
+        height: auto;
+        cursor: pointer;
+    }
+
+    .title {
+        position: absolute;
+        /* stays in the center */
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: larger;
+        font-weight: 600;
+    }
+
+    .right-placeholder {
+        width: 24px;
+        /* same as back-icon width, balances layout */
+    }
+
+    .msg_wrapper {
+        width: 100%;
+        padding: 40px;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
+
+    .messagebox {
+        max-width: 500px;
+        width: 100%;
+        height: auto;
+        font-family: Arial, Helvetica, sans-serif;
+        background: rgba(0, 0, 0, 0.082);
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 30px;
+        padding: 20px;
+    }

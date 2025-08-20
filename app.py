@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -9,11 +9,6 @@ def home():
 
 
 #! Partial content routes
-
-
-@app.route("/contenthome")
-def content_home():
-    return render_template("content/home.html")
 
 
 @app.route("/search")
@@ -28,7 +23,9 @@ def content_create():
 
 @app.route("/notifications")
 def content_notifications():
-    return render_template("content/notifications.html")
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template("content/notifications.html")  # just content block
+    return render_template("base.html", title="Campus Connect")
 
 
 @app.route("/user_profile")
@@ -36,9 +33,11 @@ def content_profile():
     user_data = {
         "AboutMe": "Hi I am John Doe and I'm just going...",
         "username": "john_doe",
-        "email":"Johndoe@gmail.com"
+        "email": "Johndoe@gmail.com",
     }
-    return render_template("content/user_profile.html", user_data=user_data)
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template("content/user_profile.html")  # just content block
+    return render_template("content/base.html", user_data=user_data)
 
 
 if __name__ == "__main__":
