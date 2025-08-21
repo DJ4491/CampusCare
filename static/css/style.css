@@ -63,6 +63,8 @@
         font-family: Arial, sans-serif;
         display: flex;
         justify-content: center;
+        margin-bottom: 7rem;
+        margin-top: 2%;
     }
 
     .heading h1 {
@@ -70,22 +72,6 @@
         margin-top: 10px;
         font-size: clamp(1.5rem, 5vw, 2.5rem);
         font-weight: 800;
-    }
-
-    .version {
-        position: relative;
-        bottom: 40px;
-        left: 19px;
-        display: flex;
-        justify-content: center;
-        margin-bottom: 7rem;
-    }
-
-    .version h5 {
-        color: black;
-        opacity: 0.6;
-        font-size: clamp(8px, 1vw, 1rem);
-        font-family: "Roboto Slab";
     }
 
     .iconwrapper {
