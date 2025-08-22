@@ -33,7 +33,7 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         background: linear-gradient(135deg, #f9fafb, #eef2f3);
-        background-blend-mode: normal, color-burn;
+        /* background-blend-mode: normal, color-burn; */
         overflow: hidden;
         background-repeat: no-repeat;
         background-size: cover;
