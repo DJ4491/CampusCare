@@ -121,4 +121,4 @@ This project is licensed under the **MIT License** – feel free to use and modi
 ---
 
 
-👉 Do you want me to also add **screenshots + usage GIFs** sections? (They make the README much more attractive for GitHub reviewers and your college submission).
+
