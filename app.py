@@ -11,6 +11,11 @@ def home():
 #! Partial content routes
 
 
+@app.route("/log_on")
+def content_in():
+    return render_template("content/log_in.html")
+
+
 @app.route("/search")
 def content_search():
     return render_template("content/search.html")

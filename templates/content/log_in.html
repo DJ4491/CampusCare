@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/static/css/style1.css" />
+  </head>
+
+  <body>
+    <div class="gate left"></div>
+    <div class="container">
+      <div class="textwrapper">
+        <div class="gradientimg">CAMPUS CARE+</div>
+      </div>
+      <div class="loginpanel">
+        <div class="usercard">
+          <form id="recordform">
+            <input type="text" id="name" placeholder="Enter name" required />
+            <input type="email" id="email" placeholder="Enter email" required />
+            <input type="password" id="password" placeholder="*****" required />
+            <button id="Signin">Sign-In</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Add "loaded" class after short delay
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          document.body.classList.add("loaded");
+        }, 500); // delay before opening
+      });
+    </script>
+  </body>
+</html>
