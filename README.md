@@ -63,7 +63,7 @@ CampusApp/
 
 ```bash
 # Clone repo
-git clone https://github.com/yourusername/CampusApp.git
+git clone https://github.com/djbhai9/CampusCare.git
 cd CampusApp/backend
 
 # Create virtual environment
