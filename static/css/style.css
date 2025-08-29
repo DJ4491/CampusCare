@@ -8,7 +8,7 @@
         box-sizing: border-box;
     }
 
-    /* ===== Base HTML & Body Setup ===== */
+    /* ===== Home & Body Setup ===== */
 
     #main-content {
         transition: opacity 0.3s ease, transform 0.3s ease;
@@ -168,14 +168,6 @@
         /* Example active indicator */
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .container {
-            width: 95%;
-            max-width: 100%;
-            padding: 0 0.5rem;
-        }
-    }
 
     /* ########################## User Profile ####################################*/
 
