@@ -163,9 +163,7 @@
 
     .b_icons.active {
         background-color: #f0f0f0;
-        /* Or your preferred highlight */
         border-bottom: 2px solid #000;
-        /* Example active indicator */
     }
 
 
