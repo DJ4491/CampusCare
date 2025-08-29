@@ -313,7 +313,6 @@
 
     .right-placeholder {
         width: 24px;
-        /* same as back-icon width, balances layout */
     }
 
     .msg_wrapper {
