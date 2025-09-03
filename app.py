@@ -13,7 +13,7 @@ def home():
 
 @app.route("/log_on")
 def content_in():
-    return render_template("content/log_in.html")
+    return render_template("Pages/log_in.html")
 
 
 @app.route("/search")

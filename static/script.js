@@ -2,7 +2,7 @@ const cards = document.querySelectorAll(".icon");
 cards.forEach((card) => {
   card.addEventListener("touchstart", () => {
     card.style.transform = "scale(1.04)";
-    card.style.transition = "transform 0.2s ease-in-out";
+    card.style.transition = "transform 2s ease-in-out";
   });
   card.addEventListener("touchend", () => {
     card.style.transform = "scale(1)";
@@ -22,20 +22,24 @@ function loadpage(page) {
         // Replace content when fade-out ends
         container.innerHTML = html;
 
-        // Fade-in effect
+        // Trigger fade-in
         container.classList.remove("fade-out");
         container.classList.add("fade-in");
 
-        // Reset animation class after done
-        setTimeout(() => container.classList.remove("fade-in"), 300);
+        // Don't force-remove fade-in too soon
+        container.addEventListener(
+          "transitionend",
+          () => container.classList.remove("fade-in"),
+          { once: true }
+        );
 
         history.pushState(null, "", url);
-      }, 300); // matches CSS transition duration
+      }, 300); // match CSS transition duration
     })
     .catch((err) => console.error("Error loading page:", err));
-}
 
-// Handle back/forward buttons
-window.addEventListener("popstate", () => {
-  loadpage(location.pathname.replace("/", ""));
-});
+  // Handle back/forward buttons
+  window.addEventListener("popstate", () => {
+    loadpage(location.pathname.replace("/", ""));
+  });
+}

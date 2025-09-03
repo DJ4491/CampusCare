@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>report</title>
+    <link rel="stylesheet" href="/static/css/style2.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="page_head">
+        <img src="/static/arrow-left-line.svg" alt="" width="27px" />
+        <img src="/static/question-mark.svg" alt="" width="27px" />
+      </div>
+      <div class="page_title">
+        <h1>Report an Issue</h1>
+      </div>
+      <div class="page_main">
+        <label for="place">Issue Category</label>
+        <select id="abcd" name="place" id="place">
+          <option id="bc" value="hostel">Hostel</option>
+          <option id="bc" value="hostel">Classroom</option>
+          <option id="bc" value="hostel">Lab</option>
+          <option id="bc" value="hostel">General(Custom)</option>
+        </select>
+        <br />
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" />
+        <br />
+        <label for="title">Issue Title</label>
+        <input type="text" name="title" id="title" />
+        <br />
+        <label id="desc" for="description">Description</label>
+        <textarea id="description" name="description"></textarea>
+        <br />
+        <label for="image">Attach Image</label>
+      </div>
+    </div>
+  </body>
+</html>
