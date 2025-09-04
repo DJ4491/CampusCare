@@ -5,7 +5,9 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return render_template("home.html", title="Campus Connect")
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template("home.html")  # just content block
+    return render_template("base.html", content_template="home.html")
 
 
 #! Partial content routes
@@ -17,32 +19,36 @@ def content_in():
 
 
 @app.route("/search")
-def content_search():
-    return render_template("content/search.html")
+def search():
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template("content/search.html")  # just content block
+    return render_template("base.html", content_template="content/search.html")
 
 
 @app.route("/create")
-def content_create():
-    return render_template("content/create.html")
+def create():
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template("content/create.html")  # just content block
+    return render_template("base.html", content_template="content/create.html")
 
 
 @app.route("/notifications")
-def content_notifications():
+def notifications():
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return render_template("content/notifications.html")  # just content block
-    return render_template("base.html", title="Campus Connect")
+    return render_template("base.html", content_template="content/notifications.html")
 
 
 @app.route("/user_profile")
-def content_profile():
+def user_profile():
     user_data = {
-        "AboutMe": "Hi I am John Doe and I'm just going...",
+        "AboutMe": "Hi I am John Doe...",
         "username": "john_doe",
         "email": "Johndoe@gmail.com",
     }
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return render_template("content/user_profile.html")  # just content block
-    return render_template("content/base.html", user_data=user_data)
+        return render_template("content/user_profile.html", user_data=user_data)  # just content block
+    return render_template("base.html", content_template="content/user_profile.html", user_data=user_data)
 
 
 if __name__ == "__main__":
