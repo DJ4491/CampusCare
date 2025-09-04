@@ -1,11 +1,7 @@
 from flask import Flask, render_template, request
-from flask_sqlalchemy import SQLAlchemy
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///campusconnect.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
 
 
 @app.route("/")
@@ -52,8 +48,13 @@ def user_profile():
         "email": "Johndoe@gmail.com",
     }
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return render_template("content/user_profile.html", user_data=user_data)  # just content block
-    return render_template("base.html", content_template="content/user_profile.html", user_data=user_data)
+        return render_template(
+            "content/user_profile.html", user_data=user_data
+        )  # just content block
+    return render_template(
+        "base.html", content_template="content/user_profile.html", user_data=user_data
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
