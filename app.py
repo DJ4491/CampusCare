@@ -55,6 +55,5 @@ def user_profile():
         return render_template("content/user_profile.html", user_data=user_data)  # just content block
     return render_template("base.html", content_template="content/user_profile.html", user_data=user_data)
 
-
 if __name__ == "__main__":
     app.run(debug=True)
