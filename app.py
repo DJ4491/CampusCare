@@ -25,6 +25,10 @@ def content_search():
 def content_create():
     return render_template("content/create.html")
 
+@app.route("/All_Reports")
+def content_reports():
+    return render_template("Pages/All_Reports.html")
+
 
 @app.route("/notifications")
 def content_notifications():
