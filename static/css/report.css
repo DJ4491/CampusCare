@@ -1,0 +1,32 @@
+.container {
+    width: 100%;
+    max-width: 500px;
+    /* Keep content centered and readable */
+    margin: 0 auto;
+    padding: 0 1rem;
+    height: 100%;
+}
+
+.All-report{
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+.report-card{
+    width:98%;
+    height: auto;
+    background-color: brown;
+}
+.profile{
+   width: 100%;
+   background-color: aqua;
+   height: 2rem;
+}
+.profile-img{
+    width: 1rem;
+    height:1rem;
+}
+.profile-img img{
+    width: 50%;
+}

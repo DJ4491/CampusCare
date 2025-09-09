@@ -32,6 +32,10 @@ def create():
         return render_template("content/create.html")  # just content block
     return render_template("base.html", content_template="content/create.html")
 
+@app.route("/All_Reports")
+def content_reports():
+    return render_template("Pages/All_Reports.html")
+
 
 @app.route("/notifications")
 def notifications():
