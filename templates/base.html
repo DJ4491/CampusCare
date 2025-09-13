@@ -20,15 +20,17 @@
       /* ===== Home & Body Setup ===== */
 
       #main-content {
-        transition: opacity 0.3s ease, transform 0.3s ease;
+        transition: opacity 0.4s ease, transform 0.4s ease;
       }
 
       .fade-out {
+        will-change: opacity;
         opacity: 0;
         transform: translateY(10px);
       }
 
       .fade-in {
+        will-change: opacity;
         opacity: 1;
         transform: translateY(0);
       }
@@ -174,20 +176,6 @@
       .b_icons.active {
         background-color: #f0f0f0;
         border-bottom: 2px solid #000;
-      }
-
-      .fade-out {
-        opacity: 0;
-        transition: opacity 0.6s ease;
-        will-change: opacity;
-        /* smooth fade-out */
-      }
-
-      .fade-in {
-        will-change: opacity;
-        opacity: 1;
-        transition: opacity 0.6s ease;
-        /* smooth fade-in */
       }
 
       /* ########################## User Profile ####################################*/

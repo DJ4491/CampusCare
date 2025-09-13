@@ -49,13 +49,6 @@ body {
 }
 
 /* Animate open */
-body.loaded .left {
-    transform: translateX(-100%);
-}
-
-body.loaded .Fright {
-    transform: translateX(100%);
-}
 
 body.loaded .container {
     opacity: 1;
