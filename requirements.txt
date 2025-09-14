@@ -1,5 +1,16 @@
-Jinja2==3.1.6
-Flask==3.1.1
-gunicorn
-requests
-beautifulsoup4
+# Core Django
+Django==5.2.6
+asgiref==3.9.1
+sqlparse==0.5.3
+tzdata==2025.2
+
+# WSGI server for production
+gunicorn==23.0.0
+
+# Database (SQLite + SQLAlchemy support)
+SQLAlchemy==2.0.36
+alembic==1.14.1              # optional, for SQLAlchemy migrations
+pysqlite3-binary==0.5.3.post1   # only if you need latest SQLite features
+
+# MySQL support (optional, safe to keep if needed later)
+mysqlclient==2.2.7
