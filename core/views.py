@@ -1,6 +1,7 @@
 # core/views.py
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.utils.http import url_has_allowed_host_and_scheme
 from .models import Report
 
 
@@ -31,6 +32,8 @@ def home(request):
 def create(request):
     return render_fragment_or_full(request, "pages/create.html")
 
+def loader(request):
+    return render_fragment_or_full(request, "pages/loader.html")
 
 # add similar functions for search, notifications, user_profile, events, etc.
 

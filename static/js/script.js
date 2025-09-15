@@ -1,4 +1,3 @@
-
 // after fetch replace, you can still call any extra init
 //note:-####################### Transition and Load Page ####################################
 const cards = document.querySelectorAll(".icon");
@@ -11,46 +10,40 @@ cards.forEach((card) => {
     card.style.transform = "scale(1)";
   });
 });
+
 function loadpage(page) {
   let url = page === "" ? "/" : "/" + page + "/";
   let container = document.getElementById("main-content");
+  let loader = document.getElementById("loader");
 
-  let loader = document.getElementById("loading-screen"); // at top
-
+  // Step 1: fade out current content
   container.classList.add("fade-out");
-  loader.classList.remove("hidden"); // 👈 show loader
-  // Step 1: fade out
-
-  // Step 2: wait same duration as CSS (400ms here)
+  // Step 2: wait for fade out, then show loader
   setTimeout(() => {
+    container.style.display = "none";
+    loader.classList.remove("hidden");
+
+    // Step 3: fetch new page content while loader is visible
     fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
       .then((res) => res.text())
       .then((html) => {
-        // swap content after fade-out
-        container.innerHTML = html;
-
-        container.classList.remove("fade-out");
-        container.classList.add("fade-in");
-        loader.classList.add("hidden"); // 👈 hide loader
-
-
-        // clean up fade-in
+        // Step 4: wait for a set duration before switching content
         setTimeout(() => {
+          loader.classList.add("hidden");
+          container.innerHTML = html;
+          container.style.display = "";
           container.classList.remove("fade-out");
-          container.classList.remove("fade-in");
-        }, 1000);
+          // Push history
+          history.pushState(null, "", url);
 
-        // push history
-        history.pushState(null, "", url);
-
-        if (page === "my_reports") {
-          initReports();
-        }
+          if (page === "my_reports") {
+            initReports();
+          }
+        }, 2400); // Adjust this delay as needed (e.g., 1000ms = 1 second)
       })
       .catch((err) => console.error("Error loading page:", err));
-  }, 300); // match CSS transition time
+  }, 200); // Match initial fade-out duration
 }
-
 // handle back/forward
 window.addEventListener("popstate", () => {
   loadpage(location.pathname.replace("/", "").replace("/", ""));
@@ -95,7 +88,7 @@ function initReports() {
       post.className = "post";
 
       post.innerHTML = `
-          <div class = "container">
+            <div class = "container">
             <div class="post-header">
               <img src="${r.avatar}" class="avatar">
               <div>
@@ -111,9 +104,11 @@ function initReports() {
               <button class="like-btn ${
                 r.liked ? "liked" : ""
               }" onclick="toggleLike(${index})">❤️ ${r.likes}</button>
-              <button>💬 ${r.comments.length}</button>
+             <button class="Comment-div" onclick="toggleComments(${index})">💬 ${
+        r.comments.length
+      }</button>
             </div>
-            <div class="comments">
+            <div class="comments" id = "comments-${index}" style="display:none;">
               ${r.comments
                 .map((c) => `<div class="comment">${c}</div>`)
                 .join("")}
@@ -127,6 +122,15 @@ function initReports() {
       feed.appendChild(post);
     });
   }
+
+  window.toggleComments = function (i) {
+    const commentsDiv = document.getElementById(`comments-${i}`);
+    if (commentsDiv) {
+      commentsDiv.style.display =
+        commentsDiv.style.display === "none" ? "block" : "none";
+    }
+  };
+  
   window.toggleLike = function (i) {
     reports[i].liked = !reports[i].liked;
     reports[i].likes += reports[i].liked ? 1 : -1;

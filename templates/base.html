@@ -5,28 +5,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Campus Connect</title>
-    <script>
-      src =
-        "https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js";
-      type = "module";
-    </script>
     <!-- <link rel="stylesheet" href="{% static 'css/style.css' %}" /> -->
     <style>
       /*############################ Loading Screen ########################*/
-      .loading {
+
+      #loader {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: inherit;
+        width: 100vw;
+        height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 1000; /* on top of everything */
+        z-index: 1000;
       }
 
-      .hidden {
+      #loader.hidden {
         display: none;
       }
 
@@ -183,7 +178,7 @@
         justify-content: center;
         gap: 40px;
         width: 100%;
-        z-index: 1000;
+        z-index: 2000;
         flex-direction: row;
       }
 
@@ -378,7 +373,8 @@
     </style>
   </head>
   <body>
-    <div id="loading-screen" class="loading hidden">
+    <div id="loader" class="hidden">
+      <!-- Add your loader HTML here -->
       <dotlottie-wc
         src="https://lottie.host/c99229b3-7478-4486-a287-1d7fc5eb4188/tcfvjKuTu8.lottie"
         style="width: 300px; height: 300px"
@@ -387,7 +383,9 @@
         loop
       ></dotlottie-wc>
     </div>
+
     <div id="main-content">{% include content_template %}</div>
+
     <footer>
       <hr class="seperatline" />
       <div class="bottom_menu">
@@ -420,5 +418,9 @@
       </div>
     </footer>
     <script src="{% static 'js/script.js' %}"></script>
+    <script
+      src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js"
+      type="module"
+    ></script>
   </body>
 </html>
