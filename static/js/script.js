@@ -1,3 +1,4 @@
+
 // after fetch replace, you can still call any extra init
 //note:-####################### Transition and Load Page ####################################
 const cards = document.querySelectorAll(".icon");
@@ -14,8 +15,11 @@ function loadpage(page) {
   let url = page === "" ? "/" : "/" + page + "/";
   let container = document.getElementById("main-content");
 
-  // Step 1: fade out
+  let loader = document.getElementById("loading-screen"); // at top
+
   container.classList.add("fade-out");
+  loader.classList.remove("hidden"); // 👈 show loader
+  // Step 1: fade out
 
   // Step 2: wait same duration as CSS (400ms here)
   setTimeout(() => {
@@ -25,14 +29,16 @@ function loadpage(page) {
         // swap content after fade-out
         container.innerHTML = html;
 
-        // Step 3: fade back in
         container.classList.remove("fade-out");
         container.classList.add("fade-in");
+        loader.classList.add("hidden"); // 👈 hide loader
+
 
         // clean up fade-in
         setTimeout(() => {
+          container.classList.remove("fade-out");
           container.classList.remove("fade-in");
-        }, 400);
+        }, 1000);
 
         // push history
         history.pushState(null, "", url);
@@ -42,7 +48,7 @@ function loadpage(page) {
         }
       })
       .catch((err) => console.error("Error loading page:", err));
-  }, 400); // match CSS transition time
+  }, 300); // match CSS transition time
 }
 
 // handle back/forward

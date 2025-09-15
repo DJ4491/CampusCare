@@ -1,5 +1,7 @@
 # core/views.py
 from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Report
 
 
 def is_ajax(request):
@@ -14,6 +16,11 @@ def render_fragment_or_full(request, fragment_path, context=None):
     # normal full-page load -> wrap fragment into base.html by passing its path
     ctx["content_template"] = fragment_path
     return render(request, "base.html", ctx)
+
+
+def api_get_reports(request):
+    data = list(Report.objects.all().values())
+    return JsonResponse(data, safe=False)
 
 
 def home(request):
