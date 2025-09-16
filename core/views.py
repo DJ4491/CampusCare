@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.utils.http import url_has_allowed_host_and_scheme
-from .models import Report
+from .models import Report, Comments
 
 
 def is_ajax(request):
@@ -26,14 +26,16 @@ def api_get_reports(request):
 
 def home(request):
     # pass any context needed by the fragment
-    return render_fragment_or_full(request, "pages/home.html", {"welcome": "Hi"})
+    return render_fragment_or_full(request, "pages/home.html")
 
 
 def create(request):
     return render_fragment_or_full(request, "pages/create.html")
 
+
 def loader(request):
     return render_fragment_or_full(request, "pages/loader.html")
+
 
 # add similar functions for search, notifications, user_profile, events, etc.
 
@@ -55,7 +57,7 @@ def log_in(request):
 
 
 def report(request):
-    return render_fragment_or_full(request, "pages/reports.html")
+    return render_fragment_or_full(request, "pages/report.html")
 
 
 def my_reports(request):

@@ -10,6 +10,7 @@
       /*############################ Loading Screen ########################*/
 
       #loader {
+        background: linear-gradient(135deg, #f9fafb, #eef2f3);
         position: fixed;
         top: 0;
         left: 0;
@@ -38,16 +39,15 @@
       /* ===== Home & Body Setup ===== */
 
       #main-content {
-        transition: opacity 0.3s linear, transform 0.4s linear;
+        transition: opacity 0.5s ease-in-out; /* smoother than linear */
+        will-change: opacity; /* GPU hint */
       }
 
       .fade-out {
-        will-change: opacity;
         opacity: 0;
       }
 
       .fade-in {
-        will-change: opacity;
         opacity: 1;
       }
 

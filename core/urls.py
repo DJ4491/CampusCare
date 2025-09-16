@@ -11,6 +11,8 @@ urlpatterns = [
     path("log_in/", views.log_in, name="log_in"),
     path("report/", views.report, name="report"),
     path("my_reports/", views.my_reports, name="my_reports"),
+    # new API endpoints
+    path("api/reports/", views.api_get_reports, name="api_get_reports"),
     # path("events/", views.events, name="events"),
     # ... other routes
 ]

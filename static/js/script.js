@@ -21,7 +21,7 @@ function loadpage(page) {
   container.classList.add("fade-out");
   // Step 2: wait for fade out, then show loader
   setTimeout(() => {
-    container.style.display = "none";
+    container.style.visibility = "hidden";
     loader.classList.remove("hidden");
     // Step 3: fetch new page content while loader is visible
     fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
@@ -31,8 +31,9 @@ function loadpage(page) {
         setTimeout(() => {
           loader.classList.add("hidden");
           container.innerHTML = html;
-          container.style.display = "";
+          container.style.visibility = "visible";
           container.classList.remove("fade-out");
+          void container.offsetWidth;
           container.classList.add("fade-in");
           // Push history
           history.pushState(null, "", url);
@@ -55,31 +56,18 @@ window.addEventListener("popstate", () => {
 //@important:-  ############################## Report Page ####################################
 
 function initReports() {
-  const reports = [
-    {
-      id: 1,
-      author: "Dhruv",
-      avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=Dhruv",
-      time: "2h",
-      title: "Annual Report 2023",
-      desc: "An overview of performance & growth metrics.",
-      likes: 12,
-      liked: false,
-      comments: ["Great work!", "Very detailed 👌"],
-    },
-    {
-      id: 2,
-      author: "Sneha",
-      avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=Sneha",
-      time: "Yesterday",
-      title: "Q1 Market Analysis",
-      desc: "Trends and insights for Q1 across all sectors.",
-      likes: 8,
-      liked: false,
-      comments: ["This helps a lot!", "Looking forward to Q2."],
-    },
-  ];
-
+  let reports = [];
+  fetch("/api/reports/")
+    .then((res) => res.json())
+    .then((data) => {
+      reports = data.map((r) => ({
+        ...r,
+        liked: false, // extra field for frontend
+        comments: [], // placeholder since Django isn’t sending comments yet
+      }));
+      renderFeed();
+    })
+    .catch((err) => console.error("Error loading reports:", err));
   const feed = document.getElementById("feed");
 
   function renderFeed() {
@@ -131,7 +119,7 @@ function initReports() {
         commentsDiv.style.display === "none" ? "block" : "none";
     }
   };
-  
+
   window.toggleLike = function (i) {
     reports[i].liked = !reports[i].liked;
     reports[i].likes += reports[i].liked ? 1 : -1;

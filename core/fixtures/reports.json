@@ -1,0 +1,24 @@
+[
+  {
+    "model": "core.report",
+    "pk": 1,
+    "fields": {
+      "author": "Krishna",
+      "avatar": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse2.mm.bing.net%2Fth%2Fid%2FOIP.UwZum0y-k1eTnvoqVmYj1AHaHa%3Fr%3D0%26pid%3DApi&f=1&ipt=e420f3339c0e04d2fbcc27e5df8e78e78a9b1f0f17b2b46b191b5c5105d657a3&ipo=images",
+      "title": "First Report",
+      "desc": "This is my first seeded report from a fixture.",
+      "likes": 10
+    }
+  },
+  {
+    "model": "core.report",
+    "pk": 2,
+    "fields": {
+      "author": "Dukhi",
+      "avatar": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%2Fid%2FOIP.JSwe8MWmpAmJsvnW-749tQHaHa%3Fr%3D0%26pid%3DApi&f=1&ipt=57defc421fe34de00fdba868b65452adcd127f82eacb1de69c156ea1546027f1&ipo=images",
+      "title": "Second Report",
+      "desc": "Another seeded report, testing fixtures.",
+      "likes": 3
+    }
+  }
+]
