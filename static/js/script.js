@@ -17,12 +17,12 @@ function loadpage(page) {
   let loader = document.getElementById("loader");
 
   // Step 1: fade out current content
+  container.classList.remove("fade-in");
   container.classList.add("fade-out");
   // Step 2: wait for fade out, then show loader
   setTimeout(() => {
     container.style.display = "none";
     loader.classList.remove("hidden");
-
     // Step 3: fetch new page content while loader is visible
     fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
       .then((res) => res.text())
@@ -33,6 +33,7 @@ function loadpage(page) {
           container.innerHTML = html;
           container.style.display = "";
           container.classList.remove("fade-out");
+          container.classList.add("fade-in");
           // Push history
           history.pushState(null, "", url);
 
@@ -42,7 +43,7 @@ function loadpage(page) {
         }, 2400); // Adjust this delay as needed (e.g., 1000ms = 1 second)
       })
       .catch((err) => console.error("Error loading page:", err));
-  }, 200); // Match initial fade-out duration
+  }, 300); // Match initial fade-out duration
 }
 // handle back/forward
 window.addEventListener("popstate", () => {

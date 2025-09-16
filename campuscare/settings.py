@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-on!+kwxqk=_)wbz=16v)arjs+zz@&otf^x8pggjs=86j9yp8z9
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "https://campuscare-3-fs49.onrender.com",
+    "campuscare-3-fs49.onrender.com",
     "127.0.0.1",
 ]
 
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "campuscare",
 ]
 
 MIDDLEWARE = [
