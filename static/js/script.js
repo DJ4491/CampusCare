@@ -13,15 +13,15 @@ cards.forEach((card) => {
 
 function loadpage(page) {
   let url = page === "" ? "/" : "/" + page + "/";
-  let container = document.getElementById("main-content");
+  let content = document.getElementById("main-content");
   let loader = document.getElementById("loader");
 
   // Step 1: fade out current content
-  container.classList.remove("fade-in");
-  container.classList.add("fade-out");
+  content.classList.remove("fade-in");
+  content.classList.add("fade-out");
   // Step 2: wait for fade out, then show loader
   setTimeout(() => {
-    container.style.visibility = "hidden";
+    content.style.visibility = "hidden";
     loader.classList.remove("hidden");
     // Step 3: fetch new page content while loader is visible
     fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
@@ -30,11 +30,11 @@ function loadpage(page) {
         // Step 4: wait for a set duration before switching content
         setTimeout(() => {
           loader.classList.add("hidden");
-          container.innerHTML = html;
-          container.style.visibility = "visible";
-          container.classList.remove("fade-out");
-          void container.offsetWidth;
-          container.classList.add("fade-in");
+          content.innerHTML = html;
+          content.style.visibility = "visible";
+          content.classList.remove("fade-out");
+          void content.offsetWidth;
+          content.classList.add("fade-in");
           // Push history
           history.pushState(null, "", url);
 

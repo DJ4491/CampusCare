@@ -2,26 +2,50 @@
 <div class="container">
   <div id="notifycontent">
     <div class="NotifyPanel">
-      <p class="title" style="font-weight: 400">Notifications</p>
+      <p class="title" style="font-weight: 600">Notifications</p>
       <!-- <img class="back-icon" src="{% static 'images/back.svg' %}" alt="back" /> -->
       <div class="right-placeholder"></div>
       <!-- keeps title centered -->
     </div>
     <div class="msg_wrapper">
-      <div class="messagebox msg0">
-        <p>Hey welcome back!</p>
+      <div class="noti_list">
+        <!-- Example item (replace with real data when wired) -->
+        <a class="noti_item unread" href="#">
+          <div class="noti_icon">
+            <img src="{% static 'images/notification-2-line.svg' %}" alt="" width="20" height="20" />
+          </div>
+          <div class="noti_content">
+            <p class="noti_title">New activity on your report</p>
+            <p class="noti_body">Security team has updated the status.</p>
+            <span class="noti_meta">2m ago</span>
+          </div>
+          <span class="noti_dot" aria-hidden="true"></span>
+        </a>
+        <a class="noti_item" href="#">
+          <div class="noti_icon">
+            <img src="{% static 'images/add-fill.svg' %}" alt="" width="20" height="20" />
+          </div>
+          <div class="noti_content">
+            <p class="noti_title">Report submitted successfully</p>
+            <p class="noti_body">We’ll notify you as soon as there’s an update.</p>
+            <span class="noti_meta">Yesterday</span>
+          </div>
+        </a>
+        <a class="noti_item" href="#">
+          <div class="noti_icon">
+            <img src="{% static 'images/help.png' %}" alt="" width="20" height="20" />
+          </div>
+          <div class="noti_content">
+            <p class="noti_title">Tips for faster resolutions</p>
+            <p class="noti_body">Add a clear description and location details.</p>
+            <span class="noti_meta">2 days ago</span>
+          </div>
+        </a>
       </div>
-      <div class="messagebox msg1">
-        <p>john doe ! You've got a offer</p>
-      </div>
-      <div class="messagebox msg2">
-        <p>john doe ! You've got a offer</p>
-      </div>
-      <div class="messagebox msg3">
-        <p>Want some pie at mole's corner ?</p>
-      </div>
-      <div class="messagebox msg4">
-        <p>Want some pie at mole's corner ?</p>
+      <div class="noti_empty" hidden>
+        <img src="{% static 'images/notification-2-line.svg' %}" alt="" width="48" height="48" />
+        <p class="empty_title">You're all caught up</p>
+        <p class="empty_body">We’ll let you know when there’s something new.</p>
       </div>
     </div>
   </div>
