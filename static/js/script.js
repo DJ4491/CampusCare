@@ -15,7 +15,13 @@ function loadpage(page) {
   let url = page === "" ? "/" : "/" + page + "/";
   let content = document.getElementById("main-content");
   let loader = document.getElementById("loader");
-
+  const home = document.getElementById("home-icon");
+  if (page === "") {
+    home.removeAttribute("onclick");
+  }
+  if (page !== "") {
+    home.setAttribute("onclick", "loadpage('')");
+  }
   // Step 1: fade out current content
   content.classList.remove("fade-in");
   content.classList.add("fade-out");
