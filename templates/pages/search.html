@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Search Page</title>
+<style>
+  :root {
+    --bg:#f7fafc;
+    --card:#ffffff;
+    --muted:#6c757d;
+    --primary:#0f9d86;
+    font-family: Arial, sans-serif;
+  }
+  body {
+    margin:0;
+    padding:16px;
+    background:var(--bg);
+    display:flex;
+    justify-content:center;
+  }
+  .mobile-app {
+    width:100%;
+    max-width:420px;
+  }
+  h1 {
+    font-size:20px;
+    text-align:center;
+    margin-bottom:14px;
+  }
+  .search-box {
+    display:flex;
+    margin-bottom:16px;
+  }
+  .search-box input {
+    flex:1;
+    padding:10px;
+    font-size:14px;
+    border:1px solid #dce3e8;
+    border-radius:8px;
+    outline:none;
+  }
+  .list {
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .card {
+    background:var(--card);
+    border-radius:10px;
+    padding:12px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.08);
+  }
+  .card h3 {
+    margin:0;
+    font-size:16px;
+    color:#333;
+  }
+  .card p {
+    margin:6px 0 0;
+    font-size:14px;
+    color:var(--muted);
+  }
+  .no-results {
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    margin-top:20px;
+  }
+</style>
+</head>
+<body>
+<div class="mobile-app">
+  <h1>Search Reports & Events</h1>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search...">
+  </div>
+
+  <div class="list" id="results"></div>
+  <div class="no-results" id="noResults">Start typing to search...</div>
+</div>
+
+<script>
+const data = [
+  {title:"Wi-Fi Issue", desc:"Internet problems in Block A"},
+  {title:"Library Event", desc:"Book exhibition on Friday at 3 PM"},
+  {title:"Hostel Mess Problem", desc:"Food quality issues in Hostel C"},
+  {title:"Hackathon", desc:"Annual coding competition in Lab 2"}
+];
+
+const searchInput = document.getElementById('searchInput');
+const results = document.getElementById('results');
+const noResults = document.getElementById('noResults');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase().trim();
+  results.innerHTML = "";
+  
+  if (!query) {
+    noResults.textContent = "Start typing to search...";
+    return;
+  }
+  
+  const filtered = data.filter(item => 
+    item.title.toLowerCase().includes(query) || 
+    item.desc.toLowerCase().includes(query)
+  );
+  
+  if (filtered.length === 0) {
+    noResults.textContent = "No results found.";
+  } else {
+    noResults.textContent = "";
+    filtered.forEach(item => {
+      const card = document.createElement('div');
+      card.className = "card";
+      card.innerHTML = `<h3>${item.title}</h3><p>${item.desc}</p>`;
+      results.appendChild(card);
+    });
+  }
+});
+</script>
+</body>
+</html>
