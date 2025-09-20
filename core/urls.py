@@ -13,6 +13,7 @@ urlpatterns = [
     path("my_reports/", views.my_reports, name="my_reports"),
     # new API endpoints
     path("api/reports/", views.api_get_reports, name="api_get_reports"),
+    path("api/comments/", views.api_comments, name="api_comments"),
     # path("events/", views.events, name="events"),
     # ... other routes
 ]

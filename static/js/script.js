@@ -63,17 +63,31 @@ window.addEventListener("popstate", () => {
 
 function initReports() {
   let reports = [];
-  fetch("/api/reports/")
-    .then((res) => res.json())
-    .then((data) => {
-      reports = data.map((r) => ({
+  Promise.all([
+    fetch("/api/reports/").then((res) => res.json()),
+    fetch("/api/comments/").then((res) => res.json()),
+  ])
+    .then(([reportsData, commentsData]) => {
+      // Step 1: Organize comments into a Object grouped by report_id
+      const commentsByReport = {};
+      commentsData.forEach((c) => {
+        if (!commentsByReport[c.report_id]) {
+          commentsByReport[c.report_id] = [];
+        }
+        commentsByReport[c.report_id].push(c.comment);
+      });
+
+      // Step 2: Attach correct comments to each report
+      reports = reportsData.map((r) => ({
         ...r,
-        liked: false, // extra field for frontend
-        comments: [], // placeholder since Django isn’t sending comments yet
+        liked: false,
+        comments: commentsByReport[r.id] || [], // empty if none
       }));
-      renderFeed();
+
+      console.log("Reports with comments:", reports);
+      renderFeed(reports); // pass reports into your feed renderer
     })
-    .catch((err) => console.error("Error loading reports:", err));
+    .catch((err) => console.error("Error loading reports or comments:", err));
   const feed = document.getElementById("feed");
 
   function renderFeed() {
@@ -132,16 +146,79 @@ function initReports() {
     renderFeed();
   };
 
-  window.addComment = function (i) {
+  window.addComment = function (i,comment) {
     const input = document.getElementById(`comment-${i}`);
-    if (input.value.trim()) {
-      reports[i].comments.push(input.value.trim());
-      input.value = "";
-      renderFeed();
+    const text = input.value.trim();
+    if (!text) {
+      return;
     }
+    const reportID = reports[i].id;
+    fetch("/api/comments/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        report: reportID,
+        comment: text,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Saved comment:", data);
+
+        // Update UI immediately
+        reports[i].comments.push(data.comment);
+
+        renderFeed(); // full re-render
+        input.value = "";
+      })
+      .catch((err) => console.error("Error posting comment:", err));
   };
 
   renderFeed();
+}
+
+function initNotifications() {
+  const notifications = [
+    {
+      type_icon:
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fpreviews%2F010%2F366%2F202%2Foriginal%2Fbell-icon-transparent-notification-free-png.png&f=1&nofb=1&ipt=19bdd368cbf776c232da7dfb7ff6b7140d2f053147e0f045d88e29fe9c6482b7",
+      title: "Freshers Announcement",
+      desc: "There will be a freshers party soon in the college premises",
+      time: "1h ago",
+      isLatest: true,
+    },
+    {
+      type_icon:
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F2417%2F2417835.png&f=1&nofb=1&ipt=72233f0bf8ab254de30b16294a009c2d9093e7fed63260a98cab5e15551efb2d",
+      title: "Freshers cancelled due to mismanagement in college",
+      desc: "There will be no freshers party in college due to mismanagement of students",
+      time: "1m ago",
+      isLatest: true,
+    },
+  ];
+  const notification_feed = document.getElementById("msg_wrapper");
+  function renderFeed() {
+    notification_feed.innerHTML = "";
+    notifications.forEach((n, index) => {
+      const post_notification = document.createElement("div");
+      post_notification.className = "post_notification";
+      post_notification.innerHTML = `
+        <div class="noti_list">
+        <a class="noti_item unread" href="#">
+          <div class="noti_icon">
+            <img src="${n.type_icon}" alt="" width="20" height="20" />
+          </div>
+          <div class="noti_content">
+            <p class="noti_title">${n.title}</p>
+            <p class="noti_body">${n.desc}</p>
+            <span class="noti_meta">${n.time}</span>
+          </div>
+          <span class="noti_dot" aria-hidden="${n.isLatest}"></span>
+        </a>
+        <div>
+      `;
+    });
+  }
 }
 // If user directly loads /reports/, initialize immediately
 document.addEventListener("DOMContentLoaded", () => {

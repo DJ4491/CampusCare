@@ -2,6 +2,9 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
 from .models import Report, Comments
 
 
@@ -22,6 +25,46 @@ def render_fragment_or_full(request, fragment_path, context=None):
 def api_get_reports(request):
     data = list(Report.objects.all().values())
     return JsonResponse(data, safe=False)
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def api_comments(request):
+    if request.method == "GET":
+        data = list(Comments.objects.all().values())
+        return JsonResponse(data, safe=False)
+    
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            report_id = data.get('report')
+            comment_text = data.get('comment')
+            
+            if not report_id or not comment_text:
+                return JsonResponse({'error': 'Missing report ID or comment text'}, status=400)
+            
+            # Get the report object
+            try:
+                report = Report.objects.get(id=report_id)
+            except Report.DoesNotExist:
+                return JsonResponse({'error': 'Report not found'}, status=404)
+            
+            # Create the comment
+            comment = Comments.objects.create(
+                report=report,
+                comment=comment_text
+            )
+            
+            return JsonResponse({
+                'id': comment.id,
+                'report': comment.report.id,
+                'comment': comment.comment
+            }, status=201)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 
 def home(request):
