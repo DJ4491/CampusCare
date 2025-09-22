@@ -1,6 +1,6 @@
 # 📱 Campus Utility App (Minor Project)
 
-A **Flask-based web application** with an Android wrapper that brings essential campus utilities in one place.
+A **Django-based web application** with an Android wrapper that brings essential campus utilities in one place.
 Features include **event & activity notifications**, **lost and found system**, **campus map & facilities**, and **issue reporting**.
 
 The app is accessible both via **web browser** and as a **mobile app (WebView)**.
@@ -26,7 +26,7 @@ The app is accessible both via **web browser** and as a **mobile app (WebView)**
 
 **Backend**
 
-* Flask (Python)
+* Django (Python)
 * SQLite Database
 
 **Android Wrapper**
