@@ -533,6 +533,38 @@
       .empty_body {
         font-size: 14px;
       }
+      .fab-options {
+  display: none;
+  position: fixed;
+  bottom: 40px;
+  margin-bottom: 10px;
+  align-items: center;
+  gap: 10px;
+}
+
+.fab-options button {
+  margin-bottom: 10px;
+  padding: 10px 15px;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 100%;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+.button1{
+  transform: rotate(25deg);
+}
+.button2{
+  transform: rotate(-25deg);
+}
+
+.fab-options button:hover {
+  transform: scale(1.05);
+}
 
       @keyframes slideUpFade {
         from {
@@ -580,6 +612,11 @@
           <div class="b_icons" id="create-icon" onclick="loadpage('create')">
             <img src="{% static 'images/add-fill.svg' %}" width="20px" />
           </div>
+          <div id="fab-options" class="fab-options">
+              <button class="button1" onclick="createReport()">📝 Create Report</button>
+              <button class="button2" onclick="recordVideo()">🎥 Record Video</button>
+          </div>
+
           <div
             class="b_icons"
             id="notifications-icon"

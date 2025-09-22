@@ -11,6 +11,29 @@ cards.forEach((card) => {
   });
 });
 
+  const fab = document.getElementById("create-icon");
+const fabOptions = document.getElementById("fab-options");
+
+fab.addEventListener("click", () => {
+  if (fabOptions.style.display === "flex") {
+    fabOptions.style.display = "none";
+  } else {
+    fabOptions.style.display = "flex";
+  }
+});
+
+// Functions for the buttons
+function createReport() {
+  // Load your report page here
+  loadpage("my_reports");
+}
+
+function recordVideo() {
+  alert("Record Video clicked! 🎥");
+  // You can integrate your video recording logic here
+}
+
+
 function loadpage(page) {
   let url = page === "" ? "/" : "/" + page + "/";
   let content = document.getElementById("main-content");
