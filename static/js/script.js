@@ -10,6 +10,31 @@ cards.forEach((card) => {
     card.style.transform = "scale(1)";
   });
 });
+//################## Fab ##################################
+
+const fab = document.getElementById("create-icon");
+const fabOptions = document.getElementById("fab-options");
+
+fab.addEventListener("click", () => {
+  if (fabOptions.style.display === "flex") {
+    fabOptions.style.display = "none";  
+  } else {
+    fabOptions.style.display = "flex";
+  }
+});
+
+// Functions for the buttons
+function createReport() {
+  // Load your report page here
+  loadpage("report");
+  fabOptions.style.display = "none";
+}
+
+function recordVideo() {
+  alert("Record Video clicked! 🎥");
+  // You can integrate your video recording logic here
+}
+// ########################################################################
 
 function loadpage(page) {
   let url = page === "" ? "/" : "/" + page + "/";
@@ -47,6 +72,15 @@ function loadpage(page) {
           if (page === "my_reports") {
             initReports();
           }
+          if (page === "notifications") {
+            initNotifications();
+          }
+          if (page === "user_profile") {
+            initUserProfile();
+          }
+          if (page === "search") {
+            initSearch();
+          }
         }, 2400); // Adjust this delay as needed (e.g., 1000ms = 1 second)
       })
       .catch((err) => console.error("Error loading page:", err));
@@ -59,7 +93,7 @@ window.addEventListener("popstate", () => {
 
 //note:-####################### Transition and Load Page ####################################
 
-//@important:-  ############################## Report Page ####################################
+//@important:-  ############################## Report Feed ####################################
 
 function initReports() {
   let reports = [];
@@ -86,6 +120,11 @@ function initReports() {
 
       console.log("Reports with comments:", reports);
       renderFeed(reports); // pass reports into your feed renderer
+
+      // Update time display every minute
+      setInterval(() => {
+        renderFeed();
+      }, 60000); // 60000ms = 1 minute
     })
     .catch((err) => console.error("Error loading reports or comments:", err));
   const feed = document.getElementById("feed");
@@ -102,7 +141,7 @@ function initReports() {
               <img src="${r.avatar}" class="avatar">
               <div>
                 <div class="author">${r.author}</div>
-                <div class="time">${r.time}</div>
+                <div class="time">${formatTimeAgo(r.time)}</div>
               </div>
             </div>
             <div class="post-body">
@@ -146,7 +185,7 @@ function initReports() {
     renderFeed();
   };
 
-  window.addComment = function (i,comment) {
+  window.addComment = function (i, comment) {
     const input = document.getElementById(`comment-${i}`);
     const text = input.value.trim();
     if (!text) {
@@ -177,26 +216,35 @@ function initReports() {
   renderFeed();
 }
 
+// Function to format time to human readable format
+function formatTimeAgo(dateString) {
+  const now = new Date();
+  const notificationTime = new Date(dateString);
+  const diffInSeconds = Math.floor((now - notificationTime) / 1000);
+
+  if (diffInSeconds < 60) {
+    return `${diffInSeconds}s ago`;
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes}m ago`;
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours}h ago`;
+  } else if (diffInSeconds < 604800) {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days}d ago`;
+  } else {
+    const weeks = Math.floor(diffInSeconds / 604800);
+    return `${weeks}w ago`;
+  }
+}
+
+//@important:- ############################### Notification Feed ############################
+
 function initNotifications() {
-  const notifications = [
-    {
-      type_icon:
-        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fpreviews%2F010%2F366%2F202%2Foriginal%2Fbell-icon-transparent-notification-free-png.png&f=1&nofb=1&ipt=19bdd368cbf776c232da7dfb7ff6b7140d2f053147e0f045d88e29fe9c6482b7",
-      title: "Freshers Announcement",
-      desc: "There will be a freshers party soon in the college premises",
-      time: "1h ago",
-      isLatest: true,
-    },
-    {
-      type_icon:
-        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F2417%2F2417835.png&f=1&nofb=1&ipt=72233f0bf8ab254de30b16294a009c2d9093e7fed63260a98cab5e15551efb2d",
-      title: "Freshers cancelled due to mismanagement in college",
-      desc: "There will be no freshers party in college due to mismanagement of students",
-      time: "1m ago",
-      isLatest: true,
-    },
-  ];
+  let notifications = [];
   const notification_feed = document.getElementById("msg_wrapper");
+
   function renderFeed() {
     notification_feed.innerHTML = "";
     notifications.forEach((n, index) => {
@@ -206,23 +254,138 @@ function initNotifications() {
         <div class="noti_list">
         <a class="noti_item unread" href="#">
           <div class="noti_icon">
-            <img src="${n.type_icon}" alt="" width="20" height="20" />
+            <img src="${n.type_icon}" alt="" width="30" height="30" />
           </div>
           <div class="noti_content">
             <p class="noti_title">${n.title}</p>
             <p class="noti_body">${n.desc}</p>
-            <span class="noti_meta">${n.time}</span>
+            <span class="noti_meta">${formatTimeAgo(n.time)}</span>
           </div>
           <span class="noti_dot" aria-hidden="${n.isLatest}"></span>
         </a>
-        <div>
+        </div>
+      `;
+      notification_feed.appendChild(post_notification);
+    });
+  }
+
+  fetch("/api/notifications")
+    .then((res) => res.json())
+    .then((notes) => {
+      notifications = notes.map((n) => ({
+        ...n,
+        isLatest: false,
+      }));
+      renderFeed(); // Call renderFeed after data is loaded
+
+      // Update time display every minute
+      setInterval(() => {
+        renderFeed();
+      }, 60000); // 60000ms = 1 minute
+    })
+    .catch((error) => {
+      console.error("Error fetching notifications:", error);
+    });
+}
+
+function initUserProfile() {
+  let userData = [
+    {
+      pfp: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapers.com%2Fimages%2Fhd%2Fpfp-pictures-ph6qxvz14p4uvj2j.jpg&f=1&nofb=1&ipt=3a6b6418b7e35569da64e680a1fc79cc6da0b827a8b84ad6d8a3563557dd",
+      username: "Minakshi Joshi",
+      aboutme:
+        "Hey there ! fellas, I don't think I'm gonna do smth today. Just eat and relaaaax",
+      user_email: "Meenu@gmail.com",
+    },
+  ];
+  const user_feed = document.getElementById("user_feed");
+
+  function renderFeed() {
+    user_feed.innerHTML = "";
+    userData.forEach((u) => {
+      user_feed.innerHTML = `
+    <div class="profile_image">
+        <img class="pfp_image" src="${u.pfp}" alt="" width="120px" height="auto" />
+      <p id="username">${u.username}</p>
+    </div>
+    <div class="aboutme">
+      <p class="head">About</p>
+      <p>${u.aboutme}</p>
+      <p>Your favorite music ?</p>
+      <div class="user_form">
+          <p><strong>Username: </strong> ${u.username}</p>
+        <br />
+        <p><strong>Email: </strong>${u.user_email}</p>
+      </div>  
+    </div>   
       `;
     });
   }
+  renderFeed();
 }
+
+// ############################### Search Page ################################
+function initSearch() {
+  const data = [
+    { title: "Wi-Fi Issue", desc: "Internet problems in Block A" },
+    { title: "Library Event", desc: "Book exhibition on Friday at 3 PM" },
+    { title: "Hostel Mess Problem", desc: "Food quality issues in Hostel C" },
+    { title: "Hackathon", desc: "Annual coding competition in Lab 2" },
+  ];
+
+  const searchInput = document.getElementById("searchInput");
+  const results = document.getElementById("results");
+  const noResults = document.getElementById("noResults");
+  if (!searchInput || !results || !noResults) {
+    return;
+  }
+
+  function render(query) {
+    const q = (query || "").toLowerCase().trim();
+    results.innerHTML = "";
+    if (!q) {
+      noResults.textContent = "Start typing to search...";
+      return;
+    }
+    const filtered = data.filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        item.desc.toLowerCase().includes(q)
+    );
+    if (filtered.length === 0) {
+      noResults.textContent = "No results found.";
+      return;
+    }
+    noResults.textContent = "";
+    filtered.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `<h3>${item.title}</h3><p>${item.desc}</p>`;
+      results.appendChild(card);
+    });
+  }
+
+  let debounceTimer;
+  searchInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => render(searchInput.value), 150);
+  });
+
+  render("");
+}
+
 // If user directly loads /reports/, initialize immediately
 document.addEventListener("DOMContentLoaded", () => {
   if (window.location.pathname.includes("my_reports")) {
     initReports();
+  }
+  if (window.location.pathname.includes("notifications")) {
+    initNotifications();
+  }
+  if (window.location.pathname.includes("user_profile")) {
+    initUserProfile();
+  }
+  if (window.location.pathname.includes("search")) {
+    initSearch();
   }
 });

@@ -1,0 +1,16 @@
+[
+  {
+    "type_icon": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fpreviews%2F010%2F366%2F202%2Foriginal%2Fbell-icon-transparent-notification-free-png.png&f=1&nofb=1&ipt=19bdd368cbf776c232da7dfb7ff6b7140d2f053147e0f045d88e29fe9c6482b7",
+    "title": "Freshers Announcement",
+    "desc": "There will be a freshers party soon in the college premises",
+    "time": "1h ago",
+    "isLatest": true
+  },
+  {
+    "type_icon": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F2417%2F2417835.png&f=1&nofb=1&ipt=72233f0bf8ab254de30b16294a009c2d9093e7fed63260a98cab5e15551efb2d",
+    "title": "Freshers cancelled due to mismanagement in college",
+    "desc": "There will be no freshers party in college due to mismanagement of students",
+    "time": "1m ago",
+    "isLatest": true
+  }
+]

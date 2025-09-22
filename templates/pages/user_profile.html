@@ -3,29 +3,7 @@
   <div class="floattext">
     <h1>My Profile</h1>
   </div>
-  <div class="user_content">
-    <div class="profile_image">
-      <div class="pfp">
-        <!--pfp!!-->
-      </div>
-      <p id="username">John Doe</p>
-    </div>
-    <div class="aboutme">
-      <p class="head">About</p>
-      {% if user_data %}
-      <p>{{user_data.AboutMe}}</p>
-      {% else %}
-      <p>Your favorite music ?</p>
-      {% endif %}
-    </div>
-    <div class="user_form">
-      {% if user_data %}
-      <p><strong>Username: </strong> {{ user_data.username }}</p>
-      <br />
-      <p><strong>Email: </strong>{{user_data.email}}</p>
-      {% else %}
-      <p>No user data available.</p>
-      {% endif %}
-    </div>
+  <div class="user_feed" id="user_feed">
+    
   </div>
 </div>
