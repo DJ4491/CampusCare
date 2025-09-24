@@ -49,6 +49,13 @@ body {
 }
 
 /* Animate open */
+body.loaded .left {
+    transform: translateX(-100%);
+}
+
+body.loaded .Fright {
+    transform: translateX(100%);
+}
 
 body.loaded .container {
     opacity: 1;
@@ -106,7 +113,7 @@ body.loaded .container {
     background-size: 400% 400%;
     -webkit-background-clip: text;
     text-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
-    -webkit-font-smoothing: antialiased;
+    -webikt-font-smoothing: antialiased;
     -webkit-text-stroke: 0;
     text-rendering: optimizeLegibility;
     -webkit-text-fill-color: transparent;

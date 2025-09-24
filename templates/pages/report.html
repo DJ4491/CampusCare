@@ -6,7 +6,7 @@
     <title>Report an Issue</title>
     <style>
       :root {
-        --bg: #f7fafc;
+        --bg: linear-gradient(135deg, #f9fafb, #eef2f3);
         --card: #ffffff;
         --muted: #7b8794;
         --primary: #0f9d86;
@@ -17,7 +17,7 @@
         padding: 0;
         background: var(--bg);
         display: flex;
-        justify-content: cen  ter;
+        justify-content: center;
       }
 
       /* Mobile-like container */
@@ -107,6 +107,80 @@
         border: 1px solid var(--primary);
         color: var(--primary);
       }
+      /* Custom mobile dropdown */
+      .dropdown {
+        position: relative;
+      }
+      .dropdown-toggle {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border: 1px solid #dce3e8;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .dropdown-toggle:focus {
+        outline: 2px solid rgba(15, 157, 134, 0.3);
+        outline-offset: 2px;
+      }
+      .dropdown-toggle .caret {
+        transition: transform 200ms ease;
+      }
+      .dropdown.open .dropdown-toggle .caret {
+        transform: rotate(180deg);
+      }
+      .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #dce3e8;
+        border-radius: 12px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        max-height: 280px;
+        overflow: auto;
+        padding: 8px;
+        opacity: 0;
+        transform: scale(0.98);
+        transform-origin: top center;
+        pointer-events: none;
+        transition: opacity 160ms ease, transform 160ms ease;
+        z-index: 20;
+      }
+      .dropdown.open .dropdown-menu {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+      }
+      .dropdown-item {
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .dropdown-item:hover,
+      .dropdown-item[aria-selected="true"] {
+        background: rgba(15, 157, 134, 0.08);
+        color: #0f9d86;
+      }
+      .dropdown-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.08);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 160ms ease;
+        z-index: 10;
+      }
+      .dropdown.open + .dropdown-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+      }
     </style>
   </head>
   <body>
@@ -115,16 +189,40 @@
       <h1>Report an Issue</h1>
       <form id="reportForm">
         <div>
-          <label for="category">Issue Category</label>
-          <select id="category" required>
-            <option value="">Select category</option>
-            <option>Hostel</option>
-            <option>Classroom</option>
-            <option>Library</option>
-            <option>Wi-Fi</option>
-            <option>Mess</option>
-            <option>Other</option>
-          </select>
+          <label for="categoryDropdown">Issue Category</label>
+          <div class="dropdown" id="categoryDropdown" aria-expanded="false">
+            <button
+              type="button"
+              class="dropdown-toggle"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              <span class="dropdown-label">Select category</span>
+              <span class="caret">▾</span>
+            </button>
+            <ul class="dropdown-menu" role="listbox">
+              <li class="dropdown-item" role="option" data-value="Hostel">
+                Hostel
+              </li>
+              <li class="dropdown-item" role="option" data-value="Classroom">
+                Classroom
+              </li>
+              <li class="dropdown-item" role="option" data-value="Library">
+                Library
+              </li>
+              <li class="dropdown-item" role="option" data-value="Wi-Fi">
+                Wi-Fi
+              </li>
+              <li class="dropdown-item" role="option" data-value="Mess">
+                Mess
+              </li>
+              <li class="dropdown-item" role="option" data-value="Other">
+                Other
+              </li>
+            </ul>
+          </div>
+          <div class="dropdown-backdrop" hidden></div>
+          <input type="hidden" id="category" name="category" required />
         </div>
 
         <div>
@@ -163,27 +261,6 @@
       </form>
     </div>
 
-    <script>
-      const photoInput = document.getElementById("photoInput");
-      const previewWrap = document.getElementById("previewWrap");
-      photoInput.addEventListener("change", (e) => {
-        previewWrap.innerHTML = "";
-        const file = e.target.files[0];
-        if (!file) return;
-        const img = document.createElement("img");
-        img.className = "img-preview";
-        previewWrap.appendChild(img);
-        const reader = new FileReader();
-        reader.onload = () => {
-          img.src = reader.result;
-        };
-        reader.readAsDataURL(file);
-      });
-
-      document.getElementById("reportForm").addEventListener("submit", (e) => {
-        e.preventDefault();
-        alert("Report submitted successfully!");
-      });
-    </script>
+    <script></script>
   </body>
 </html>

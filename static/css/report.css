@@ -51,6 +51,41 @@
           max-width: 420px;
           margin: auto;
           padding: 15px;
+          /* make the feed a dedicated scroll container */
+          height: calc(100vh - 60px - 20px);
+          /* viewport - navbar - small buffer */
+          overflow-y: auto;
+          overflow-x: hidden;
+          scroll-behavior: smooth;
+          /* smooth scroll */
+          -webkit-overflow-scrolling: touch;
+          /* iOS momentum */
+      }
+
+      /* optional: subtler scrollbar */
+      .feed::-webkit-scrollbar {
+          width: 8px;
+      }
+
+      .feed::-webkit-scrollbar-track {
+          background: transparent;
+      }
+
+      .feed::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.15);
+          border-radius: 8px;
+      }
+
+      @media (max-width: 600px) {
+          .feed::-webkit-scrollbar {
+              width: 0;
+              height: 0;
+          }
+
+          .feed {
+              scrollbar-width: none;
+              -ms-overflow-style: none;
+          }
       }
 
       /* Post Card */

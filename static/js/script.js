@@ -17,7 +17,7 @@ const fabOptions = document.getElementById("fab-options");
 
 fab.addEventListener("click", () => {
   if (fabOptions.style.display === "flex") {
-    fabOptions.style.display = "none";  
+    fabOptions.style.display = "none";
   } else {
     fabOptions.style.display = "flex";
   }
@@ -34,7 +34,103 @@ function recordVideo() {
   alert("Record Video clicked! 🎥");
   // You can integrate your video recording logic here
 }
-// ########################################################################
+// ################################# Drop down report Page #######################################
+const photoInput = document.getElementById("photoInput");
+const previewWrap = document.getElementById("previewWrap");
+if (photoInput && previewWrap) {
+  photoInput.addEventListener("change", (e) => {
+    previewWrap.innerHTML = "";
+    const file = e.target.files[0];
+    if (!file) return;
+    const img = document.createElement("img");
+    img.className = "img-preview";
+    previewWrap.appendChild(img);
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Mobile-friendly custom dropdown for Issue Category
+function initCategoryDropdown() {
+  const dropdown = document.getElementById("categoryDropdown");
+  if (!dropdown) return;
+  const toggle = dropdown.querySelector(".dropdown-toggle");
+  const menu = dropdown.querySelector(".dropdown-menu");
+  const label = dropdown.querySelector(".dropdown-label");
+  const hiddenInput = document.getElementById("category");
+  const backdrop = dropdown.nextElementSibling; // .dropdown-backdrop
+  if (!toggle || !menu || !label || !hiddenInput) return;
+
+  const openDropdown = () => {
+    dropdown.classList.add("open");
+    toggle.setAttribute("aria-expanded", "true");
+    dropdown.setAttribute("aria-expanded", "true");
+    if (backdrop) {
+      backdrop.hidden = false;
+    }
+  };
+  const closeDropdown = () => {
+    dropdown.classList.remove("open");
+    toggle.setAttribute("aria-expanded", "false");
+    dropdown.setAttribute("aria-expanded", "false");
+    if (backdrop) {
+      // Delay hiding to allow fade-out
+      setTimeout(() => {
+        backdrop.hidden = true;
+      }, 160);
+    }
+  };
+  const toggleDropdown = () => {
+    if (dropdown.classList.contains("open")) closeDropdown();
+    else openDropdown();
+  };
+
+  toggle.addEventListener("click", toggleDropdown);
+  if (backdrop) {
+    backdrop.addEventListener("click", closeDropdown);
+  }
+
+  // Select option
+  menu.addEventListener("click", (e) => {
+    const item = e.target.closest(".dropdown-item");
+    if (!item) return;
+    const value = item.getAttribute("data-value");
+    label.textContent = item.textContent;
+    hiddenInput.value = value;
+    // Update selected state
+    menu.querySelectorAll(".dropdown-item").forEach((el) => {
+      el.setAttribute("aria-selected", el === item ? "true" : "false");
+    });
+    closeDropdown();
+  });
+
+  // Keyboard support (basic)
+  toggle.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggleDropdown();
+    }
+    if (e.key === "Escape") {
+      closeDropdown();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeDropdown();
+  });
+}
+
+const reportForm = document.getElementById("reportForm");
+if (reportForm) {
+  reportForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    alert("Report submitted successfully!");
+  });
+}
+//@important ######################################## Main AJAX Load page function #############################################
 
 function loadpage(page) {
   let url = page === "" ? "/" : "/" + page + "/";
@@ -81,6 +177,9 @@ function loadpage(page) {
           if (page === "search") {
             initSearch();
           }
+          if (page === "report") {
+            initCategoryDropdown();
+          }
         }, 2400); // Adjust this delay as needed (e.g., 1000ms = 1 second)
       })
       .catch((err) => console.error("Error loading page:", err));
@@ -110,7 +209,6 @@ function initReports() {
         }
         commentsByReport[c.report_id].push(c.comment);
       });
-
       // Step 2: Attach correct comments to each report
       reports = reportsData.map((r) => ({
         ...r,
@@ -125,6 +223,23 @@ function initReports() {
       setInterval(() => {
         renderFeed();
       }, 60000); // 60000ms = 1 minute
+
+      // If navigation specified a target post, scroll/highlight once items are in DOM
+      if (window.__targetPostId) {
+        setTimeout(() => {
+          const targetEl = document.getElementById(window.__targetPostId);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            const originalBg = targetEl.style.backgroundColor;
+            targetEl.style.transition = "background-color 600ms ease";
+            targetEl.style.backgroundColor = "#fff1a8";
+            setTimeout(() => {
+              targetEl.style.backgroundColor = originalBg || "";
+            }, 1200);
+          }
+          window.__targetPostId = null;
+        }, 0);
+      }
     })
     .catch((err) => console.error("Error loading reports or comments:", err));
   const feed = document.getElementById("feed");
@@ -134,7 +249,7 @@ function initReports() {
     reports.forEach((r, index) => {
       const post = document.createElement("div");
       post.className = "post";
-
+      post.id = `post-${r.id}`; //ID to match the hash fragment
       post.innerHTML = `
             <div class = "container">
             <div class="post-header">
@@ -288,6 +403,15 @@ function initNotifications() {
     });
 }
 
+// SPA helper: navigate to my_reports and scroll to a specific post id
+function goToMyReport(reportId) {
+  if (!reportId) return;
+  // set a global flag used by initReports to focus after render
+  window.__targetPostId = `post-${reportId}`;
+  // Use existing loader-enabled navigation
+  loadpage("my_reports");
+}
+
 function initUserProfile() {
   let userData = [
     {
@@ -326,12 +450,14 @@ function initUserProfile() {
 
 // ############################### Search Page ################################
 function initSearch() {
-  const data = [
-    { title: "Wi-Fi Issue", desc: "Internet problems in Block A" },
-    { title: "Library Event", desc: "Book exhibition on Friday at 3 PM" },
-    { title: "Hostel Mess Problem", desc: "Food quality issues in Hostel C" },
-    { title: "Hackathon", desc: "Annual coding competition in Lab 2" },
-  ];
+  let data = [];
+  fetch("/api/reports/")
+    .then((res) => res.json())
+    .then((reports) => {
+      data = reports.map((r) => ({
+        ...r,
+      }));
+    });
 
   const searchInput = document.getElementById("searchInput");
   const results = document.getElementById("results");
@@ -360,7 +486,15 @@ function initSearch() {
     filtered.forEach((item) => {
       const card = document.createElement("div");
       card.className = "card";
-      card.innerHTML = `<h3>${item.title}</h3><p>${item.desc}</p>`;
+      card.innerHTML = `
+      <h3>${item.title}</h3>
+      <p>${item.desc}</p>
+      <a href="/my_reports/" class="view-link">View</a>`;
+      const link = card.querySelector(".view-link");
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        goToMyReport(item.id);
+      });
       results.appendChild(card);
     });
   }
@@ -370,7 +504,6 @@ function initSearch() {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => render(searchInput.value), 150);
   });
-
   render("");
 }
 
@@ -387,5 +520,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   if (window.location.pathname.includes("search")) {
     initSearch();
+  }
+  if (window.location.pathname.includes("report")) {
+    initCategoryDropdown();
   }
 });

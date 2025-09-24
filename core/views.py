@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, logout
 import json
 from .models import Report, Comments, Notification, User
 
@@ -20,6 +22,18 @@ def render_fragment_or_full(request, fragment_path, context=None):
     # normal full-page load -> wrap fragment into base.html by passing its path
     ctx["content_template"] = fragment_path
     return render(request, "base.html", ctx)
+
+
+def register_view(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return "success"
+        else:
+            form = UserCreationForm()
+        return render_fragment_or_full(request, "")
 
 
 def api_user(request):
