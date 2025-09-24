@@ -233,11 +233,13 @@ function initReports() {
             const originalBg = targetEl.style.backgroundColor;
             targetEl.style.transition = "background-color 600ms ease";
             targetEl.style.backgroundColor = "#fff1a8";
+            targetEl.classList.add("jiggle");
             setTimeout(() => {
+              targetEl.classList.remove("jiggle");
               targetEl.style.backgroundColor = originalBg || "";
-            }, 1200);
+            }, 2000);
           }
-          window.__targetPostId = null;
+          window.__targetPostId = null; 
         }, 0);
       }
     })
