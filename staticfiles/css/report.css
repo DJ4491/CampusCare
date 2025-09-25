@@ -120,7 +120,7 @@
       }
 
       .jiggle {
-          animation: jiggle 0.5s ease-in-out;
+          animation: jiggle 0.5s ease-in-out infinite;
       }
 
       .post-header {

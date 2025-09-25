@@ -34,7 +34,7 @@ function recordVideo() {
   alert("Record Video clicked! 🎥");
   // You can integrate your video recording logic here
 }
-// ################################# Drop down report Page #######################################
+// ################################# Drop down submit report Page #######################################
 const photoInput = document.getElementById("photoInput");
 const previewWrap = document.getElementById("previewWrap");
 if (photoInput && previewWrap) {
@@ -121,14 +121,48 @@ function initCategoryDropdown() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeDropdown();
   });
-}
+  window.AddReport = function () {
+    const category = hiddenInput.value.trim();
+    const r_location = document.getElementById("location").value.trim();
+    const r_title = document.getElementById("title").value.trim();
+    const description = document.getElementById("desc").value.trim();
+    const fileInput = document.getElementById("photoInput");
+    const file =
+      fileInput && fileInput.files && fileInput.files[0]
+        ? fileInput.files[0]
+        : null;
 
-const reportForm = document.getElementById("reportForm");
-if (reportForm) {
-  reportForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    alert("Report submitted successfully!");
-  });
+    const formData = new FormData();
+    formData.append("author", "test");
+    formData.append(
+      "avatar",
+      "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fas1.ftcdn.net%2Fv2%2Fjpg%2F00%2F64%2F67%2F52%2F1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg&f=1&nofb=1&ipt=e365c0871e8954842f9444570f19c1c2acb3aae129617affdcdfec4927344627"
+    );
+    formData.append("category", category);
+    formData.append("location", r_location);
+    formData.append("title", r_title);
+    formData.append("desc", description);
+    if (file) formData.append("image", file);
+
+    return fetch("/api/reports/", {
+      method: "POST",
+      body: formData,
+    }).then((res) => res.json());
+  };
+  const reportForm = document.getElementById("reportForm");
+  if (reportForm) {
+    reportForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      try {
+        const data = await window.AddReport();
+        console.log("Report Added", data);
+        loadpage("my_reports");
+      } catch (err) {
+        console.error("Error Posting Reports:", err);
+        alert("Failed to submit report.");
+      }
+    });
+  }
 }
 //@important ######################################## Main AJAX Load page function #############################################
 
@@ -230,16 +264,20 @@ function initReports() {
           const targetEl = document.getElementById(window.__targetPostId);
           if (targetEl) {
             targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            targetEl.focus();
             const originalBg = targetEl.style.backgroundColor;
             targetEl.style.transition = "background-color 600ms ease";
             targetEl.style.backgroundColor = "#fff1a8";
-            targetEl.classList.add("jiggle");
+            if (focus) {
+              targetEl.classList.add("jiggle");
+            }
             setTimeout(() => {
+              targetEl.blur();
               targetEl.classList.remove("jiggle");
               targetEl.style.backgroundColor = originalBg || "";
             }, 2000);
           }
-          window.__targetPostId = null; 
+          window.__targetPostId = null;
         }, 0);
       }
     })
@@ -405,15 +443,6 @@ function initNotifications() {
     });
 }
 
-// SPA helper: navigate to my_reports and scroll to a specific post id
-function goToMyReport(reportId) {
-  if (!reportId) return;
-  // set a global flag used by initReports to focus after render
-  window.__targetPostId = `post-${reportId}`;
-  // Use existing loader-enabled navigation
-  loadpage("my_reports");
-}
-
 function initUserProfile() {
   let userData = [
     {
@@ -451,6 +480,15 @@ function initUserProfile() {
 }
 
 // ############################### Search Page ################################
+// SPA helper: navigate to my_reports and scroll to a specific post id
+function goToMyReport(reportId) {
+  if (!reportId) return;
+  // set a global flag used by initReports to focus after render
+  window.__targetPostId = `post-${reportId}`;
+  // Use existing loader-enabled navigation
+  loadpage("my_reports");
+}
+
 function initSearch() {
   let data = [];
   fetch("/api/reports/")

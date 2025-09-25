@@ -183,25 +183,27 @@
         margin-top: 10rem;
       }
 
-      .seperatline {
-        margin-bottom: 10px;
-        opacity: 0.3;
-        position: fixed;
-        width: 100%;
-        bottom: 40px;
-        left: 0;
-      }
-
       .bottom_menu {
         display: flex;
         position: fixed;
         bottom: 10px;
+        align-items: center;
         left: 0;
         justify-content: center;
         gap: 40px;
         width: 100%;
         z-index: 2000;
         flex-direction: row;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 255, 255, 0.02)
+        );
+        backdrop-filter: saturate(1.2) blur(2px);
+        will-change: background;
+        -webkit-backdrop-filter: saturate(1.2) blur(16px);
+        border-top: 1px solid rgba(17, 24, 39, 0.08);
+        padding: 3px;
       }
 
       .b_icons {
@@ -703,7 +705,6 @@
       <div id="main-content">{% include content_template %}</div>
 
       <footer>
-        <hr class="seperatline" />
         <div class="bottom_menu">
           <div class="b_icons" id="home-icon">
             <img src="{% static 'images/home-line.svg' %}" width="20px" />

@@ -1,4 +1,6 @@
 from email.policy import default
+from tkinter import Image
+from django.core.files import images
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
@@ -20,10 +22,13 @@ class User(AbstractUser):
 class Report(models.Model):
     author = models.CharField(max_length=50)
     avatar = models.URLField()
+    category = models.CharField(default="")
+    location = models.CharField(default="")
     title = models.CharField(max_length=100)
     time = models.DateTimeField(default=timezone.now)
     desc = models.TextField(default="")
     likes = models.IntegerField(default=0)
+    image = models.ImageField(upload_to="images/", default="")
 
 
 class Comments(models.Model):

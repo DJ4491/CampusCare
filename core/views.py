@@ -41,9 +41,49 @@ def api_user(request):
     return JsonResponse(data, safe=False)
 
 
-def api_get_reports(request):
-    data = list(Report.objects.all().values())
-    return JsonResponse(data, safe=False)
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def api_reports(request):
+    if request.method == "GET":
+        data = list(Report.objects.all().values())
+        return JsonResponse(data, safe=False)
+    elif request.method == "POST":
+        try:
+            # Expecting multipart form data from FormData()
+            author = request.POST.get("author", "")
+            avatar = request.POST.get("avatar", "")
+            category = request.POST.get("category", "")
+            location = request.POST.get("location", "")
+            title = request.POST.get("title", "")
+            desc = request.POST.get("desc", "")
+            image = request.FILES.get("image")
+
+            report = Report.objects.create(
+                author=author,
+                avatar=avatar,
+                category=category,
+                location=location,
+                title=title,
+                desc=desc,
+                image=image or "",
+            )
+            return JsonResponse(
+                {
+                    "id": report.id,
+                    "author": report.author,
+                    "avatar": report.avatar,
+                    "category": report.category,
+                    "location": report.location,
+                    "title": report.title,
+                    "time": report.time,
+                    "desc": report.desc,
+                    "likes": report.likes,
+                    "image": report.image.url if report.image else "",
+                },
+                status=201,
+            )
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
 
 
 def api_notifications(request):
