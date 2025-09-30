@@ -1,0 +1,194 @@
+body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .posts{
+        overflow: scroll;
+        height: 38rem;
+        scrollbar-width: none;
+    }
+    .container {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #eee;
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-info .name {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .user-info .time {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .item-title {
+      font-weight: bold;
+      margin: 6px 0 4px;
+    }
+
+    .item-desc {
+      font-size: 14px;
+      color: #444;
+      margin: 6px 0 10px;
+    }
+
+    .item-image {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .status {
+      font-size: 12px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-left: 6px;
+    }
+
+    .lost {
+      color: #b00020;
+      background: #fde7e9;
+    }
+
+    .found {
+      color: #0d660d;
+      background: #e1f3e1;
+    }
+
+    .comment-section {
+      margin-top: 10px;
+    }
+
+    .comment {
+      font-size: 14px;
+      background: #f1f1f1;
+      padding: 6px 10px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      word-wrap: break-word;
+    }
+
+    .see-more {
+      color: #007bff;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .comment-box {
+      display: flex;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .comment-box input {
+      border: none;
+      padding: 8px 12px;
+      flex: 1;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .comment-box button {
+      border: none;
+      background: #007bff;
+      color: white;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .comment-box button:hover {
+      background: #0056b3;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: #fff;
+      width: 90%;
+      max-width: 400px;
+      max-height: 70%;
+      overflow-y: auto;
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+    }
+
+    .modal .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .modal h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .modal .comment {
+      background: #f1f1f1;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }

@@ -11,6 +11,10 @@ urlpatterns = [
     path("log_in/", views.log_in, name="log_in"),
     path("report/", views.report, name="report"),
     path("my_reports/", views.my_reports, name="my_reports"),
+    path("create_report/", views.create_report, name="create_report"),
+    path("lost_found/", views.lost_found, name="lost_found"),
+    path("create_lost_found/", views.create_lost_found, name="create_lost_found"),
+
     # new API endpoints
     path("api/reports/", views.api_get_reports, name="api_get_reports"),
     path("api/comments/", views.api_comments, name="api_comments"),

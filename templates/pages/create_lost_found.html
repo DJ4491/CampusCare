@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Lost & Found Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .inside{
+      height: 42rem;
+      overflow: scroll;
+      scrollbar-width: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 4px;
+      font-weight: bold;
+    }
+
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    input[type="file"] {
+      margin-top: 6px;
+      margin-bottom: 10px;
+    }
+
+    .sumbitBtn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .sumbitBtn:hover {
+      background: #0056b3;
+    }
+
+    .post {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .post img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .status {
+      font-size: 12px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-left: 6px;
+    }
+
+    .lost {
+      color: #b00020;
+      background: #fde7e9;
+    }
+
+    .found {
+      color: #0d660d;
+      background: #e1f3e1;
+    }
+
+    .posts-container {
+      width: 100%;
+      max-width: 500px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container inside">
+    <h2>Submit Lost & Found Report</h2>
+    <form id="reportForm">
+      <label>User Name</label>
+      <input type="text" id="userName" placeholder="Your name" required>
+
+      <label>Branch</label>
+      <input type="text" id="branch" placeholder="Your branch" required>
+
+      <label>Item Name</label>
+      <input type="text" id="itemName" placeholder="Item name" required>
+
+      <label>Status</label>
+      <select id="status" required>
+        <option value="">Select Status</option>
+        <option value="Lost">Lost</option>
+        <option value="Found">Found</option>
+      </select>
+
+      <label>Description</label>
+      <textarea id="description" rows="3" placeholder="Item description" required></textarea>
+
+      <label>Upload Image</label>
+      <input type="file" id="imageFile" accept="image/*" capture="environment">
+
+      <button class="sumbitBtn" type="submit">Submit Report</button>
+    </form>
+
+    <h2>Lost & Found Reports</h2>
+    <div class="posts-container" id="postsContainer"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("reportForm");
+    const postsContainer = document.getElementById("postsContainer");
+    const posts = [];
+
+    function renderPosts() {
+      postsContainer.innerHTML = "";
+      posts.forEach(post => {
+        const div = document.createElement("div");
+        div.classList.add("post");
+        div.innerHTML = `
+          <div><strong>${post.user} (${post.branch})</strong></div>
+          <div style="margin:4px 0">${post.item} <span class="status ${post.status.toLowerCase()}">${post.status}</span></div>
+          ${post.image ? `<img src="${post.image}" alt="${post.item}">` : ''}
+          <div>${post.description}</div>
+        `;
+        postsContainer.prepend(div);
+      });
+    }
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const userName = document.getElementById("userName").value.trim();
+      const branch = document.getElementById("branch").value.trim();
+      const itemName = document.getElementById("itemName").value.trim();
+      const status = document.getElementById("status").value;
+      const description = document.getElementById("description").value.trim();
+      const imageFile = document.getElementById("imageFile").files[0];
+
+      if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const newPost = {
+            user: userName,
+            branch: branch,
+            item: itemName,
+            status: status,
+            description: description,
+            image: event.target.result
+          };
+          posts.push(newPost);
+          renderPosts();
+          form.reset();
+        };
+        reader.readAsDataURL(imageFile);
+      } else {
+        const newPost = {
+          user: userName,
+          branch: branch,
+          item: itemName,
+          status: status,
+          description: description,
+          image: null
+        };
+        posts.push(newPost);
+        renderPosts();
+        form.reset();
+      }
+    });
+  </script>
+</body>
+</html>
