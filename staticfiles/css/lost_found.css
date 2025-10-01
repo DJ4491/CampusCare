@@ -1,4 +1,11 @@
+/* Ensure main layout stays centered and mobile-width */
+body > .container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
 .posts {
+    padding: 15px;
     scroll-behavior: smooth;
     will-change: scroll-position;
     contain: layout paint;
@@ -17,14 +24,37 @@
     top: 0;
     left: 0;
     right: 0;
-    height: auto;
-    background: white;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    justify-content: center;
+    height: 60px;
+    background: #ffffffcc;
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #e5e7eb;
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 12px;
     z-index: 20;
+}
+
+.page_head .title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.page_head .action {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.page_head .action:hover {
+    background: #f3f4f6;
 }
 
 
