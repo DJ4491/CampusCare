@@ -15,26 +15,76 @@ cards.forEach((card) => {
 const fab = document.getElementById("create-icon");
 const fabOptions = document.getElementById("fab-options");
 
-fab.addEventListener("click", () => {
-  if (fabOptions.style.display === "flex") {
-    fabOptions.style.display = "none";
-  } else {
-    fabOptions.style.display = "flex";
+function openFab() {
+  if (!fabOptions) return;
+  fabOptions.classList.add("open");
+  fabOptions.setAttribute("aria-hidden", "false");
+}
+
+function closeFab() {
+  if (!fabOptions) return;
+  fabOptions.classList.remove("open");
+  fabOptions.setAttribute("aria-hidden", "true");
+}
+
+function toggleFab() {
+  if (!fabOptions) return;
+  if (fabOptions.classList.contains("open")) closeFab();
+  else openFab();
+}
+
+if (fab) {
+  fab.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleFab();
+  });
+}
+
+// Close on outside click
+document.addEventListener("click", (e) => {
+  if (!fabOptions) return;
+  if (!fabOptions.contains(e.target) && !fab.contains(e.target)) {
+    closeFab();
   }
 });
+
+// Close on Escape
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeFab();
+});
+
+// Ripple effect for fab buttons
+function attachRipple(el) {
+  if (!el) return;
+  el.addEventListener("click", function (e) {
+    const rect = el.getBoundingClientRect();
+    const ripple = document.createElement("span");
+    ripple.className = "ripple";
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + "px";
+    ripple.style.left = e.clientX - rect.left - size / 2 + "px";
+    ripple.style.top = e.clientY - rect.top - size / 2 + "px";
+    el.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 650);
+  });
+}
+
+if (fabOptions) {
+  fabOptions.querySelectorAll(".fab-btn").forEach(attachRipple);
+}
 
 // Functions for the buttons
 function createReport() {
   // Load your report page here
   loadpage("report");
-  fabOptions.style.display = "none";
+  closeFab();
 }
 
 function recordVideo() {
   alert("Record Video clicked! 🎥");
   // You can integrate your video recording logic here
 }
-// ################################# Drop down submit report Page #######################################
+// ################################# Drop down, Create Report and submit report Page #######################################
 const photoInput = document.getElementById("photoInput");
 const previewWrap = document.getElementById("previewWrap");
 if (photoInput && previewWrap) {
@@ -133,11 +183,12 @@ function initCategoryDropdown() {
         : null;
 
     const formData = new FormData();
-    formData.append("author", "test");
     formData.append(
       "avatar",
       "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fas1.ftcdn.net%2Fv2%2Fjpg%2F00%2F64%2F67%2F52%2F1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg&f=1&nofb=1&ipt=e365c0871e8954842f9444570f19c1c2acb3aae129617affdcdfec4927344627"
     );
+
+    // formData.append("author",);
     formData.append("category", category);
     formData.append("location", r_location);
     formData.append("title", r_title);
@@ -231,11 +282,12 @@ window.addEventListener("popstate", () => {
 function initReports() {
   let reports = [];
   Promise.all([
-    fetch("/api/reports/").then((res) => res.json()),
+    fetch("/api/reports/").then((res) => res.json()), //Once you get the response from the server, parse it as JSON so we can use it in our JavaScript code
     fetch("/api/comments/").then((res) => res.json()),
   ])
     .then(([reportsData, commentsData]) => {
       // Step 1: Organize comments into a Object grouped by report_id
+      console.log("Reports Data:", reportsData)
       const commentsByReport = {};
       commentsData.forEach((c) => {
         if (!commentsByReport[c.report_id]) {
@@ -247,7 +299,8 @@ function initReports() {
       reports = reportsData.map((r) => ({
         ...r,
         liked: false,
-        comments: commentsByReport[r.id] || [], // empty if none
+        comments: commentsByReport[r.id] || [],
+        author: (r.author && r.author.username) ? r.author.username : "Anonymous" // fallback if missing
       }));
 
       console.log("Reports with comments:", reports);
@@ -263,7 +316,7 @@ function initReports() {
         setTimeout(() => {
           const targetEl = document.getElementById(window.__targetPostId);
           if (targetEl) {
-            targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
             targetEl.focus();
             const originalBg = targetEl.style.backgroundColor;
             targetEl.style.transition = "background-color 600ms ease";
@@ -302,6 +355,9 @@ function initReports() {
             <div class="post-body">
               <div class="post-title">${r.title}</div>
               <div class="post-desc">${r.desc}</div>
+              <div class= "post-image">
+              <img src ="${r.image}">
+              </div>
             </div>
             <div class="actions">
               <button class="like-btn ${

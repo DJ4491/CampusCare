@@ -4,10 +4,35 @@ from django.core.files import images
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 
 
 # Using Django's built-in AbstractUser for extensibility and authentication
 class User(AbstractUser):
+    # Override username to be non-unique; keep Django's validations/help text.
+    username_validator = UnicodeUsernameValidator()
+
+    username = models.CharField(
+        max_length=150,
+        unique=False,
+        help_text="Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+        validators=[username_validator],
+        error_messages={
+            "unique": "A user with that username already exists.",
+        },
+    )
+
+    # Use email for login; must be unique and non-null
+    email = models.EmailField(
+        "email address",
+        unique=True,
+        blank=False,
+        null=False,
+    )
+
+    # Configure authentication fields
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
     pfp = models.URLField(
         default="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapers.com%2Fimages%2Fhd%2Fpfp-pictures-ph6qxvz14p4uvj2j.jpg&f=1&nofb=1&ipt=3a6b6418b7e35569da64e680a1fc79cc6da0b827a8b84ad6d8a3563557dd"
     )
@@ -20,7 +45,7 @@ class User(AbstractUser):
 
 # Create your models here.
 class Report(models.Model):
-    author = models.CharField(max_length=50)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     avatar = models.URLField()
     category = models.CharField(default="")
     location = models.CharField(default="")
@@ -28,13 +53,20 @@ class Report(models.Model):
     time = models.DateTimeField(default=timezone.now)
     desc = models.TextField(default="")
     likes = models.IntegerField(default=0)
-    image = models.ImageField(upload_to="images/", default="")
+    image = models.ImageField(upload_to="media/", default="")
+
+    def __str__(self):
+        return self.title
 
 
 class Comments(models.Model):
+    added_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
     comment = models.TextField(default="", blank=True)
+
     # time = models.DateTimeField(auto_now_add=True)
+    # def __str__(self):
+    #     return f"{self.added_by.username}"
 
 
 class Notification(models.Model):

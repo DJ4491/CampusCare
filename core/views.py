@@ -1,9 +1,11 @@
 # core/views.py
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout
 import json
@@ -36,21 +38,79 @@ def register_view(request):
         return render_fragment_or_full(request, "")
 
 
-def api_user(request):
-    data = list(User.objects.all().values())
-    return JsonResponse(data, safe=False)
+@require_http_methods(["GET"])
+def api_users(request):
+    users = list(User.objects.all().values("id", "username", "email", "pfp", "aboutme"))
+    return JsonResponse(users, safe=False)
+
+
+@require_http_methods(["GET"])
+def api_user_by_id(request, user_id):
+    try:
+        user = User.objects.values("id", "username", "email", "pfp", "aboutme").get(
+            id=user_id
+        )
+        return JsonResponse(user, safe=False)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+
+
+@require_http_methods(["GET"])
+def api_user_by_username(request, username):
+    users = list(
+        User.objects.filter(username=username).values(
+            "id", "username", "email", "pfp", "aboutme"
+        )
+    )
+    # Return list to handle non-unique usernames
+    return JsonResponse(users, safe=False)
+
+
+@require_http_methods(["GET"])
+def api_user_by_email(request, email):
+    try:
+        user = User.objects.values("id", "username", "email", "pfp", "aboutme").get(
+            email=email
+        )
+        return JsonResponse(user, safe=False)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+
+
+## POST and ADD report objects
 
 
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
+@login_required
 def api_reports(request):
     if request.method == "GET":
-        data = list(Report.objects.all().values())
+        reports = (
+            Report.objects.select_related("author").all().order_by("-id")
+        )
+        data = [
+            {
+                "id": r.id,
+                "author": {
+                    "id": r.author.id if r.author else None,
+                    "username": r.author.username if r.author else "",
+                },
+                "avatar": r.avatar,
+                "category": r.category,
+                "location": r.location,
+                "title": r.title,
+                "time": r.time,
+                "desc": r.desc,
+                "likes": r.likes,
+                "image": r.image.url if r.image else "",
+            }
+            for r in reports
+        ]
         return JsonResponse(data, safe=False)
     elif request.method == "POST":
         try:
             # Expecting multipart form data from FormData()
-            author = request.POST.get("author", "")
+            author = request.user
             avatar = request.POST.get("avatar", "")
             category = request.POST.get("category", "")
             location = request.POST.get("location", "")
@@ -70,7 +130,10 @@ def api_reports(request):
             return JsonResponse(
                 {
                     "id": report.id,
-                    "author": report.author,
+                    "author": {
+                        "id": report.author.id,
+                        "username": report.author.username,
+                    },
                     "avatar": report.avatar,
                     "category": report.category,
                     "location": report.location,
@@ -86,9 +149,17 @@ def api_reports(request):
             return JsonResponse({"error": str(e)}, status=500)
 
 
+def get_media_image_url(request, image_name):
+    image_url = f"{settings.MEDIA_URL}{image_name}"
+    return JsonResponse({"image_url": image_url})
+
+
 def api_notifications(request):
     data = list(Notification.objects.all().values())
     return JsonResponse(data, safe=False)
+
+
+# POST and GET comment objects
 
 
 @csrf_exempt

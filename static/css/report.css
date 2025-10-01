@@ -48,7 +48,16 @@
 
       /* Feed Layout */
       .feed {
+          contain: layout paint;
+          /* isolates layout */
+          will-change: transform;
+          /* hints GPU */
           max-width: 420px;
+          transform: translateZ(0);
+          will-change: scroll-position;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          /* for mobile smoothness */
           margin: auto;
           padding: 15px;
           /* make the feed a dedicated scroll container */
@@ -56,9 +65,7 @@
           /* viewport - navbar - small buffer */
           overflow-y: auto;
           overflow-x: hidden;
-          scroll-behavior: smooth;
-          /* smooth scroll */
-          -webkit-overflow-scrolling: touch;
+          /* scroll-behavior: smooth; */
           /* iOS momentum */
       }
 
@@ -90,6 +97,8 @@
 
       /* Post Card */
       .post {
+          contain: content;
+          will-change: auto;
           background: white;
           border-radius: 20px;
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
@@ -133,6 +142,7 @@
       .avatar {
           width: 42px;
           height: 42px;
+          object-fit: cover;
           border-radius: 50%;
           background: #ccc;
       }
@@ -155,6 +165,11 @@
           font-size: 16px;
           font-weight: bold;
           margin-bottom: 4px;
+      }
+
+      .post-image {
+          width: 100px;
+          height: auto;
       }
 
       .post-desc {

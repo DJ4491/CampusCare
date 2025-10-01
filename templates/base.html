@@ -4,11 +4,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google-signin-client_id" content="54441714223-lgrhr4om2uj3sm2sbialerl2cdhoucj8.apps.googleusercontent.com">
     <title>Campus Connect</title>
     <!-- <link rel="stylesheet" href="{% static 'css/style.css' %}" /> -->
     <style>
       /*############################ Loading Screen ########################*/
-
       #loader {
         background: linear-gradient(135deg, #f9fafb, #eef2f3);
         position: fixed;
@@ -230,6 +230,41 @@
 
       .b_icons:active {
         transform: translateY(0) scale(0.96);
+      }
+
+      /* Plus FAB specific enhancements */
+      #create-icon {
+        position: relative;
+        padding: 0;
+        overflow: hidden; /* ripple */
+        width: 44px;
+        height: 44px;
+        justify-content: center;
+      }
+      #create-icon img {
+        transition: transform 220ms cubic-bezier(0.2, 0.65, 0.2, 1),
+          filter 140ms ease;
+        will-change: transform;
+      }
+      /* rotate to X when options open */
+      #create-icon.open img {
+        transform: rotate(45deg) scale(1.05);
+        filter: saturate(1.2);  
+      }
+      /* elevated when open */
+      #create-icon.open {
+        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18),
+          0 3px 6px rgba(0, 0, 0, 0.1);
+        background-color: #168cc275;
+      }
+      /* ripple element */
+      #create-icon .ripple {
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 600ms ease-out;
+        background-color: rgba(15, 23, 42, 0.2);
+        pointer-events: none;
       }
 
       /* ########################## User Profile ####################################*/
@@ -548,36 +583,95 @@
 
       /*##########################Fab create report and lost and found###########################*/
       .fab-options {
-        display: none;
         position: fixed;
-        bottom: 40px;
-        webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
-        animation: slideUpFade 120ms cubic-bezier(0.2, 0.65, 0.2, 1) both;
-        margin-bottom: 10px;
-        align-items: center;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
         gap: 10px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 160ms ease,
+          transform 220ms cubic-bezier(0.2, 0.65, 0.2, 1);
+        will-change: opacity, transform;
       }
 
-      .fab-options button {
-        webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
-        margin-bottom: 10px;
-        padding: 10px 15px;
-        width: 5rem;
-        height: 5rem;
-        border-radius: 100%;
-        border: none;
-        background-color: #007bff;
-        color: white;
-        cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        transition: transform 0.2s;
+      .fab-options.open {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
       }
-      .fab-options button:hover {
-        transform: scale(1.05);
+
+      .fab-item {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+        transition: transform 200ms cubic-bezier(0.2, 0.65, 0.2, 1),
+          opacity 140ms ease;
+      }
+      .fab-options.open .fab-item {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      .fab-item:nth-child(1) {
+        transition-delay: 20ms;
+      }
+      .fab-item:nth-child(2) {
+        transition-delay: 60ms;
+      }
+
+      .fab-btn {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        height: 44px;
+        border-radius: 999px;
+        border: 1px solid rgba(17, 24, 39, 0.08);
+        background: rgba(255, 255, 255, 0.85);
+        color: #0f172a;
+        cursor: pointer;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        transition: transform 140ms ease, box-shadow 140ms ease,
+          background-color 140ms ease, border-color 140ms ease;
+        outline: none;
+        overflow: hidden;
+      }
+      .fab-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(17, 24, 39, 0.12);
+      }
+      .fab-btn:active {
+        transform: translateY(0) scale(0.98);
+      }
+      .fab-emoji {
+        font-size: 18px;
+        line-height: 1;
+      }
+      .fab-text {
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      /* Ripple for new pill button */
+      .fab-btn .ripple {
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 600ms ease-out;
+        background-color: rgba(15, 23, 42, 0.14);
+        pointer-events: none;
+      }
+      @keyframes ripple {
+        to {
+          transform: scale(3);
+          opacity: 0;
+        }
       }
       /*########################## Search Page#######################################*/
       :root {
@@ -651,6 +745,8 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        scroll-behavior: smooth;
+        overflow: scroll;
         will-change: contents;
       }
       .card {
@@ -691,6 +787,7 @@
     </style>
   </head>
   <body>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <div id="loader" class="hidden">
       <!-- Add your loader HTML here -->
       <dotlottie-wc
@@ -712,16 +809,29 @@
           <div class="b_icons" id="search-icon" onclick="loadpage('search')">
             <img src="{% static 'images/search-line.svg' %}" width="20px" />
           </div>
-          <div class="b_icons" id="create-icon">
+          <div
+            class="b_icons"
+            id="create-icon"
+            role="button"
+            aria-controls="fab-options"
+            aria-expanded="false"
+            tabindex="0"
+          >
             <img src="{% static 'images/add-fill.svg' %}" width="20px" />
           </div>
-          <div id="fab-options" class="fab-options">
-            <button class="button1" onclick="createReport()">
-              📝 Create Report
-            </button>
-            <button class="button2" onclick="recordVideo()">
-              🎥 Record Video
-            </button>
+          <div id="fab-options" class="fab-options" aria-hidden="true">
+            <div class="fab-item">
+              <button class="fab-btn" type="button" onclick="createReport()">
+                <span class="fab-emoji">📝</span>
+                <span class="fab-text">Create Report</span>
+              </button>
+            </div>
+            <div class="fab-item">
+              <button class="fab-btn" type="button" onclick="recordVideo()">
+                <span class="fab-emoji">🎥</span>
+                <span class="fab-text">Record Video</span>
+              </button>
+            </div>
           </div>
           <div
             class="b_icons"
