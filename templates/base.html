@@ -582,95 +582,94 @@
       }
 
       /*##########################Fab create report and lost and found###########################*/
-      .fab-options {
-        position: fixed;
-        bottom: 80px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 160ms ease,
-          transform 220ms cubic-bezier(0.2, 0.65, 0.2, 1);
-        will-change: opacity, transform;
+      .menu {
+        position: relative;
       }
-
-      .fab-options.open {
+  
+      .main-btn {
+        border-radius: 50%;
+        border: none;
+        background: rgb(231, 229, 229);
+        color: #fff;
+        font-size: 28px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        z-index: 2;
+        position: relative;
+      }
+  
+      .main-btn.open {
+        transform: rotate(45deg);
+      }
+  
+      .sub-btn {
+        display: flex;
+        position: absolute;
+        cursor: pointer;
+        bottom: 50px;
+        /* always above main button */
+        left: 50%;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        color: #fff;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.4s ease;
+      }
+      .button1 img{
+        transform: rotate(-15deg);
+         padding:5px;
+        width: 100%;
+        height: 100%;
+      }
+       .button1 img:hover{
+        transform: rotate(0deg);
+      }
+      .button2 img{
+        transform: rotate(15deg);
+         padding:8px;
+        width: 100%;
+        height: 100%;
+      }
+      .button2 img:hover{
+        transform: rotate(0deg);
+      }
+  
+      /* When open, move horizontally */
+      .menu.open .sub-btn:nth-child(2) {
+        transform: translateX(-120%);
         opacity: 1;
-        transform: translateX(-50%) translateY(0);
         pointer-events: auto;
       }
-
-      .fab-item {
-        opacity: 0;
-        transform: translateY(8px) scale(0.98);
-        transition: transform 200ms cubic-bezier(0.2, 0.65, 0.2, 1),
-          opacity 140ms ease;
-      }
-      .fab-options.open .fab-item {
+  
+      .menu.open .sub-btn:nth-child(3) {
+        transform: translateX(20%);
         opacity: 1;
-        transform: translateY(0) scale(1);
+        pointer-events: auto;
       }
-      .fab-item:nth-child(1) {
-        transition-delay: 20ms;
-      }
-      .fab-item:nth-child(2) {
-        transition-delay: 60ms;
-      }
-
-      .fab-btn {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 14px;
-        height: 44px;
-        border-radius: 999px;
-        border: 1px solid rgba(17, 24, 39, 0.08);
-        background: rgba(255, 255, 255, 0.85);
-        color: #0f172a;
-        cursor: pointer;
-        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        transition: transform 140ms ease, box-shadow 140ms ease,
-          background-color 140ms ease, border-color 140ms ease;
-        outline: none;
-        overflow: hidden;
-      }
-      .fab-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-        background: rgba(255, 255, 255, 0.95);
-        border-color: rgba(17, 24, 39, 0.12);
-      }
-      .fab-btn:active {
-        transform: translateY(0) scale(0.98);
-      }
-      .fab-emoji {
-        font-size: 18px;
-        line-height: 1;
-      }
-      .fab-text {
-        font-weight: 700;
-        font-size: 14px;
-      }
-
-      /* Ripple for new pill button */
-      .fab-btn .ripple {
-        position: absolute;
-        border-radius: 50%;
-        transform: scale(0);
-        animation: ripple 600ms ease-out;
-        background-color: rgba(15, 23, 42, 0.14);
-        pointer-events: none;
-      }
-      @keyframes ripple {
-        to {
-          transform: scale(3);
+  
+  
+  
+      @keyframes slideUpFade {
+        from {
           opacity: 0;
+          transform: translateY(18px);
+        }
+  
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+  
+      @media (prefers-reduced-motion: reduce) {
+  
+        .user_content,
+        .profile_image,
+        .user_form {
+          animation: none !important;
         }
       }
       /*########################## Search Page#######################################*/
@@ -803,52 +802,25 @@
 
       <footer>
         <div class="bottom_menu">
-          <div class="b_icons" id="home-icon">
+           <div class="b_icons iconarr" id="home-icon">
             <img src="{% static 'images/home-line.svg' %}" width="20px" />
           </div>
-          <div class="b_icons" id="search-icon" onclick="loadpage('search')">
+          <div class="b_icons iconarr searchIcon" id="search-icon" onclick="loadpage('search')">
             <img src="{% static 'images/search-line.svg' %}" width="20px" />
           </div>
-          <div
-            class="b_icons"
-            id="create-icon"
-            role="button"
-            aria-controls="fab-options"
-            aria-expanded="false"
-            tabindex="0"
-          >
-            <img src="{% static 'images/add-fill.svg' %}" width="20px" />
+  
+          <div class="menu">
+            <div class="b_icons main-btn" id="mainBtn"><img src="{% static 'images/add-fill.svg' %}" width="20px"/></div>
+            <button class="button1 sub-btn" onclick="loadpage('report')"><img src="/static/images/crop_issue.png" alt=""></button>
+            <button class="button2 sub-btn" onclick="loadpage('create_lost_found')"><img src="/static/images/lostAndFound_report.png" alt=""></button>
           </div>
-          <div id="fab-options" class="fab-options" aria-hidden="true">
-            <div class="fab-item">
-              <button class="fab-btn" type="button" onclick="createReport()">
-                <span class="fab-emoji">📝</span>
-                <span class="fab-text">Create Report</span>
-              </button>
-            </div>
-            <div class="fab-item">
-              <button class="fab-btn" type="button" onclick="recordVideo()">
-                <span class="fab-emoji">🎥</span>
-                <span class="fab-text">Record Video</span>
-              </button>
-            </div>
-          </div>
-          <div
-            class="b_icons"
-            id="notifications-icon"
-            onclick="loadpage('notifications')"
-          >
-            <img
-              src="{% static 'images/notification-2-line.svg' %}"
-              width="20px"
-            />
-          </div>
-          <div
-            class="b_icons"
-            id="profile-icon"
-            onclick="loadpage('user_profile')"
-          >
-            <img src="{% static 'images/user-line.svg' %}" width="20px" />
+  
+        <div class="b_icons iconarr notificationIcon" id="notifications-icon" onclick="loadpage('notifications')">
+          <img src="{% static 'images/notification-2-line.svg' %}" width="20px" />
+        </div>
+        <div class="b_icons iconarr profileIcon" id="profile-icon" onclick="loadpage('user_profile')">
+          <img src="{% static 'images/user-line.svg' %}" width="20px" />
+        </div>
           </div>
         </div>
       </footer>
@@ -858,5 +830,48 @@
       type="module"
     ></script>
     <script src="{% static 'js/script.js' %}"></script>
+    <script>
+      const mainBtn = document.querySelector('.main-btn');
+      const menu = document.querySelector(".menu");
+      
+      mainBtn.addEventListener("click", () => {
+        menu.classList.toggle("open");
+        mainBtn.classList.toggle("open");
+      });
+  
+      document.querySelector('.button1').addEventListener('click',()=>{
+         menu.classList.toggle("open");
+        mainBtn.classList.toggle("open");
+      })
+      document.querySelector('.button2').addEventListener('click',()=>{
+         menu.classList.toggle("open");
+        mainBtn.classList.toggle("open");
+      })
+  
+      const iconsArr = document.querySelectorAll('.iconarr');
+      iconsArr.forEach((icon)=>{
+        icon.addEventListener('click',()=>{
+        menu.classList.remove("open");
+        mainBtn.classList.remove("open");
+        })
+      })
+      
+      
+      /*
+      document.querySelector('.searchIcon').addEventListener('click',()=>{
+         menu.classList.toggle("open");
+        mainBtn.classList.toggle("open");
+      })
+       document.querySelector('.notificationIcon').addEventListener('click',()=>{
+         menu.classList.toggle("open");
+        mainBtn.classList.toggle("open");
+      })
+       document.querySelector('.profileIcon').addEventListener('click',()=>{
+         menu.classList.toggle("open");
+        mainBtn.classList.toggle("open");
+      })
+        */
+  
+    </script>
   </body>
 </html>

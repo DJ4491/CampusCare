@@ -1,7 +1,6 @@
-// after fetch replace, you can still call any extra init
 //note:-####################### Transition and Load Page ####################################
-const cards = document.querySelectorAll(".icon");
-cards.forEach((card) => {
+const cards_home = document.querySelectorAll(".icon");
+cards_home.forEach((card) => {
   card.addEventListener("touchstart", () => {
     card.style.transform = "scale(1.04)";
     card.style.transition = "transform 2s ease-in-out";
@@ -265,6 +264,9 @@ function loadpage(page) {
           if (page === "report") {
             initCategoryDropdown();
           }
+          if (page === "lost_found") {
+            initLostFound();
+          }
         }, 2400); // Adjust this delay as needed (e.g., 1000ms = 1 second)
       })
       .catch((err) => console.error("Error loading page:", err));
@@ -287,7 +289,7 @@ function initReports() {
   ])
     .then(([reportsData, commentsData]) => {
       // Step 1: Organize comments into a Object grouped by report_id
-      console.log("Reports Data:", reportsData)
+      console.log("Reports Data:", reportsData);
       const commentsByReport = {};
       commentsData.forEach((c) => {
         if (!commentsByReport[c.report_id]) {
@@ -300,7 +302,7 @@ function initReports() {
         ...r,
         liked: false,
         comments: commentsByReport[r.id] || [],
-        author: (r.author && r.author.username) ? r.author.username : "Anonymous" // fallback if missing
+        author: r.author && r.author.username ? r.author.username : "Anonymous", // fallback if missing
       }));
 
       console.log("Reports with comments:", reports);
@@ -448,6 +450,137 @@ function formatTimeAgo(dateString) {
     const weeks = Math.floor(diffInSeconds / 604800);
     return `${weeks}w ago`;
   }
+}
+
+//note:- ########################### Js function for lost and found page ####################################3--->
+function initLostFound() {
+  // Sample dynamic posts with images
+  const posts = [
+    {
+      id: 1,
+      user: "Aman",
+      branch: "CS",
+      avatar: "👨",
+      time: "2025-09-30 10:30 AM",
+      item: "Wallet",
+      status: "Lost",
+      description: "Blue leather wallet with multiple cards",
+      image:
+        "https://thumbs.dreamstime.com/z/brown-wallet-sitting-table-ai-296869590.jpg",
+      comments: [
+        "I think I saw it near canteen",
+        "Check library counter",
+        "Hope you find it soon!",
+      ],
+    },
+    {
+      id: 2,
+      user: "Aisha",
+      branch: "IT",
+      avatar: "👩",
+      time: "2025-09-30 11:00 AM",
+      item: "Headphones",
+      status: "Found",
+      description: "Black over-ear headphones with a green stripe",
+      image:
+        "https://img.freepik.com/premium-photo/headphones-resting-wooden-table_118124-198357.jpg",
+      comments: ["Might be mine!", "Good work returning it"],
+    },
+  ];
+
+  const postsContainer = document.getElementById("posts");
+
+  posts.forEach((post) => {
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.innerHTML = `
+        <div class="card-header">
+          <div class="avatar">${post.avatar}</div>
+          <div class="user-info">
+            <span class="name">${post.user} (${post.branch})</span>
+            <span class="time">${post.time}</span>
+          </div>
+        </div>
+        <div class="item-title">
+          ${post.item} 
+          <span class="status ${post.status.toLowerCase()}">${
+      post.status
+    }</span>
+        </div>
+        ${
+          post.image
+            ? `<img src="${post.image}" alt="${post.item}" class="item-image">`
+            : ""
+        }
+        <div class="item-desc">${post.description}</div>
+        <div class="comment-section" id="comments-${post.id}"></div>
+        <div class="comment-box">
+          <input type="text" placeholder="Add a comment...">
+          <button>Post</button>
+        </div>
+        <div class="modal" id="modal-${post.id}">
+          <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h3>All Comments</h3>
+            <div id="allComments-${post.id}"></div>
+          </div>
+        </div>
+      `;
+    postsContainer.appendChild(card);
+
+    const commentSection = card.querySelector(`#comments-${post.id}`);
+    const commentInput = card.querySelector(".comment-box input");
+    const postBtn = card.querySelector(".comment-box button");
+    const modal = card.querySelector(`#modal-${post.id}`);
+    const modalClose = modal.querySelector(".close-btn");
+    const allCommentsContainer = modal.querySelector(`#allComments-${post.id}`);
+
+    function renderComments() {
+      commentSection.innerHTML = "";
+      const visibleComments = post.comments.slice(0, 3);
+      visibleComments.forEach((c) => {
+        const div = document.createElement("div");
+        div.classList.add("comment");
+        div.textContent = c;
+        commentSection.appendChild(div);
+      });
+
+      if (post.comments.length > 3) {
+        const seeMore = document.createElement("div");
+        seeMore.classList.add("see-more");
+        seeMore.textContent = "See more comments";
+        seeMore.onclick = () => openModal();
+        commentSection.appendChild(seeMore);
+      }
+    }
+
+    function openModal() {
+      allCommentsContainer.innerHTML = "";
+      post.comments.forEach((c) => {
+        const div = document.createElement("div");
+        div.classList.add("comment");
+        div.textContent = c;
+        allCommentsContainer.appendChild(div);
+      });
+      modal.style.display = "flex";
+    }
+
+    modalClose.onclick = () => (modal.style.display = "none");
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) modal.style.display = "none";
+    });
+
+    postBtn.addEventListener("click", () => {
+      const value = commentInput.value.trim();
+      if (value) {
+        post.comments.unshift(value);
+        commentInput.value = "";
+        renderComments();
+      }
+    });
+
+    renderComments();
+  });
 }
 
 //@important:- ############################### Notification Feed ############################
@@ -607,6 +740,9 @@ function initSearch() {
 document.addEventListener("DOMContentLoaded", () => {
   if (window.location.pathname.includes("my_reports")) {
     initReports();
+  }
+  if (window.location.pathname.includes("lost_found")) {
+    initLostFound();
   }
   if (window.location.pathname.includes("notifications")) {
     initNotifications();

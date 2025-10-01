@@ -242,3 +242,9 @@ def report(request):
 
 def my_reports(request):
     return render_fragment_or_full(request, "pages/my_reports.html")
+
+def lost_found(request):
+    return render_fragment_or_full(request, "pages/lost_found.html")
+
+def create_lost_found(request):
+    return render_fragment_or_full(request, "pages/create_lost_found.html")

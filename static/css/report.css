@@ -48,10 +48,9 @@
 
       /* Feed Layout */
       .feed {
+          margin-top: 60px;
           contain: layout paint;
           /* isolates layout */
-          will-change: transform;
-          /* hints GPU */
           max-width: 420px;
           transform: translateZ(0);
           will-change: scroll-position;
