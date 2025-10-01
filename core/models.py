@@ -1,5 +1,4 @@
 from email.policy import default
-from tkinter import Image
 from django.core.files import images
 from django.db import models
 from django.utils import timezone
