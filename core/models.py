@@ -10,7 +10,6 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 class User(AbstractUser):
     # Override username to be non-unique; keep Django's validations/help text.
     username_validator = UnicodeUsernameValidator()
-
     username = models.CharField(
         max_length=150,
         unique=False,
@@ -36,7 +35,6 @@ class User(AbstractUser):
         default="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapers.com%2Fimages%2Fhd%2Fpfp-pictures-ph6qxvz14p4uvj2j.jpg&f=1&nofb=1&ipt=3a6b6418b7e35569da64e680a1fc79cc6da0b827a8b84ad6d8a3563557dd"
     )
     aboutme = models.TextField(default="", blank=True)
-    user_email = models.EmailField(max_length=200)
 
     def __str__(self):
         return self.username

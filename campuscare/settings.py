@@ -48,7 +48,10 @@ INSTALLED_APPS = [
 ]
 
 # Authentication backends (plural)
-AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -116,7 +119,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # Use custom user model from core app
 AUTH_USER_MODEL = "core.User"
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -152,3 +154,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Redirect unauthenticated users here when using @login_required
+LOGIN_URL = "/log_in/"

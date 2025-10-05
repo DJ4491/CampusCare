@@ -5,77 +5,131 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Submit Lost & Found Report</title>
   <style>
-    body {
+    :root {
+      --bg: linear-gradient(135deg, #f9fafb, #eef2f3);
+      --card: #ffffff;
+      --muted: #7b8794;
+      --primary: #0f9d86;
+      --danger: #b00020;
+      --success: #0d660d;
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #f9fafb, #eef2f3);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
       display: flex;
       justify-content: center;
-      padding: 20px;
+    }
+
+    /* Mobile-like container */
+    .mobile-app {
+      width: 100%;
+      max-width: 420px; /* fixed mobile width */
+      padding: 16px;
+      background: var(--bg);
+      min-height: 100vh;
     }
 
     .container {
       width: 100%;
-      max-width: 500px;
+      max-width: 420px;
     }
 
     h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
       text-align: center;
-      margin-bottom: 20px;
+      color: #1a202c;
     }
 
     form {
-      background: white;
-      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--card);
+      padding: 16px;
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 24px;
     }
 
     label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
       display: block;
-      margin: 10px 0 4px;
-      font-weight: bold;
+      color: #374151;
     }
 
     input[type="text"], textarea, select {
       width: 100%;
-      padding: 8px 10px;
+      padding: 10px;
+      border: 1px solid #dce3e8;
       border-radius: 8px;
-      border: 1px solid #ccc;
       font-size: 14px;
-      margin-bottom: 10px;
       box-sizing: border-box;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 157, 134, 0.1);
     }
 
     textarea {
+      min-height: 90px;
       resize: vertical;
     }
 
     input[type="file"] {
-      margin-top: 6px;
-      margin-bottom: 10px;
+      width: 100%;
+      padding: 10px;
+      border: 1px dashed #bfc8ce;
+      border-radius: 8px;
+      background: #f8fafc;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    input[type="file"]:hover {
+      border-color: var(--primary);
+      background: #f0fdf4;
     }
 
     .sumbitBtn {
-      background: #007bff;
+      background: var(--primary);
       color: white;
       border: none;
-      padding: 10px 16px;
+      padding: 12px 16px;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      margin-top: 8px;
     }
 
     .sumbitBtn:hover {
-      background: #0056b3;
+      background: #0d8a73;
+      transform: translateY(-1px);
+    }
+
+    .sumbitBtn:active {
+      transform: translateY(0);
     }
 
     .post {
-      background: white;
+      background: var(--card);
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       padding: 16px;
       margin-bottom: 16px;
+      border: 1px solid #f1f5f9;
     }
 
     .post img {
@@ -83,125 +137,220 @@
       max-height: 200px;
       object-fit: cover;
       border-radius: 10px;
+      margin: 8px 0;
+      border: 1px solid #e2e8f0;
+    }
+
+    .post-header {
+      font-weight: 600;
+      color: #1a202c;
       margin-bottom: 8px;
+    }
+
+    .post-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 4px 0 8px 0;
+      font-weight: 500;
+    }
+
+    .post-description {
+      color: #4a5568;
+      line-height: 1.5;
+      margin-top: 8px;
     }
 
     .status {
       font-size: 12px;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 6px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 12px;
       display: inline-block;
-      margin-left: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .lost {
-      color: #b00020;
-      background: #fde7e9;
+      color: var(--danger);
+      background: #fef2f2;
+      border: 1px solid #fecaca;
     }
 
     .found {
-      color: #0d660d;
-      background: #e1f3e1;
+      color: var(--success);
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
     }
 
     .posts-container {
       width: 100%;
-      max-width: 500px;
+    }
+
+    .posts-header {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #1a202c;
+      text-align: center;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    /* Custom mobile dropdown */
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      border: 1px solid #dce3e8;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .dropdown-toggle:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 157, 134, 0.1);
+    }
+    .dropdown-toggle .caret {
+      transition: transform 200ms ease;
+    }
+    .dropdown.open .dropdown-toggle .caret {
+      transform: rotate(180deg);
+    }
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #dce3e8;
+      border-radius: 12px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+      max-height: 280px;
+      overflow: auto;
+      padding: 8px;
+      opacity: 0;
+      transform: scale(0.98);
+      transform-origin: top center;
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+      z-index: 20;
+    }
+    .dropdown.open .dropdown-menu {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+    .dropdown-item {
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .dropdown-item:hover,
+    .dropdown-item[aria-selected="true"] {
+      background: rgba(15, 157, 134, 0.08);
+      color: #0f9d86;
+    }
+    .dropdown-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.08);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease;
+      z-index: 10;
+    }
+    .dropdown.open + .dropdown-backdrop {
+      opacity: 1;
+      pointer-events: auto;
     }
   </style>
 </head>
 <body>
-  <div class="container inside">
+  <div class="mobile-app">
     <h2>Submit Lost & Found Report</h2>
     <form id="reportForm">
-      <label>User Name</label>
-      <input type="text" id="userName" placeholder="Your name" required>
+      <div>
+        <label for="userName">User Name</label>
+        <input type="text" id="userName" placeholder="Your name" required>
+      </div>
 
-      <label>Branch</label>
-      <input type="text" id="branch" placeholder="Your branch" required>
+      <div>
+        <label for="branch">Branch</label>
+        <input type="text" id="branch" placeholder="Your branch" required>
+      </div>
 
-      <label>Item Name</label>
-      <input type="text" id="itemName" placeholder="Item name" required>
+      <div>
+        <label for="itemName">Item Name</label>
+        <input type="text" id="itemName" placeholder="Item name" required>
+      </div>
 
-      <label>Status</label>
-      <select id="status" required>
-        <option value="">Select Status</option>
-        <option value="Lost">Lost</option>
-        <option value="Found">Found</option>
-      </select>
+      <div>
+        <label for="statusDropdown">Status</label>
+        <div class="dropdown" id="statusDropdown" aria-expanded="false">
+          <button
+            type="button"
+            class="dropdown-toggle"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span class="dropdown-label">Select Status</span>
+            <span class="caret">▾</span>
+          </button>
+          <ul class="dropdown-menu" role="listbox">
+            <li class="dropdown-item" role="option" data-value="Lost">
+              Lost
+            </li>
+            <li class="dropdown-item" role="option" data-value="Found">
+              Found
+            </li>
+          </ul>
+        </div>
+        <div class="dropdown-backdrop" hidden></div>
+        <input type="hidden" id="status" name="status" required />
+      </div>
 
-      <label>Description</label>
-      <textarea id="description" rows="3" placeholder="Item description" required></textarea>
+      <div>
+        <label for="description">Description</label>
+        <textarea id="description" rows="3" placeholder="Item description" required></textarea>
+      </div>
 
-      <label>Upload Image</label>
-      <input type="file" id="imageFile" accept="image/*" capture="environment">
+      <div>
+        <label for="imageFile">Upload Image (optional)</label>
+        <input type="file" id="imageFile" accept="image/*" capture="environment">
+      </div>
 
       <button class="sumbitBtn" type="submit">Submit Report</button>
     </form>
 
-    <div class="posts-container" id="postsContainer"></div>
+    <div class="posts-header">Recent Reports</div>
+    <div class="posts-container" id="postsContainer">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">📋</div>
+        <div>No reports yet. Submit the first one!</div>
+      </div>
+    </div>
   </div>
 
-  <script>
-    const form = document.getElementById("reportForm");
-    const postsContainer = document.getElementById("postsContainer");
-    const posts = [];
-
-    function renderPosts() {
-      postsContainer.innerHTML = "";
-      posts.forEach(post => {
-        const div = document.createElement("div");
-        div.classList.add("post");
-        div.innerHTML = `
-          <div><strong>${post.user} (${post.branch})</strong></div>
-          <div style="margin:4px 0">${post.item} <span class="status ${post.status.toLowerCase()}">${post.status}</span></div>
-          ${post.image ? `<img src="${post.image}" alt="${post.item}">` : ''}
-          <div>${post.description}</div>
-        `;
-        postsContainer.prepend(div);
-      });
-    }
-
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-      const userName = document.getElementById("userName").value.trim();
-      const branch = document.getElementById("branch").value.trim();
-      const itemName = document.getElementById("itemName").value.trim();
-      const status = document.getElementById("status").value;
-      const description = document.getElementById("description").value.trim();
-      const imageFile = document.getElementById("imageFile").files[0];
-
-      if (imageFile) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          const newPost = {
-            user: userName,
-            branch: branch,
-            item: itemName,
-            status: status,
-            description: description,
-            image: event.target.result
-          };
-          posts.push(newPost);
-          renderPosts();
-          form.reset();
-        };
-        reader.readAsDataURL(imageFile);
-      } else {
-        const newPost = {
-          user: userName,
-          branch: branch,
-          item: itemName,
-          status: status,
-          description: description,
-          image: null
-        };
-        posts.push(newPost);
-        renderPosts();
-        form.reset();
-      }
-    });
-  </script>
 </body>
 </html>

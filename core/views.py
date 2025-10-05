@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
 import json
 from .models import Report, Comments, Notification, User
 
@@ -77,6 +77,62 @@ def api_user_by_email(request, email):
         return JsonResponse({"error": "User not found"}, status=404)
 
 
+User = get_user_model()
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def get_or_create_user(request):
+    data = json.loads(request.body)
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+    pfp = data.get("pfp", None)
+    aboutme = data.get("aboutme", "")
+
+    # Basic validation
+    if not username or not password:
+        return JsonResponse({"error": "Username and password are required"}, status=400)
+
+    try:
+        user, created = User.objects.get_or_create(
+            username=username,
+            defaults={"email": email, "aboutme": aboutme},
+        )
+
+        if created:
+            # Ensure password is hashed for newly created users
+            user.set_password(password)
+            if pfp is not None and hasattr(user, "pfp"):
+                user.pfp = pfp
+            user.save()
+            # Log in newly created user
+            login(request, user)
+
+        else:
+            # Existing user: verify password and log in
+            if not user.check_password(password):
+                return JsonResponse({"error": "Invalid credentials"}, status=401)
+            login(request, user)
+
+        return JsonResponse(
+            {
+                "id": user.id,
+                "username": user.username,
+                "email": getattr(user, "email", ""),
+                "aboutme": getattr(user, "aboutme", ""),
+                "pfp": getattr(user, "pfp", ""),
+                "created": created,
+            },
+            status=(
+                201 if created else 200
+            ),  # This sets the HTTP status code to 201 (Created) if a new user was created,
+            # or 200 (OK) if the user already existed.
+        )
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
 ## POST and ADD report objects
 
 
@@ -85,9 +141,7 @@ def api_user_by_email(request, email):
 @login_required
 def api_reports(request):
     if request.method == "GET":
-        reports = (
-            Report.objects.select_related("author").all().order_by("-id")
-        )
+        reports = Report.objects.select_related("author").all().order_by("-id")
         data = [
             {
                 "id": r.id,
@@ -204,15 +258,18 @@ def api_comments(request):
             return JsonResponse({"error": str(e)}, status=500)
 
 
+@login_required
 def home(request):
     # pass any context needed by the fragment
     return render_fragment_or_full(request, "pages/home.html")
 
 
+@login_required
 def create(request):
     return render_fragment_or_full(request, "pages/create.html")
 
 
+@login_required
 def loader(request):
     return render_fragment_or_full(request, "pages/loader.html")
 
@@ -220,14 +277,17 @@ def loader(request):
 # add similar functions for search, notifications, user_profile, events, etc.
 
 
+@login_required
 def search(request):
     return render_fragment_or_full(request, "pages/search.html")
 
 
+@login_required
 def notifications(request):
     return render_fragment_or_full(request, "pages/notifications.html")
 
 
+@login_required
 def user_profile(request):
     return render_fragment_or_full(request, "pages/user_profile.html")
 
@@ -236,15 +296,21 @@ def log_in(request):
     return render_fragment_or_full(request, "pages/log_in.html")
 
 
+@login_required
 def report(request):
     return render_fragment_or_full(request, "pages/report.html")
 
 
+@login_required
 def my_reports(request):
     return render_fragment_or_full(request, "pages/my_reports.html")
 
+
+@login_required
 def lost_found(request):
     return render_fragment_or_full(request, "pages/lost_found.html")
 
+
+@login_required
 def create_lost_found(request):
     return render_fragment_or_full(request, "pages/create_lost_found.html")

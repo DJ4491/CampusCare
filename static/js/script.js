@@ -1,3 +1,52 @@
+(function () {
+  const form = document.getElementById("recordform");
+  if (!form) return; // Only attach on login page
+
+  const nameInput = document.getElementById("name");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const username = (nameInput?.value || "").trim();
+    const email = (emailInput?.value || "").trim();
+    const password = passwordInput?.value || "";
+
+    if (!username || !password) {
+      alert("Username and password are required");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/google-login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Login failed");
+        return;
+      }
+
+      // Use SPA navigation after successful login
+      if (typeof loadpage === "function") {
+        loadpage("");
+      } else {
+        window.location.href = "/";
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Network error. Please try again.");
+    }
+  });
+})();
+
 //note:-####################### Transition and Load Page ####################################
 const cards_home = document.querySelectorAll(".icon");
 cards_home.forEach((card) => {
@@ -9,80 +58,9 @@ cards_home.forEach((card) => {
     card.style.transform = "scale(1)";
   });
 });
-//################## Fab ##################################
-
-const fab = document.getElementById("create-icon");
-const fabOptions = document.getElementById("fab-options");
-
-function openFab() {
-  if (!fabOptions) return;
-  fabOptions.classList.add("open");
-  fabOptions.setAttribute("aria-hidden", "false");
-}
-
-function closeFab() {
-  if (!fabOptions) return;
-  fabOptions.classList.remove("open");
-  fabOptions.setAttribute("aria-hidden", "true");
-}
-
-function toggleFab() {
-  if (!fabOptions) return;
-  if (fabOptions.classList.contains("open")) closeFab();
-  else openFab();
-}
-
-if (fab) {
-  fab.addEventListener("click", (e) => {
-    e.stopPropagation();
-    toggleFab();
-  });
-}
-
-// Close on outside click
-document.addEventListener("click", (e) => {
-  if (!fabOptions) return;
-  if (!fabOptions.contains(e.target) && !fab.contains(e.target)) {
-    closeFab();
-  }
-});
-
-// Close on Escape
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeFab();
-});
-
-// Ripple effect for fab buttons
-function attachRipple(el) {
-  if (!el) return;
-  el.addEventListener("click", function (e) {
-    const rect = el.getBoundingClientRect();
-    const ripple = document.createElement("span");
-    ripple.className = "ripple";
-    const size = Math.max(rect.width, rect.height);
-    ripple.style.width = ripple.style.height = size + "px";
-    ripple.style.left = e.clientX - rect.left - size / 2 + "px";
-    ripple.style.top = e.clientY - rect.top - size / 2 + "px";
-    el.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 650);
-  });
-}
-
-if (fabOptions) {
-  fabOptions.querySelectorAll(".fab-btn").forEach(attachRipple);
-}
 
 // Functions for the buttons
-function createReport() {
-  // Load your report page here
-  loadpage("report");
-  closeFab();
-}
 
-function recordVideo() {
-  alert("Record Video clicked! 🎥");
-  // You can integrate your video recording logic here
-}
 // ################################# Drop down, Create Report and submit report Page #######################################
 const photoInput = document.getElementById("photoInput");
 const previewWrap = document.getElementById("previewWrap");
@@ -267,6 +245,9 @@ function loadpage(page) {
           if (page === "lost_found") {
             initLostFound();
           }
+          if (page === "create_lost_found") {
+            initCreateLostFound();
+          }
         }, 2400); // Adjust this delay as needed (e.g., 1000ms = 1 second)
       })
       .catch((err) => console.error("Error loading page:", err));
@@ -284,7 +265,7 @@ window.addEventListener("popstate", () => {
 function initReports() {
   let reports = [];
   Promise.all([
-    fetch("/api/reports/").then((res) => res.json()), //Once you get the response from the server, parse it as JSON so we can use it in our JavaScript code
+    fetch("/api/reports/").then((res) => res.json()), //Once you get the response from the server, parse it as JSON so we can use it  in our JavaScript code
     fetch("/api/comments/").then((res) => res.json()),
   ])
     .then(([reportsData, commentsData]) => {
@@ -358,7 +339,7 @@ function initReports() {
               <div class="post-title">${r.title}</div>
               <div class="post-desc">${r.desc}</div>
               <div class= "post-image">
-              <img src ="${r.image}">
+              <img src ="${r.image}" width="250px" height="auto">
               </div>
             </div>
             <div class="actions">
@@ -528,12 +509,17 @@ function initLostFound() {
       `;
     postsContainer.appendChild(card);
 
-    const commentSection = card.querySelector(`#comments-${post.id}`);
+    // Use getElementById for elements with unique IDs (faster)
+    const commentSection = document.getElementById(`comments-${post.id}`);
+    const modal = document.getElementById(`modal-${post.id}`);
+    const allCommentsContainer = document.getElementById(
+      `allComments-${post.id}`
+    );
+
+    // Keep querySelector for elements without unique IDs
     const commentInput = card.querySelector(".comment-box input");
     const postBtn = card.querySelector(".comment-box button");
-    const modal = card.querySelector(`#modal-${post.id}`);
     const modalClose = modal.querySelector(".close-btn");
-    const allCommentsContainer = modal.querySelector(`#allComments-${post.id}`);
 
     function renderComments() {
       commentSection.innerHTML = "";
@@ -581,6 +567,196 @@ function initLostFound() {
 
     renderComments();
   });
+}
+
+//note:- ########################### Js function for create lost and found page ####################################
+function initCreateLostFound() {
+  console.log("Initializing Create Lost Found page...");
+
+  const form = document.getElementById("reportForm");
+  const postsContainer = document.getElementById("postsContainer");
+  const posts = [];
+
+  // Custom dropdown functionality with better error handling
+  const dropdown = document.getElementById("statusDropdown");
+  if (!dropdown) {
+    console.warn("Status dropdown not found, retrying in 100ms...");
+    setTimeout(initCreateLostFound, 100);
+    return;
+  }
+
+  const dropdownToggle = dropdown.querySelector(".dropdown-toggle");
+  const dropdownMenu = dropdown.querySelector(".dropdown-menu");
+  const dropdownLabel = dropdown.querySelector(".dropdown-label");
+  const dropdownBackdrop = dropdown.nextElementSibling;
+  const statusInput = document.getElementById("status");
+
+  // Verify all required elements exist
+  if (!dropdownToggle || !dropdownMenu || !dropdownLabel || !statusInput) {
+    console.warn("Missing dropdown elements, retrying...");
+    setTimeout(initCreateLostFound, 100);
+    return;
+  }
+
+  console.log("All dropdown elements found, setting up event listeners...");
+
+  // Remove any existing event listeners to prevent duplicates
+  const newDropdownToggle = dropdownToggle.cloneNode(true);
+  dropdownToggle.parentNode.replaceChild(newDropdownToggle, dropdownToggle);
+
+  const newDropdownMenu = dropdownMenu.cloneNode(true);
+  dropdownMenu.parentNode.replaceChild(newDropdownMenu, dropdownMenu);
+
+  // Get references to the new elements
+  const toggle = dropdown.querySelector(".dropdown-toggle");
+  const menu = dropdown.querySelector(".dropdown-menu");
+  const label = dropdown.querySelector(".dropdown-label");
+  const backdrop = dropdown.nextElementSibling;
+
+  function openDropdown() {
+    dropdown.classList.add("open");
+    dropdown.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-expanded", "true");
+    if (backdrop) backdrop.removeAttribute("hidden");
+  }
+
+  function closeDropdown() {
+    dropdown.classList.remove("open");
+    dropdown.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-expanded", "false");
+    if (backdrop) backdrop.setAttribute("hidden", "");
+  }
+
+  function resetDropdown() {
+    label.textContent = "Select Status";
+    statusInput.value = "";
+    menu.querySelectorAll(".dropdown-item").forEach((item) => {
+      item.removeAttribute("aria-selected");
+    });
+    closeDropdown();
+  }
+
+  // Add event listeners to the new elements
+  toggle.addEventListener("click", (e) => {
+    e.preventDefault();
+    console.log("Dropdown toggle clicked");
+    if (dropdown.classList.contains("open")) {
+      closeDropdown();
+    } else {
+      openDropdown();
+    }
+  });
+
+  menu.addEventListener("click", (e) => {
+    if (e.target.classList.contains("dropdown-item")) {
+      const value = e.target.getAttribute("data-value");
+      console.log("Dropdown item selected:", value);
+      label.textContent = value;
+      statusInput.value = value;
+
+      // Remove previous selection
+      menu.querySelectorAll(".dropdown-item").forEach((item) => {
+        item.removeAttribute("aria-selected");
+      });
+
+      // Mark current selection
+      e.target.setAttribute("aria-selected", "true");
+
+      closeDropdown();
+    }
+  });
+
+  if (backdrop) {
+    backdrop.addEventListener("click", closeDropdown);
+  }
+
+  // Create a unique escape key handler for this instance
+  const escapeHandler = (e) => {
+    if (e.key === "Escape" && dropdown.classList.contains("open")) {
+      closeDropdown();
+    }
+  };
+
+  document.addEventListener("keydown", escapeHandler);
+
+  // Store the handler so we can remove it later if needed
+  dropdown._escapeHandler = escapeHandler;
+
+  function renderPosts() {
+    const emptyState = document.getElementById("emptyState");
+
+    if (posts.length === 0) {
+      emptyState.style.display = "block";
+      return;
+    }
+
+    emptyState.style.display = "none";
+    postsContainer.innerHTML = '<div class="posts-header">Recent Reports</div>';
+
+    posts.forEach((post) => {
+      const div = document.createElement("div");
+      div.classList.add("post");
+      div.innerHTML = `
+        <div class="post-header">${post.user} (${post.branch})</div>
+        <div class="post-item">
+          <span>${post.item}</span>
+          <span class="status ${post.status.toLowerCase()}">${
+        post.status
+      }</span>
+        </div>
+        ${post.image ? `<img src="${post.image}" alt="${post.item}">` : ""}
+        <div class="post-description">${post.description}</div>
+      `;
+      postsContainer.appendChild(div);
+    });
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const userName = document.getElementById("userName").value.trim();
+      const branch = document.getElementById("branch").value.trim();
+      const itemName = document.getElementById("itemName").value.trim();
+      const status = document.getElementById("status").value;
+      const description = document.getElementById("description").value.trim();
+      const imageFile = document.getElementById("imageFile").files[0];
+
+      if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          const newPost = {
+            user: userName,
+            branch: branch,
+            item: itemName,
+            status: status,
+            description: description,
+            image: event.target.result,
+          };
+          posts.push(newPost);
+          renderPosts();
+          form.reset();
+          resetDropdown();
+        };
+        reader.readAsDataURL(imageFile);
+      } else {
+        const newPost = {
+          user: userName,
+          branch: branch,
+          item: itemName,
+          status: status,
+          description: description,
+          image: null,
+        };
+        posts.push(newPost);
+        renderPosts();
+        form.reset();
+        resetDropdown();
+      }
+    });
+  }
+
+  // Initial render
+  renderPosts();
 }
 
 //@important:- ############################### Notification Feed ############################
@@ -736,24 +912,74 @@ function initSearch() {
   render("");
 }
 
-// If user directly loads /reports/, initialize immediately
-document.addEventListener("DOMContentLoaded", () => {
-  if (window.location.pathname.includes("my_reports")) {
+// Track initialization state to prevent duplicate calls
+let initializationState = {
+  my_reports: false,
+  lost_found: false,
+  create_lost_found: false,
+  notifications: false,
+  user_profile: false,
+  search: false,
+  report: false,
+};
+
+function initializePages() {
+  const path = window.location.pathname;
+  console.log("Initializing page for path:", path);
+
+  // Reset all states
+  Object.keys(initializationState).forEach((key) => {
+    initializationState[key] = false;
+  });
+
+  if (path.includes("my_reports") && !initializationState.my_reports) {
+    initializationState.my_reports = true;
     initReports();
   }
-  if (window.location.pathname.includes("lost_found")) {
+  if (
+    path.includes("lost_found") &&
+    !path.includes("create_lost_found") &&
+    !initializationState.lost_found
+  ) {
+    initializationState.lost_found = true;
     initLostFound();
   }
-  if (window.location.pathname.includes("notifications")) {
+  if (
+    path.includes("create_lost_found") &&
+    !initializationState.create_lost_found
+  ) {
+    initializationState.create_lost_found = true;
+    initCreateLostFound();
+  }
+  if (path.includes("notifications") && !initializationState.notifications) {
+    initializationState.notifications = true;
     initNotifications();
   }
-  if (window.location.pathname.includes("user_profile")) {
+  if (path.includes("user_profile") && !initializationState.user_profile) {
+    initializationState.user_profile = true;
     initUserProfile();
   }
-  if (window.location.pathname.includes("search")) {
+  if (path.includes("search") && !initializationState.search) {
+    initializationState.search = true;
     initSearch();
   }
-  if (window.location.pathname.includes("report")) {
+  if (
+    path.includes("report") &&
+    !path.includes("my_reports") &&
+    !initializationState.report
+  ) {
+    initializationState.report = true;
     initCategoryDropdown();
+  }
+}
+
+// If user directly loads page, initialize immediately
+document.addEventListener("DOMContentLoaded", initializePages);
+
+// Also initialize on window load for additional compatibility
+window.addEventListener("load", () => {
+  // Only initialize if DOM content hasn't loaded yet
+  if (document.readyState === "complete") {
+    initializePages();
   }
 });
