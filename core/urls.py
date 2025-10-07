@@ -11,11 +11,13 @@ urlpatterns = [
     path("search/", views.search, name="search"),
     path("notifications/", views.notifications, name="notifications"),
     path("user_profile/", views.user_profile, name="user_profile"),
+    path("edit_profile/", views.Edit_user_profile, name="Edit_user_profile"),
     path("log_in/", views.log_in, name="log_in"),
     path("report/", views.report, name="report"),
     path("my_reports/", views.my_reports, name="my_reports"),
     # user API endpoints
     path("api/users/", views.api_users, name="api_users"),
+    path("api/current_user/", views.current_user, name="api_current_user"),
     path("api/users/id/<int:user_id>/", views.api_user_by_id, name="api_user_by_id"),
     path("api/users/username/<str:username>/", views.api_user_by_username, name="api_user_by_username"),
     path("api/users/email/<str:email>/", views.api_user_by_email, name="api_user_by_email"),

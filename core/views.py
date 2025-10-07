@@ -1,6 +1,7 @@
 # core/views.py
 from django.shortcuts import render
 from django.http import JsonResponse
+import random
 from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
@@ -36,6 +37,36 @@ def register_view(request):
         else:
             form = UserCreationForm()
         return render_fragment_or_full(request, "")
+
+
+@require_http_methods(["GET"])
+@login_required
+def current_user(request):
+    user = request.user
+    about_me_placeholders = [
+        "Favorite music genre?",
+        "Best travel memory?",
+        "Current hobby?",
+        "Favorite book or movie?",
+        "Future goals?",
+        "Most inspiring person?",
+        "Dream skill to learn?",
+        "Guiding principles?",
+        "Weekend plans?",
+        "Something unique about you?",
+    ]
+    # If user.aboutme is empty or None, use a random placeholder
+    aboutme = getattr(user, "aboutme", None)
+    if not aboutme:
+        aboutme = random.choice(about_me_placeholders)
+    userdata = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "pfp": getattr(user, "pfp", ""),
+        "aboutme": aboutme,
+    }
+    return JsonResponse(userdata)
 
 
 @require_http_methods(["GET"])
@@ -290,6 +321,11 @@ def notifications(request):
 @login_required
 def user_profile(request):
     return render_fragment_or_full(request, "pages/user_profile.html")
+
+
+@login_required
+def Edit_user_profile(request):
+    return render_fragment_or_full(request, "pages/edit_profile.html")
 
 
 def log_in(request):

@@ -1,3 +1,5 @@
+//@important ########################  IIFE function for login page and accquiring user details ###################################
+
 (function () {
   const form = document.getElementById("recordform");
   if (!form) return; // Only attach on login page
@@ -61,7 +63,7 @@ cards_home.forEach((card) => {
 
 // Functions for the buttons
 
-// ################################# Drop down, Create Report and submit report Page #######################################
+//* ################################# Drop down, Create Report and submit report Page #######################################
 const photoInput = document.getElementById("photoInput");
 const previewWrap = document.getElementById("previewWrap");
 if (photoInput && previewWrap) {
@@ -809,42 +811,66 @@ function initNotifications() {
 }
 
 function initUserProfile() {
-  let userData = [
-    {
-      pfp: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapers.com%2Fimages%2Fhd%2Fpfp-pictures-ph6qxvz14p4uvj2j.jpg&f=1&nofb=1&ipt=3a6b6418b7e35569da64e680a1fc79cc6da0b827a8b84ad6d8a3563557dd",
-      username: "Minakshi Joshi",
-      aboutme:
-        "Hey there ! fellas, I don't think I'm gonna do smth today. Just eat and relaaaax",
-      user_email: "Meenu@gmail.com",
+  let userData = [];
+  fetch("/api/current_user/", {
+    method: "GET",
+    headers: {
+      "X-Requested-With": "XMLHttpRequest",
+      "Content-Type": "application/json",
     },
-  ];
-  const user_feed = document.getElementById("user_feed");
-
-  function renderFeed() {
-    user_feed.innerHTML = "";
-    userData.forEach((u) => {
-      user_feed.innerHTML = `
-    <div class="profile_image">
-        <img class="pfp_image" src="${u.pfp}" alt="" width="120px" height="auto" />
-      <p id="username">${u.username}</p>
-    </div>
-    <div class="aboutme">
-      <p class="head">About</p>
-      <p>${u.aboutme}</p>
-      <p>Your favorite music ?</p>
-      <div class="user_form">
-          <p><strong>Username: </strong> ${u.username}</p>
-        <br />
-        <p><strong>Email: </strong>${u.user_email}</p>
-      </div>  
-    </div>   
-      `;
+    credentials: "include", // ensures that cookies are sent
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Network response was not ok");
+      return res.json();
+    })
+    .then((user) => {
+      const user_feed = document.getElementById("user_feed");
+      function renderFeed() {
+        user_feed.innerHTML = "";
+        user_feed.innerHTML = `
+        <div class="profile_header">
+          <div class="profile_image">
+            <img class="pfp_image" src="${user.pfp}" alt="" width="120px" height="auto" />
+            <p id="username">${user.username}</p>
+          </div>
+          <button type="button" class="edit_profile_btn" id="editProfileBtn">Edit Profile</button>
+        </div>
+        <div class="aboutme">
+          <p class="head">About</p>
+          <div class="text_about">
+          <p>${user.aboutme}</p>
+          </div>
+          <div class="user_form">
+            <div class="user_details">
+              <div class="detail_row">
+                <span class="detail_label">Username</span>
+                <span class="detail_value">${user.username}</span>
+              </div>
+              <div class="detail_row">
+                <span class="detail_label">Email</span>
+                <span class="detail_value">${user.email}</span>
+              </div>
+            </div>
+          </div>  
+        </div>   
+          `;
+        const editBtn = document.getElementById("editProfileBtn");
+        if (editBtn) {
+          editBtn.addEventListener("click", () => {
+            if (typeof loadpage === "function") {
+              // If you add an edit route later, replace with loadpage('edit_profile')
+              // alert("Edit Profile coming soon.");
+              window.location.href = '/edit_profile'
+            }
+          });
+        }
+      }
+      renderFeed();
     });
-  }
-  renderFeed();
 }
 
-// ############################### Search Page ################################
+//note:- ############################### Search Page ################################
 // SPA helper: navigate to my_reports and scroll to a specific post id
 function goToMyReport(reportId) {
   if (!reportId) return;

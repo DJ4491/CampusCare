@@ -32,7 +32,7 @@ class User(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
     pfp = models.URLField(
-        default="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapers.com%2Fimages%2Fhd%2Fpfp-pictures-ph6qxvz14p4uvj2j.jpg&f=1&nofb=1&ipt=3a6b6418b7e35569da64e680a1fc79cc6da0b827a8b84ad6d8a3563557dd"
+        default="/static/images/profile.png"
     )
     aboutme = models.TextField(default="", blank=True)
 
@@ -52,8 +52,8 @@ class Report(models.Model):
     likes = models.IntegerField(default=0)
     image = models.ImageField(upload_to="media/", default="")
 
-    def __str__(self):
-        return self.title
+    # def __str__(self):
+        # return self.title
 
 
 class Comments(models.Model):

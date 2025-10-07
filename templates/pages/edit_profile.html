@@ -1,0 +1,198 @@
+{% load static %}
+<div class="content">
+  <section id="edit-profile-page" aria-label="Edit profile page">
+    <style>
+      /* Edit Profile - Bottom sheet page (scoped) */
+      #edit-profile-page {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 0 0 24px 0;
+        position: relative;
+      }
+      #edit-profile-page .sheet {
+        position: relative;
+        top: 100px; /* align with user feed */
+        width: 100%;
+        background: #ffffff; /* solid to reduce banding/blurring */
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-top-left-radius: 16px; /* even radii align better on mobile */
+        border-top-right-radius: 16px;
+        box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.12);
+        overflow: hidden;
+        animation: sheetEnter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        will-change: transform, opacity;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      #edit-profile-page .sheet-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 18px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        background: #fafafa;
+      }
+      #edit-profile-page .sheet-header h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+      }
+      #edit-profile-page .sheet-body {
+        padding: 18px;
+        display: grid;
+        gap: 16px;
+        -webkit-overflow-scrolling: touch; /* smoother scrolling on iOS */
+      }
+      #edit-profile-page .profile-row {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 14px;
+        align-items: center;
+      }
+      #edit-profile-page .avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        object-fit: cover;
+        background: #e5e7eb;
+      }
+      #edit-profile-page .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 720px) {
+        #edit-profile-page .form-row { grid-template-columns: 1fr; }
+      }
+      #edit-profile-page .form-field label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+      }
+      #edit-profile-page .form-field input[type="text"],
+      #edit-profile-page .form-field input[type="email"],
+      #edit-profile-page .form-field input[type="url"],
+      #edit-profile-page .form-field textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #fff;
+        color: #111827;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+      #edit-profile-page .form-field textarea { min-height: 96px; resize: vertical; }
+      #edit-profile-page .form-field input:focus,
+      #edit-profile-page .form-field textarea:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      }
+      #edit-profile-page .assistive-text { color: #6b7280; font-size: 12px; margin-top: 6px; }
+      #edit-profile-page .sheet-footer {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 18px;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        background: #fafafa;
+      }
+      #edit-profile-page .btn {
+        appearance: none;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 120ms ease, color 120ms ease,
+          border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+      }
+      #edit-profile-page .btn:active { transform: translateY(0) scale(0.98); }
+      #edit-profile-page .btn-primary { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+      #edit-profile-page .btn-primary:hover { background: #1e40af; border-color: #1e40af; }
+      #edit-profile-page .btn-secondary { background: #ffffff; color: #111827; border-color: #e5e7eb; }
+      #edit-profile-page .btn-secondary:hover { background: #f3f4f6; }
+
+      @keyframes sheetEnter {
+        from { opacity: 0; transform: translateY(24px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      /* Mobile-specific crispness adjustments */
+      @media (max-width: 480px) {
+        #edit-profile-page .sheet {
+          box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.10);
+        }
+        #edit-profile-page .sheet-header { background: #ffffff; }
+        #edit-profile-page .btn { font-weight: 600; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #edit-profile-page .sheet { animation: none !important; }
+      }
+    </style>
+
+    <div class="sheet" role="dialog" aria-modal="true">
+      <div class="sheet-header">
+        <button type="button" class="btn btn-secondary" onclick="loadpage('user_profile')" aria-label="Go back">
+          Back
+        </button>
+        <h2>Edit Profile</h2>
+        <div style="width:66px;height:1px;"></div>
+      </div>
+
+      <form id="editProfileForm" method="post" action="" autocomplete="on">
+        {% csrf_token %}
+        <div class="sheet-body">
+          <div class="profile-row">
+            <img class="avatar" src="{{ request.user.pfp|default:'/static/images/profile.png' }}" alt="Profile image" />
+            <div>
+              <div style="font-weight:700;color:#111827;">{{ request.user.username }}</div>
+              <div style="font-size:12px;color:#6b7280;">{{ request.user.email }}</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="username">Username</label>
+              <input id="username" name="username" type="text" minlength="3" maxlength="150" required value="{{ request.user.username }}" />
+            </div>
+            <div class="form-field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" inputmode="email" required value="{{ request.user.email }}" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="pfp">Profile image URL</label>
+              <input id="pfp" name="pfp" type="url" placeholder="https://…" value="{{ request.user.pfp }}" />
+              <p class="assistive-text">Direct image URL. Square images look best.</p>
+            </div>
+            <div class="form-field">
+              <label for="aboutme">About me</label>
+              <textarea id="aboutme" name="aboutme" maxlength="600" placeholder="Tell others about yourself…">{{ request.user.aboutme }}</textarea>
+              <p class="assistive-text">Max 600 characters.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="sheet-footer">
+          <button type="button" class="btn btn-secondary" onclick="loadpage('user_profile')">Cancel</button>
+          <div style="display:flex;gap:10px;">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>
+
+
