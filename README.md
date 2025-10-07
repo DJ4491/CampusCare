@@ -74,10 +74,10 @@ source venv/bin/activate   # on Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Run Flask server
-flask run
+manage.py runserver
 ```
 
-App runs on: `http://127.0.0.1:5000/`
+App runs on: `http://127.0.0.1:8000/`
 
 ---
 
