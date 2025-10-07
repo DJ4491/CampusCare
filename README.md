@@ -73,7 +73,7 @@ source venv/bin/activate   # on Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Run Flask server
+# Run Django server
 manage.py runserver
 ```
 
