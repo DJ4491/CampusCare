@@ -7,6 +7,25 @@
       alt="CamConnect"  
     />
   </div>
+  <section class="home_dashboard home_card" aria-label="Overview">
+    <div class="stat_grid">
+      <div class="stat_card" role="button" tabindex="0" aria-label="My Reports">
+        <div class="stat_header">My Reports</div>
+        <div class="stat_value" id="statMyReports">–</div>
+        <div class="stat_meta">View and manage</div>
+      </div>
+      <div class="stat_card" role="button" tabindex="0" aria-label="Lost & Found">
+        <div class="stat_header">Lost & Found</div>
+        <div class="stat_value" id="statLostFound">–</div>
+        <div class="stat_meta">Items this week</div>
+      </div>
+      <div class="stat_card" role="button" tabindex="0" aria-label="Notifications">
+        <div class="stat_header">Notifications</div>
+        <div class="stat_value" id="statNoti">–</div>
+        <div class="stat_meta">Unread</div>
+      </div>
+    </div>
+  </section>
   <div class="content">
     <div class="iconwrapper">
       <div onclick="loadpage('my_reports')" class="icon icon1"></div>

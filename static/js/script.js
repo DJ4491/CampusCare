@@ -162,11 +162,6 @@ function initCategoryDropdown() {
         : null;
 
     const formData = new FormData();
-    formData.append(
-      "avatar",
-      "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fas1.ftcdn.net%2Fv2%2Fjpg%2F00%2F64%2F67%2F52%2F1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg&f=1&nofb=1&ipt=e365c0871e8954842f9444570f19c1c2acb3aae129617affdcdfec4927344627"
-    );
-
     // formData.append("author",);
     formData.append("category", category);
     formData.append("location", r_location);
@@ -861,13 +856,60 @@ function initUserProfile() {
             if (typeof loadpage === "function") {
               // If you add an edit route later, replace with loadpage('edit_profile')
               // alert("Edit Profile coming soon.");
-              window.location.href = '/edit_profile'
+              window.location.href = "/edit_profile";
             }
           });
         }
       }
       renderFeed();
     });
+}
+
+function initEditUserProfile() {
+  const form = document.getElementById("editProfileForm");
+  const inputImage = document.getElementById("UploadImage");
+  const profilePic = document.getElementById("avatar");
+  const usernameInput = document.getElementById("username");
+  const emailInput = document.getElementById("email");
+  const aboutMeInput = document.getElementById("aboutme");
+
+  if (!form || !inputImage || !profilePic || !usernameInput || !emailInput || !aboutMeInput) {
+    console.warn("Edit profile elements not found; skipping initEditUserProfile");
+    return;
+  }
+
+  inputImage.addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const imageUrl = URL.createObjectURL(file);
+    profilePic.src = imageUrl;
+    profilePic.onload = () => {
+      URL.revokeObjectURL(imageUrl);
+    };
+  });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    // ensure latest values are captured
+    formData.set("username", (usernameInput.value || "").trim());
+    formData.set("email", (emailInput.value || "").trim());
+    formData.set("aboutme", (aboutMeInput.value || "").trim());
+    const file = inputImage.files && inputImage.files[0];
+    if (file) {
+      formData.set("pfp", file);
+    }
+    fetch("/api/current_user/", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then(() => {
+        // Optionally navigate back or show success
+        loadpage('user_profile');
+      })
+      .catch((err) => console.error("Failed to update profile", err));
+  });
 }
 
 //note:- ############################### Search Page ################################
@@ -945,6 +987,7 @@ let initializationState = {
   create_lost_found: false,
   notifications: false,
   user_profile: false,
+  edit_profile: false,
   search: false,
   report: false,
 };
@@ -984,6 +1027,10 @@ function initializePages() {
   if (path.includes("user_profile") && !initializationState.user_profile) {
     initializationState.user_profile = true;
     initUserProfile();
+  }
+  if (path.includes("edit_profile") && !initializationState.edit_profile) {
+    initializationState.edit_profile = true;
+    initEditUserProfile();
   }
   if (path.includes("search") && !initializationState.search) {
     initializationState.search = true;

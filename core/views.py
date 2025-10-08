@@ -39,34 +39,80 @@ def register_view(request):
         return render_fragment_or_full(request, "")
 
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
 @login_required
 def current_user(request):
+    if request.method == "GET":
+        user = request.user
+        about_me_placeholders = [
+            "Favorite music genre?",
+            "Best travel memory?",
+            "Current hobby?",
+            "Favorite book or movie?",
+            "Future goals?",
+            "Most inspiring person?",
+            "Dream skill to learn?",
+            "Guiding principles?",
+            "Weekend plans?",
+            "Something unique about you?",
+        ]
+        # If user.aboutme is empty or None, use a random placeholder
+        aboutme = getattr(user, "aboutme", None)
+        if not aboutme:
+            aboutme = random.choice(about_me_placeholders)
+        userdata = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "pfp": getattr(user, "pfp", ""),
+            "aboutme": aboutme,
+        }
+        return JsonResponse(userdata)
+
+    # POST: update current logged-in user
     user = request.user
-    about_me_placeholders = [
-        "Favorite music genre?",
-        "Best travel memory?",
-        "Current hobby?",
-        "Favorite book or movie?",
-        "Future goals?",
-        "Most inspiring person?",
-        "Dream skill to learn?",
-        "Guiding principles?",
-        "Weekend plans?",
-        "Something unique about you?",
-    ]
-    # If user.aboutme is empty or None, use a random placeholder
-    aboutme = getattr(user, "aboutme", None)
-    if not aboutme:
-        aboutme = random.choice(about_me_placeholders)
-    userdata = {
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "pfp": getattr(user, "pfp", ""),
-        "aboutme": aboutme,
-    }
-    return JsonResponse(userdata)
+    try:
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        aboutme = request.POST.get("aboutme")
+
+        # Handle profile picture from file upload or direct URL
+        uploaded_pfp = request.FILES.get("pfp")
+        pfp_url_from_form = request.POST.get("pfp")
+
+        # Update simple fields if provided
+        if username:
+            user.username = username
+        if email:
+            user.email = email
+        if aboutme is not None:
+            user.aboutme = aboutme
+
+        # Save uploaded file to MEDIA and store resulting URL in URLField
+        if uploaded_pfp:
+            from django.core.files.storage import FileSystemStorage
+
+            fs = FileSystemStorage()  # defaults to MEDIA_ROOT
+            filename = fs.save(uploaded_pfp.name, uploaded_pfp)
+            stored_url = fs.url(filename)  # typically under MEDIA_URL
+            user.pfp = stored_url
+        elif pfp_url_from_form:
+            # Fallback: allow setting URL directly if sent
+            user.pfp = pfp_url_from_form
+
+        user.save()
+
+        return JsonResponse(
+            {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "pfp": getattr(user, "pfp", ""),
+                "aboutme": getattr(user, "aboutme", ""),
+            }
+        )
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
 
 
 @require_http_methods(["GET"])
@@ -196,7 +242,8 @@ def api_reports(request):
         try:
             # Expecting multipart form data from FormData()
             author = request.user
-            avatar = request.POST.get("avatar", "")
+            # sourcing avatar from the current user's profile picture URL
+            avatar = getattr(author, "pfp", "")
             category = request.POST.get("category", "")
             location = request.POST.get("location", "")
             title = request.POST.get("title", "")
@@ -232,7 +279,7 @@ def api_reports(request):
             )
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
-
+        
 
 def get_media_image_url(request, image_name):
     image_url = f"{settings.MEDIA_URL}{image_name}"

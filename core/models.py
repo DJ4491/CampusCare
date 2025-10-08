@@ -52,8 +52,8 @@ class Report(models.Model):
     likes = models.IntegerField(default=0)
     image = models.ImageField(upload_to="media/", default="")
 
-    # def __str__(self):
-        # return self.title
+    def __str__(self):
+        return self.title
 
 
 class Comments(models.Model):
