@@ -226,7 +226,8 @@ def api_reports(request):
                     "id": r.author.id if r.author else None,
                     "username": r.author.username if r.author else "",
                 },
-                "avatar": r.avatar,
+                # Always reflect the author's CURRENT profile picture
+                "avatar": getattr(r.author, "pfp", "") or r.avatar,
                 "category": r.category,
                 "location": r.location,
                 "title": r.title,
