@@ -39,6 +39,24 @@ def register_view(request):
         return render_fragment_or_full(request, "")
 
 
+# note:- User DashBoard
+@csrf_exempt
+def user_reports(request):
+    user = request.user
+    user_id = getattr(user, "id")
+    if request.method == "GET":
+        reports = Report.objects.filter(
+            author_id=user_id
+        ).values()  # values() is used to get a dict-like queryset
+        report_count = reports.count()
+        return JsonResponse({
+            'user_id': user_id,
+            'reports_count': report_count,
+            })  # safe=False allows non-dict objects
+
+
+
+
 @require_http_methods(["GET", "POST"])
 @login_required
 def current_user(request):
@@ -280,7 +298,7 @@ def api_reports(request):
             )
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
-        
+
 
 def get_media_image_url(request, image_name):
     image_url = f"{settings.MEDIA_URL}{image_name}"
@@ -290,6 +308,7 @@ def get_media_image_url(request, image_name):
 def api_notifications(request):
     data = list(Notification.objects.all().values())
     return JsonResponse(data, safe=False)
+
 
 
 # POST and GET comment objects

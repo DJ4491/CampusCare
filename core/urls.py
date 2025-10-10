@@ -23,6 +23,7 @@ urlpatterns = [
     path("api/users/email/<str:email>/", views.api_user_by_email, name="api_user_by_email"),
     path("api/google-login/",views.get_or_create_user,name="google_auth"),
     path("api/reports/", views.api_reports, name="api_get_reports"),
+    path("api/users/reports/", views.user_reports, name="api_user_reports"),
     path('get-media-image/<str:image_name>/',views.get_media_image_url,name = "get_media_image_url"),
     path("api/comments/", views.api_comments, name="api_comments"),
     path("api/notifications/", views.api_notifications, name="api_notifications"),

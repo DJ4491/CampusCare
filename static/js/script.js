@@ -49,6 +49,126 @@
   });
 })();
 
+// Render dashboard skeleton into the container
+function renderDashboardSkeleton(container) {
+  if (!container) return;
+  container.innerHTML = `
+    <div class="stat_grid">
+      <div class="stat_card skeleton" role="button" tabindex="0" aria-label="My Reports">
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statMyReports"></div>
+        <div class="stat_meta"></div>
+      </div>
+      <div class="stat_card skeleton" role="button" tabindex="0" aria-label="Lost & Found">
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statLostFound"></div>
+        <div class="stat_meta"></div>
+      </div>
+      <div class="stat_card skeleton" role="button" tabindex="0" aria-label="Notifications">
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statNoti"></div>
+        <div class="stat_meta"></div>
+      </div>
+    </div>
+  `;
+}
+
+// Render final dashboard with data and a short reveal animation
+function renderDashboard(container, data) {
+  if (!container) return;
+  const { myReports = "–", lostFound = "–", notifications = "–" } = data || {};
+  container.innerHTML = `
+    <div class="stat_grid">
+      <div class="stat_card" role="button" tabindex="0" aria-label="My Reports">
+        <div class="stat_header">My Reports</div>
+        <div class="stat_value" id="statMyReports">${myReports}</div>
+        <div class="stat_meta">View and manage</div>
+      </div>
+      <div class="stat_card" role="button" tabindex="0" aria-label="Lost & Found">
+        <div class="stat_header">Lost & Found</div>
+        <div class="stat_value" id="statLostFound">${lostFound}</div>
+        <div class="stat_meta">Items this week</div>
+      </div>
+      <div class="stat_card" role="button" tabindex="0" aria-label="Notifications">
+        <div class="stat_header">Notifications</div>
+        <div class="stat_value" id="statNoti">${notifications}</div>
+        <div class="stat_meta">Unread</div>
+      </div>
+    </div>
+  `;
+  const cards = container.querySelectorAll(".stat_card");
+  cards.forEach((card) => {
+    card.classList.add("reveal");
+    card.addEventListener("animationend", function handler() {
+      card.classList.remove("reveal");
+      card.removeEventListener("animationend", handler);
+    });
+  });
+}
+
+function initUserDashboard() {
+  const home_dashboard = document.querySelector(".home_dashboard");
+  if (!home_dashboard) return;
+  // Render skeleton immediately
+  renderDashboardSkeleton(home_dashboard);
+  // Fetch and then render actual content
+  setTimeout(() => {
+    fetch("/api/users/reports")
+      .then((res) => res.json())
+      .then((user_reports) => {
+        renderDashboard(home_dashboard, {
+          myReports: user_reports?.reports_count ?? "–",
+          lostFound: "–",
+          notifications: "–",
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user reports:", err);
+        renderDashboard(home_dashboard, {
+          myReports: "0",
+          lostFound: "–",
+          notifications: "–",
+        });
+      });
+  }, 2000);
+}
+
+function RenderSkeleton(count = 0) {
+  const home_card = document.querySelector(".home_card");
+  home_card.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const stat_grid = document.createElement("div");
+    stat_grid.className = "stat_grid";
+    stat_grid.innerHTML = `
+    <div class="stat_card skeleton " role="button" tabindex="0" aria-label="My Reports">
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statMyReports"></div>
+        <div class="stat_meta"></div>
+      </div>
+      <div
+        class="stat_card skeleton"
+        role="button"
+        tabindex="0"
+        aria-label="Lost & Found"
+      >
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statLostFound"></div>
+        <div class="stat_meta"></div>
+      </div>
+      <div
+        class="stat_card skeleton"
+        role="button"
+        tabindex="0"
+        aria-label="Notifications"
+      >
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statNoti"></div>
+        <div class="stat_meta"></div>
+      </div>
+    `;
+    home_card.appendChild(stat_grid);
+  }
+}
 //note:-####################### Transition and Load Page ####################################
 const cards_home = document.querySelectorAll(".icon");
 cards_home.forEach((card) => {
@@ -224,6 +344,11 @@ function loadpage(page) {
           // Push history
           history.pushState(null, "", url);
 
+          // It is safe and more robust to check for either the empty string ("") or "/" here,
+          // since your homepage is accessed with both '' and '/'.
+          if (page === "" || page === "/") {
+            initUserDashboard();
+          }
           if (page === "my_reports") {
             initReports();
           }
@@ -873,8 +998,17 @@ function initEditUserProfile() {
   const emailInput = document.getElementById("email");
   const aboutMeInput = document.getElementById("aboutme");
 
-  if (!form || !inputImage || !profilePic || !usernameInput || !emailInput || !aboutMeInput) {
-    console.warn("Edit profile elements not found; skipping initEditUserProfile");
+  if (
+    !form ||
+    !inputImage ||
+    !profilePic ||
+    !usernameInput ||
+    !emailInput ||
+    !aboutMeInput
+  ) {
+    console.warn(
+      "Edit profile elements not found; skipping initEditUserProfile"
+    );
     return;
   }
 
@@ -906,7 +1040,7 @@ function initEditUserProfile() {
       .then((res) => res.json())
       .then(() => {
         // Optionally navigate back or show success
-        loadpage('user_profile');
+        loadpage("user_profile");
       })
       .catch((err) => console.error("Failed to update profile", err));
   });
@@ -982,6 +1116,7 @@ function initSearch() {
 
 // Track initialization state to prevent duplicate calls
 let initializationState = {
+  home: false,
   my_reports: false,
   lost_found: false,
   create_lost_found: false,
@@ -1001,6 +1136,10 @@ function initializePages() {
     initializationState[key] = false;
   });
 
+  if (path.includes("") || (path.includes("/") && !initializationState.home)) {
+    initializationState.home = true;
+    initUserDashboard();
+  }
   if (path.includes("my_reports") && !initializationState.my_reports) {
     initializationState.my_reports = true;
     initReports();
