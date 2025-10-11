@@ -428,17 +428,15 @@ function initReports() {
           if (targetEl) {
             targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
             targetEl.focus();
-            const originalBg = targetEl.style.backgroundColor;
-            targetEl.style.transition = "background-color 600ms ease";
-            targetEl.style.backgroundColor = "#fff1a8";
-            if (focus) {
-              targetEl.classList.add("jiggle");
-            }
+            
+            // Apply prominent highlight effect
+            targetEl.classList.add("highlight-target");
+            
+            // Remove highlight after animation completes
             setTimeout(() => {
               targetEl.blur();
-              targetEl.classList.remove("jiggle");
-              targetEl.style.backgroundColor = originalBg || "";
-            }, 2000);
+              targetEl.classList.remove("highlight-target");
+            }, 2300);
           }
           window.__targetPostId = null;
         }, 0);
