@@ -1,3 +1,174 @@
+//@important ########################  IIFE function for login page and accquiring user details ###################################
+
+(function () {
+  const form = document.getElementById("recordform");
+  if (!form) return; // Only attach on login page
+
+  const nameInput = document.getElementById("name");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const username = (nameInput?.value || "").trim();
+    const email = (emailInput?.value || "").trim();
+    const password = passwordInput?.value || "";
+
+    if (!username || !password) {
+      alert("Username and password are required");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/google-login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Login failed");
+        return;
+      }
+
+      // Use SPA navigation after successful login
+      if (typeof loadpage === "function") {
+        loadpage("");
+      } else {
+        window.location.href = "/";
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Network error. Please try again.");
+    }
+  });
+})();
+
+// Render dashboard skeleton into the container
+function renderDashboardSkeleton(container) {
+  if (!container) return;
+  container.innerHTML = `
+    <div class="stat_grid">
+      <div class="stat_card skeleton" role="button" tabindex="0" aria-label="My Reports">
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statMyReports"></div>
+        <div class="stat_meta"></div>
+      </div>
+      <div class="stat_card skeleton" role="button" tabindex="0" aria-label="Lost & Found">
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statLostFound"></div>
+        <div class="stat_meta"></div>
+      </div>
+      <div class="stat_card skeleton" role="button" tabindex="0" aria-label="Notifications">
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statNoti"></div>
+        <div class="stat_meta"></div>
+      </div>
+    </div>
+  `;
+}
+
+// Render final dashboard with data and a short reveal animation
+function renderDashboard(container, data) {
+  if (!container) return;
+  const { myReports = "–", lostFound = "–", notifications = "–" } = data || {};
+  container.innerHTML = `
+    <div class="stat_grid">
+      <div class="stat_card" role="button" tabindex="0" aria-label="My Reports">
+        <div class="stat_header">My Reports</div>
+        <div class="stat_value" id="statMyReports">${myReports}</div>
+        <div class="stat_meta">View and manage</div>
+      </div>
+      <div class="stat_card" role="button" tabindex="0" aria-label="Lost & Found">
+        <div class="stat_header">Lost & Found</div>
+        <div class="stat_value" id="statLostFound">${lostFound}</div>
+        <div class="stat_meta">Items this week</div>
+      </div>
+      <div class="stat_card" role="button" tabindex="0" aria-label="Notifications">
+        <div class="stat_header">Notifications</div>
+        <div class="stat_value" id="statNoti">${notifications}</div>
+        <div class="stat_meta">Unread</div>
+      </div>
+    </div>
+  `;
+  const cards = container.querySelectorAll(".stat_card");
+  cards.forEach((card) => {
+    card.classList.add("reveal");
+    card.addEventListener("animationend", function handler() {
+      card.classList.remove("reveal");
+      card.removeEventListener("animationend", handler);
+    });
+  });
+}
+
+function initUserDashboard() {
+  const home_dashboard = document.querySelector(".home_dashboard");
+  if (!home_dashboard) return;
+  // Render skeleton immediately
+  renderDashboardSkeleton(home_dashboard);
+  // Fetch and then render actual content
+  setTimeout(() => {
+    fetch("/api/users/reports")
+      .then((res) => res.json())
+      .then((user_reports) => {
+        renderDashboard(home_dashboard, {
+          myReports: user_reports?.reports_count ?? "–",
+          lostFound: "–",
+          notifications: "–",
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user reports:", err);
+        renderDashboard(home_dashboard, {
+          myReports: "0",
+          lostFound: "–",
+          notifications: "–",
+        });
+      });
+  }, 1000);
+}
+
+function RenderSkeleton(count = 0) {
+  const home_card = document.querySelector(".home_card");
+  home_card.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const stat_grid = document.createElement("div");
+    stat_grid.className = "stat_grid";
+    stat_grid.innerHTML = `
+    <div class="stat_card skeleton " role="button" tabindex="0" aria-label="My Reports">
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statMyReports"></div>
+        <div class="stat_meta"></div>
+      </div>
+      <div
+        class="stat_card skeleton"
+        role="button"
+        tabindex="0"
+        aria-label="Lost & Found"
+      >
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statLostFound"></div>
+        <div class="stat_meta"></div>
+      </div>
+      <div
+        class="stat_card skeleton"
+        role="button"
+        tabindex="0"
+        aria-label="Notifications"
+      >
+        <div class="stat_header"></div>
+        <div class="stat_value" id="statNoti"></div>
+        <div class="stat_meta"></div>
+      </div>
+    `;
+    home_card.appendChild(stat_grid);
+  }
+}
 //note:-####################### Transition and Load Page ####################################
 const cards_home = document.querySelectorAll(".icon");
 cards_home.forEach((card) => {
@@ -9,81 +180,10 @@ cards_home.forEach((card) => {
     card.style.transform = "scale(1)";
   });
 });
-//################## Fab ##################################
-
-const fab = document.getElementById("create-icon");
-const fabOptions = document.getElementById("fab-options");
-
-function openFab() {
-  if (!fabOptions) return;
-  fabOptions.classList.add("open");
-  fabOptions.setAttribute("aria-hidden", "false");
-}
-
-function closeFab() {
-  if (!fabOptions) return;
-  fabOptions.classList.remove("open");
-  fabOptions.setAttribute("aria-hidden", "true");
-}
-
-function toggleFab() {
-  if (!fabOptions) return;
-  if (fabOptions.classList.contains("open")) closeFab();
-  else openFab();
-}
-
-if (fab) {
-  fab.addEventListener("click", (e) => {
-    e.stopPropagation();
-    toggleFab();
-  });
-}
-
-// Close on outside click
-document.addEventListener("click", (e) => {
-  if (!fabOptions) return;
-  if (!fabOptions.contains(e.target) && !fab.contains(e.target)) {
-    closeFab();
-  }
-});
-
-// Close on Escape
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeFab();
-});
-
-// Ripple effect for fab buttons
-function attachRipple(el) {
-  if (!el) return;
-  el.addEventListener("click", function (e) {
-    const rect = el.getBoundingClientRect();
-    const ripple = document.createElement("span");
-    ripple.className = "ripple";
-    const size = Math.max(rect.width, rect.height);
-    ripple.style.width = ripple.style.height = size + "px";
-    ripple.style.left = e.clientX - rect.left - size / 2 + "px";
-    ripple.style.top = e.clientY - rect.top - size / 2 + "px";
-    el.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 650);
-  });
-}
-
-if (fabOptions) {
-  fabOptions.querySelectorAll(".fab-btn").forEach(attachRipple);
-}
 
 // Functions for the buttons
-function createReport() {
-  // Load your report page here
-  loadpage("report");
-  closeFab();
-}
 
-function recordVideo() {
-  alert("Record Video clicked! 🎥");
-  // You can integrate your video recording logic here
-}
-// ################################# Drop down, Create Report and submit report Page #######################################
+//* ################################# Drop down, Create Report and submit report Page #######################################
 const photoInput = document.getElementById("photoInput");
 const previewWrap = document.getElementById("previewWrap");
 if (photoInput && previewWrap) {
@@ -182,11 +282,6 @@ function initCategoryDropdown() {
         : null;
 
     const formData = new FormData();
-    formData.append(
-      "avatar",
-      "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fas1.ftcdn.net%2Fv2%2Fjpg%2F00%2F64%2F67%2F52%2F1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg&f=1&nofb=1&ipt=e365c0871e8954842f9444570f19c1c2acb3aae129617affdcdfec4927344627"
-    );
-
     // formData.append("author",);
     formData.append("category", category);
     formData.append("location", r_location);
@@ -249,6 +344,11 @@ function loadpage(page) {
           // Push history
           history.pushState(null, "", url);
 
+          // It is safe and more robust to check for either the empty string ("") or "/" here,
+          // since your homepage is accessed with both '' and '/'.
+          if (page === "" || page === "/") {
+            initUserDashboard();
+          }
           if (page === "my_reports") {
             initReports();
           }
@@ -267,6 +367,9 @@ function loadpage(page) {
           if (page === "lost_found") {
             initLostFound();
           }
+          if (page === "create_lost_found") {
+            initCreateLostFound();
+          }
         }, 2400); // Adjust this delay as needed (e.g., 1000ms = 1 second)
       })
       .catch((err) => console.error("Error loading page:", err));
@@ -284,18 +387,23 @@ window.addEventListener("popstate", () => {
 function initReports() {
   let reports = [];
   Promise.all([
-    fetch("/api/reports/").then((res) => res.json()), //Once you get the response from the server, parse it as JSON so we can use it in our JavaScript code
+    fetch("/api/reports/").then((res) => res.json()), //Once you get the response from the server, parse it as JSON so we can use it  in our JavaScript code
     fetch("/api/comments/").then((res) => res.json()),
   ])
     .then(([reportsData, commentsData]) => {
       // Step 1: Organize comments into a Object grouped by report_id
       console.log("Reports Data:", reportsData);
+      console.log("Comments Data:", commentsData);
       const commentsByReport = {};
       commentsData.forEach((c) => {
-        if (!commentsByReport[c.report_id]) {
-          commentsByReport[c.report_id] = [];
+        if (!commentsByReport[c.report]) {
+          commentsByReport[c.report] = [];
         }
-        commentsByReport[c.report_id].push(c.comment);
+        commentsByReport[c.report].push({
+          comment: c.comment,
+          added_by: c.added_by,
+          time: c.time,
+        });
       });
       // Step 2: Attach correct comments to each report
       reports = reportsData.map((r) => ({
@@ -346,37 +454,98 @@ function initReports() {
       post.className = "post";
       post.id = `post-${r.id}`; //ID to match the hash fragment
       post.innerHTML = `
-            <div class = "container">
+            <div class="container">
             <div class="post-header">
-              <img src="${r.avatar}" class="avatar">
-              <div>
+              <img src="${
+                r.avatar || "/static/images/profile.png"
+              }" class="avatar" alt="Profile">
+              <div class="post-meta">
                 <div class="author">${r.author}</div>
                 <div class="time">${formatTimeAgo(r.time)}</div>
+              </div>
+              <div class="post-category">
+                <span class="category-badge ${
+                  r.category?.toLowerCase() || "other"
+                }">${r.category || "Other"}</span>
               </div>
             </div>
             <div class="post-body">
               <div class="post-title">${r.title}</div>
-              <div class="post-desc">${r.desc}</div>
-              <div class= "post-image">
-              <img src ="${r.image}">
+              <div class="post-location">
+                <span class="location-icon">📍</span>
+                <span class="location-text">${
+                  r.location || "Location not specified"
+                }</span>
               </div>
+              <div class="post-desc">${r.desc}</div>
+              ${
+                r.image
+                  ? `
+                <div class="post-image-container">
+                  <img src="${r.image}" class="post-image" alt="Report image">
+                </div>
+              `
+                  : ""
+              }
             </div>
             <div class="actions">
-              <button class="like-btn ${
+              <button class="action-btn like-btn ${
                 r.liked ? "liked" : ""
-              }" onclick="toggleLike(${index})">❤️ ${r.likes}</button>
-             <button class="Comment-div" onclick="toggleComments(${index})">💬 ${
-        r.comments.length
-      }</button>
+              }" onclick="toggleLike(${index})">
+                <span class="action-icon">❤️</span>
+                <span class="action-count">${r.likes}</span>
+              </button>
+              <button class="action-btn comment-btn" onclick="toggleComments(${index})">
+                <span class="action-icon">💬</span>
+                <span class="action-count">${r.comments.length}</span>
+              </button>
             </div>
-            <div class="comments" id = "comments-${index}" style="display:none;">
-              ${r.comments
-                .map((c) => `<div class="comment">${c}</div>`)
-                .join("")}
+            <div class="comments-section" id="comments-${index}" style="display:none;">
+              <div class="comments-header">
+                <span class="comments-title">Comments (${
+                  r.comments.length
+                })</span>
+              </div>
+              <div class="comments-list">
+                ${r.comments
+                  .map(
+                    (c) => `
+                    <div class="comment-item">
+                      <div class="comment-avatar">
+                        <img src="/static/images/profile.png" alt="User" class="comment-user-avatar">
+                      </div>
+                      <div class="comment-content">
+                        <div class="comment-author">${
+                          c.added_by?.username || "Anonymous"
+                        }</div>
+                        <div class="comment-text">${c.comment || c}</div>
+                        <div class="comment-time">${
+                          c.time ? formatTimeAgo(c.time) : "Just now"
+                        }</div>
+                      </div>
+                    </div>
+                  `
+                  )
+                  .join("")}
+                ${
+                  r.comments.length === 0
+                    ? `
+                  <div class="no-comments">
+                    <span class="no-comments-text">No comments yet. Be the first to comment!</span>
+                  </div>
+                `
+                    : ""
+                }
+              </div>
             </div>
-            <div class="comment-input">
-              <input type="text" id="comment-${index}" placeholder="Add a comment...">
-              <button onclick="addComment(${index})">Post</button>
+            <div class="comment-input-section">
+              <div class="comment-input-container">
+                <img src="/static/images/profile.png" alt="You" class="comment-input-avatar">
+                <input type="text" id="comment-${index}" placeholder="Add a comment..." class="comment-input-field">
+                <button onclick="addComment(${index})" class="comment-submit-btn">
+                  <span class="submit-icon">📤</span>
+                </button>
+              </div>
             </div>
           </div>
           `;
@@ -417,8 +586,12 @@ function initReports() {
       .then((data) => {
         console.log("Saved comment:", data);
 
-        // Update UI immediately
-        reports[i].comments.push(data.comment);
+        // Update UI immediately with the new comment structure
+        reports[i].comments.push({
+          comment: data.comment,
+          added_by: data.added_by,
+          time: data.time,
+        });
 
         renderFeed(); // full re-render
         input.value = "";
@@ -528,12 +701,17 @@ function initLostFound() {
       `;
     postsContainer.appendChild(card);
 
-    const commentSection = card.querySelector(`#comments-${post.id}`);
+    // Use getElementById for elements with unique IDs (faster)
+    const commentSection = document.getElementById(`comments-${post.id}`);
+    const modal = document.getElementById(`modal-${post.id}`);
+    const allCommentsContainer = document.getElementById(
+      `allComments-${post.id}`
+    );
+
+    // Keep querySelector for elements without unique IDs
     const commentInput = card.querySelector(".comment-box input");
     const postBtn = card.querySelector(".comment-box button");
-    const modal = card.querySelector(`#modal-${post.id}`);
     const modalClose = modal.querySelector(".close-btn");
-    const allCommentsContainer = modal.querySelector(`#allComments-${post.id}`);
 
     function renderComments() {
       commentSection.innerHTML = "";
@@ -581,6 +759,196 @@ function initLostFound() {
 
     renderComments();
   });
+}
+
+//note:- ########################### Js function for create lost and found page ####################################
+function initCreateLostFound() {
+  console.log("Initializing Create Lost Found page...");
+
+  const form = document.getElementById("reportForm");
+  const postsContainer = document.getElementById("postsContainer");
+  const posts = [];
+
+  // Custom dropdown functionality with better error handling
+  const dropdown = document.getElementById("statusDropdown");
+  if (!dropdown) {
+    console.warn("Status dropdown not found, retrying in 100ms...");
+    setTimeout(initCreateLostFound, 100);
+    return;
+  }
+
+  const dropdownToggle = dropdown.querySelector(".dropdown-toggle");
+  const dropdownMenu = dropdown.querySelector(".dropdown-menu");
+  const dropdownLabel = dropdown.querySelector(".dropdown-label");
+  const dropdownBackdrop = dropdown.nextElementSibling;
+  const statusInput = document.getElementById("status");
+
+  // Verify all required elements exist
+  if (!dropdownToggle || !dropdownMenu || !dropdownLabel || !statusInput) {
+    console.warn("Missing dropdown elements, retrying...");
+    setTimeout(initCreateLostFound, 100);
+    return;
+  }
+
+  console.log("All dropdown elements found, setting up event listeners...");
+
+  // Remove any existing event listeners to prevent duplicates
+  const newDropdownToggle = dropdownToggle.cloneNode(true);
+  dropdownToggle.parentNode.replaceChild(newDropdownToggle, dropdownToggle);
+
+  const newDropdownMenu = dropdownMenu.cloneNode(true);
+  dropdownMenu.parentNode.replaceChild(newDropdownMenu, dropdownMenu);
+
+  // Get references to the new elements
+  const toggle = dropdown.querySelector(".dropdown-toggle");
+  const menu = dropdown.querySelector(".dropdown-menu");
+  const label = dropdown.querySelector(".dropdown-label");
+  const backdrop = dropdown.nextElementSibling;
+
+  function openDropdown() {
+    dropdown.classList.add("open");
+    dropdown.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-expanded", "true");
+    if (backdrop) backdrop.removeAttribute("hidden");
+  }
+
+  function closeDropdown() {
+    dropdown.classList.remove("open");
+    dropdown.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-expanded", "false");
+    if (backdrop) backdrop.setAttribute("hidden", "");
+  }
+
+  function resetDropdown() {
+    label.textContent = "Select Status";
+    statusInput.value = "";
+    menu.querySelectorAll(".dropdown-item").forEach((item) => {
+      item.removeAttribute("aria-selected");
+    });
+    closeDropdown();
+  }
+
+  // Add event listeners to the new elements
+  toggle.addEventListener("click", (e) => {
+    e.preventDefault();
+    console.log("Dropdown toggle clicked");
+    if (dropdown.classList.contains("open")) {
+      closeDropdown();
+    } else {
+      openDropdown();
+    }
+  });
+
+  menu.addEventListener("click", (e) => {
+    if (e.target.classList.contains("dropdown-item")) {
+      const value = e.target.getAttribute("data-value");
+      console.log("Dropdown item selected:", value);
+      label.textContent = value;
+      statusInput.value = value;
+
+      // Remove previous selection
+      menu.querySelectorAll(".dropdown-item").forEach((item) => {
+        item.removeAttribute("aria-selected");
+      });
+
+      // Mark current selection
+      e.target.setAttribute("aria-selected", "true");
+
+      closeDropdown();
+    }
+  });
+
+  if (backdrop) {
+    backdrop.addEventListener("click", closeDropdown);
+  }
+
+  // Create a unique escape key handler for this instance
+  const escapeHandler = (e) => {
+    if (e.key === "Escape" && dropdown.classList.contains("open")) {
+      closeDropdown();
+    }
+  };
+
+  document.addEventListener("keydown", escapeHandler);
+
+  // Store the handler so we can remove it later if needed
+  dropdown._escapeHandler = escapeHandler;
+
+  function renderPosts() {
+    const emptyState = document.getElementById("emptyState");
+
+    if (posts.length === 0) {
+      emptyState.style.display = "block";
+      return;
+    }
+
+    emptyState.style.display = "none";
+    postsContainer.innerHTML = '<div class="posts-header">Recent Reports</div>';
+
+    posts.forEach((post) => {
+      const div = document.createElement("div");
+      div.classList.add("post");
+      div.innerHTML = `
+        <div class="post-header">${post.user} (${post.branch})</div>
+        <div class="post-item">
+          <span>${post.item}</span>
+          <span class="status ${post.status.toLowerCase()}">${
+        post.status
+      }</span>
+        </div>
+        ${post.image ? `<img src="${post.image}" alt="${post.item}">` : ""}
+        <div class="post-description">${post.description}</div>
+      `;
+      postsContainer.appendChild(div);
+    });
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const userName = document.getElementById("userName").value.trim();
+      const branch = document.getElementById("branch").value.trim();
+      const itemName = document.getElementById("itemName").value.trim();
+      const status = document.getElementById("status").value;
+      const description = document.getElementById("description").value.trim();
+      const imageFile = document.getElementById("imageFile").files[0];
+
+      if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          const newPost = {
+            user: userName,
+            branch: branch,
+            item: itemName,
+            status: status,
+            description: description,
+            image: event.target.result,
+          };
+          posts.push(newPost);
+          renderPosts();
+          form.reset();
+          resetDropdown();
+        };
+        reader.readAsDataURL(imageFile);
+      } else {
+        const newPost = {
+          user: userName,
+          branch: branch,
+          item: itemName,
+          status: status,
+          description: description,
+          image: null,
+        };
+        posts.push(newPost);
+        renderPosts();
+        form.reset();
+        resetDropdown();
+      }
+    });
+  }
+
+  // Initial render
+  renderPosts();
 }
 
 //@important:- ############################### Notification Feed ############################
@@ -633,42 +1001,122 @@ function initNotifications() {
 }
 
 function initUserProfile() {
-  let userData = [
-    {
-      pfp: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapers.com%2Fimages%2Fhd%2Fpfp-pictures-ph6qxvz14p4uvj2j.jpg&f=1&nofb=1&ipt=3a6b6418b7e35569da64e680a1fc79cc6da0b827a8b84ad6d8a3563557dd",
-      username: "Minakshi Joshi",
-      aboutme:
-        "Hey there ! fellas, I don't think I'm gonna do smth today. Just eat and relaaaax",
-      user_email: "Meenu@gmail.com",
+  let userData = [];
+  fetch("/api/current_user/", {
+    method: "GET",
+    headers: {
+      "X-Requested-With": "XMLHttpRequest",
+      "Content-Type": "application/json",
     },
-  ];
-  const user_feed = document.getElementById("user_feed");
-
-  function renderFeed() {
-    user_feed.innerHTML = "";
-    userData.forEach((u) => {
-      user_feed.innerHTML = `
-    <div class="profile_image">
-        <img class="pfp_image" src="${u.pfp}" alt="" width="120px" height="auto" />
-      <p id="username">${u.username}</p>
-    </div>
-    <div class="aboutme">
-      <p class="head">About</p>
-      <p>${u.aboutme}</p>
-      <p>Your favorite music ?</p>
-      <div class="user_form">
-          <p><strong>Username: </strong> ${u.username}</p>
-        <br />
-        <p><strong>Email: </strong>${u.user_email}</p>
-      </div>  
-    </div>   
-      `;
+    credentials: "include", // ensures that cookies are sent
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Network response was not ok");
+      return res.json();
+    })
+    .then((user) => {
+      const user_feed = document.getElementById("user_feed");
+      function renderFeed() {
+        user_feed.innerHTML = "";
+        user_feed.innerHTML = `
+        <div class="profile_header">
+          <div class="profile_image">
+            <img class="pfp_image" src="${user.pfp}" alt="" width="120px" height="auto" />
+            <p id="username">${user.username}</p>
+          </div>
+          <button type="button" class="edit_profile_btn" id="editProfileBtn">Edit Profile</button>
+        </div>
+        <div class="aboutme">
+          <p class="head">About</p>
+          <div class="text_about">
+          <p>${user.aboutme}</p>
+          </div>
+          <div class="user_form">
+            <div class="user_details">
+              <div class="detail_row">
+                <span class="detail_label">Username</span>
+                <span class="detail_value">${user.username}</span>
+              </div>
+              <div class="detail_row">
+                <span class="detail_label">Email</span>
+                <span class="detail_value">${user.email}</span>
+              </div>
+            </div>
+          </div>  
+        </div>   
+          `;
+        const editBtn = document.getElementById("editProfileBtn");
+        if (editBtn) {
+          editBtn.addEventListener("click", () => {
+            if (typeof loadpage === "function") {
+              // If you add an edit route later, replace with loadpage('edit_profile')
+              // alert("Edit Profile coming soon.");
+              window.location.href = "/edit_profile";
+            }
+          });
+        }
+      }
+      renderFeed();
     });
-  }
-  renderFeed();
 }
 
-// ############################### Search Page ################################
+function initEditUserProfile() {
+  const form = document.getElementById("editProfileForm");
+  const inputImage = document.getElementById("UploadImage");
+  const profilePic = document.getElementById("avatar");
+  const usernameInput = document.getElementById("username");
+  const emailInput = document.getElementById("email");
+  const aboutMeInput = document.getElementById("aboutme");
+
+  if (
+    !form ||
+    !inputImage ||
+    !profilePic ||
+    !usernameInput ||
+    !emailInput ||
+    !aboutMeInput
+  ) {
+    console.warn(
+      "Edit profile elements not found; skipping initEditUserProfile"
+    );
+    return;
+  }
+
+  inputImage.addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const imageUrl = URL.createObjectURL(file);
+    profilePic.src = imageUrl;
+    profilePic.onload = () => {
+      URL.revokeObjectURL(imageUrl);
+    };
+  });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    // ensure latest values are captured
+    formData.set("username", (usernameInput.value || "").trim());
+    formData.set("email", (emailInput.value || "").trim());
+    formData.set("aboutme", (aboutMeInput.value || "").trim());
+    const file = inputImage.files && inputImage.files[0];
+    if (file) {
+      formData.set("pfp", file);
+    }
+    fetch("/api/current_user/", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then(() => {
+        // Optionally navigate back or show success
+        loadpage("user_profile");
+      })
+      .catch((err) => console.error("Failed to update profile", err));
+  });
+}
+
+//note:- ############################### Search Page ################################
 // SPA helper: navigate to my_reports and scroll to a specific post id
 function goToMyReport(reportId) {
   if (!reportId) return;
@@ -736,24 +1184,84 @@ function initSearch() {
   render("");
 }
 
-// If user directly loads /reports/, initialize immediately
-document.addEventListener("DOMContentLoaded", () => {
-  if (window.location.pathname.includes("my_reports")) {
+// Track initialization state to prevent duplicate calls
+let initializationState = {
+  home: false,
+  my_reports: false,
+  lost_found: false,
+  create_lost_found: false,
+  notifications: false,
+  user_profile: false,
+  edit_profile: false,
+  search: false,
+  report: false,
+};
+
+function initializePages() {
+  const path = window.location.pathname;
+  console.log("Initializing page for path:", path);
+
+  // Reset all states
+  Object.keys(initializationState).forEach((key) => {
+    initializationState[key] = false;
+  });
+
+  if (path.includes("") || (path.includes("/") && !initializationState.home)) {
+    initializationState.home = true;
+    initUserDashboard();
+  }
+  if (path.includes("my_reports") && !initializationState.my_reports) {
+    initializationState.my_reports = true;
     initReports();
   }
-  if (window.location.pathname.includes("lost_found")) {
+  if (
+    path.includes("lost_found") &&
+    !path.includes("create_lost_found") &&
+    !initializationState.lost_found
+  ) {
+    initializationState.lost_found = true;
     initLostFound();
   }
-  if (window.location.pathname.includes("notifications")) {
+  if (
+    path.includes("create_lost_found") &&
+    !initializationState.create_lost_found
+  ) {
+    initializationState.create_lost_found = true;
+    initCreateLostFound();
+  }
+  if (path.includes("notifications") && !initializationState.notifications) {
+    initializationState.notifications = true;
     initNotifications();
   }
-  if (window.location.pathname.includes("user_profile")) {
+  if (path.includes("user_profile") && !initializationState.user_profile) {
+    initializationState.user_profile = true;
     initUserProfile();
   }
-  if (window.location.pathname.includes("search")) {
+  if (path.includes("edit_profile") && !initializationState.edit_profile) {
+    initializationState.edit_profile = true;
+    initEditUserProfile();
+  }
+  if (path.includes("search") && !initializationState.search) {
+    initializationState.search = true;
     initSearch();
   }
-  if (window.location.pathname.includes("report")) {
+  if (
+    path.includes("report") &&
+    !path.includes("my_reports") &&
+    !initializationState.report
+  ) {
+    initializationState.report = true;
     initCategoryDropdown();
+  }
+}
+
+// If user directly loads page, initialize immediately
+document.addEventListener("DOMContentLoaded", initializePages);
+
+// Also initialize on window load for additional compatibility
+window.addEventListener("load", () => {
+  // Only initialize if DOM content hasn't loaded yet
+  if (document.readyState === "complete") {
+    initializePages();
   }
 });

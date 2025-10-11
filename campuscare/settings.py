@@ -31,6 +31,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "campuscare-ehra.onrender.com",
     "127.0.0.1",
+    ".vercel.app"
 ]
 
 
