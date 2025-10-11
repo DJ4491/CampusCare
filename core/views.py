@@ -318,7 +318,19 @@ def api_notifications(request):
 @require_http_methods(["GET", "POST"])
 def api_comments(request):
     if request.method == "GET":
-        data = list(Comments.objects.all().values())
+        comments = Comments.objects.select_related('added_by').all()
+        data = [
+            {
+                "id": comment.id,
+                "added_by": {
+                    "id": comment.added_by.id if comment.added_by else None,
+                    "username": comment.added_by.username if comment.added_by else "Anonymous",
+                },
+                "report": comment.report.id,
+                "comment": comment.comment,
+            }
+            for comment in comments
+        ]
         return JsonResponse(data, safe=False)
 
     elif request.method == "POST":
@@ -338,12 +350,20 @@ def api_comments(request):
             except Report.DoesNotExist:
                 return JsonResponse({"error": "Report not found"}, status=404)
 
-            # Create the comment
-            comment = Comments.objects.create(report=report, comment=comment_text)
+            # Create the comment with the current user (if authenticated)
+            comment = Comments.objects.create(
+                report=report, 
+                comment=comment_text,
+                added_by=request.user if request.user.is_authenticated else None
+            )
 
             return JsonResponse(
                 {
                     "id": comment.id,
+                    "added_by": {
+                        "id": comment.added_by.id if comment.added_by else None,
+                        "username": comment.added_by.username if comment.added_by else "Anonymous",
+                    },
                     "report": comment.report.id,
                     "comment": comment.comment,
                 },

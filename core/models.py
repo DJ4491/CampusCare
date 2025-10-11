@@ -60,10 +60,11 @@ class Comments(models.Model):
     added_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
     comment = models.TextField(default="", blank=True)
-
-    # time = models.DateTimeField(auto_now_add=True)
-    # def __str__(self):
-    #     return f"{self.added_by.username}"
+    
+    def __str__(self):
+        if self.added_by:
+            return f"{self.added_by.username}: {self.comment[:50]}..."
+        return f"Anonymous: {self.comment[:50]}..."
 
 
 class Notification(models.Model):

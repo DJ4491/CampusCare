@@ -130,7 +130,7 @@ function initUserDashboard() {
           notifications: "–",
         });
       });
-  }, 2000);
+  }, 1000);
 }
 
 function RenderSkeleton(count = 0) {
@@ -393,12 +393,17 @@ function initReports() {
     .then(([reportsData, commentsData]) => {
       // Step 1: Organize comments into a Object grouped by report_id
       console.log("Reports Data:", reportsData);
+      console.log("Comments Data:", commentsData);
       const commentsByReport = {};
       commentsData.forEach((c) => {
-        if (!commentsByReport[c.report_id]) {
-          commentsByReport[c.report_id] = [];
+        if (!commentsByReport[c.report]) {
+          commentsByReport[c.report] = [];
         }
-        commentsByReport[c.report_id].push(c.comment);
+        commentsByReport[c.report].push({
+          comment: c.comment,
+          added_by: c.added_by,
+          time: c.time,
+        });
       });
       // Step 2: Attach correct comments to each report
       reports = reportsData.map((r) => ({
@@ -449,37 +454,98 @@ function initReports() {
       post.className = "post";
       post.id = `post-${r.id}`; //ID to match the hash fragment
       post.innerHTML = `
-            <div class = "container">
+            <div class="container">
             <div class="post-header">
-              <img src="${r.avatar}" class="avatar">
-              <div>
+              <img src="${
+                r.avatar || "/static/images/profile.png"
+              }" class="avatar" alt="Profile">
+              <div class="post-meta">
                 <div class="author">${r.author}</div>
                 <div class="time">${formatTimeAgo(r.time)}</div>
+              </div>
+              <div class="post-category">
+                <span class="category-badge ${
+                  r.category?.toLowerCase() || "other"
+                }">${r.category || "Other"}</span>
               </div>
             </div>
             <div class="post-body">
               <div class="post-title">${r.title}</div>
-              <div class="post-desc">${r.desc}</div>
-              <div class= "post-image">
-              <img src ="${r.image}" width="250px" height="auto">
+              <div class="post-location">
+                <span class="location-icon">📍</span>
+                <span class="location-text">${
+                  r.location || "Location not specified"
+                }</span>
               </div>
+              <div class="post-desc">${r.desc}</div>
+              ${
+                r.image
+                  ? `
+                <div class="post-image-container">
+                  <img src="${r.image}" class="post-image" alt="Report image">
+                </div>
+              `
+                  : ""
+              }
             </div>
             <div class="actions">
-              <button class="like-btn ${
+              <button class="action-btn like-btn ${
                 r.liked ? "liked" : ""
-              }" onclick="toggleLike(${index})">❤️ ${r.likes}</button>
-             <button class="Comment-div" onclick="toggleComments(${index})">💬 ${
-        r.comments.length
-      }</button>
+              }" onclick="toggleLike(${index})">
+                <span class="action-icon">❤️</span>
+                <span class="action-count">${r.likes}</span>
+              </button>
+              <button class="action-btn comment-btn" onclick="toggleComments(${index})">
+                <span class="action-icon">💬</span>
+                <span class="action-count">${r.comments.length}</span>
+              </button>
             </div>
-            <div class="comments" id = "comments-${index}" style="display:none;">
-              ${r.comments
-                .map((c) => `<div class="comment">${c}</div>`)
-                .join("")}
+            <div class="comments-section" id="comments-${index}" style="display:none;">
+              <div class="comments-header">
+                <span class="comments-title">Comments (${
+                  r.comments.length
+                })</span>
+              </div>
+              <div class="comments-list">
+                ${r.comments
+                  .map(
+                    (c) => `
+                    <div class="comment-item">
+                      <div class="comment-avatar">
+                        <img src="/static/images/profile.png" alt="User" class="comment-user-avatar">
+                      </div>
+                      <div class="comment-content">
+                        <div class="comment-author">${
+                          c.added_by?.username || "Anonymous"
+                        }</div>
+                        <div class="comment-text">${c.comment || c}</div>
+                        <div class="comment-time">${
+                          c.time ? formatTimeAgo(c.time) : "Just now"
+                        }</div>
+                      </div>
+                    </div>
+                  `
+                  )
+                  .join("")}
+                ${
+                  r.comments.length === 0
+                    ? `
+                  <div class="no-comments">
+                    <span class="no-comments-text">No comments yet. Be the first to comment!</span>
+                  </div>
+                `
+                    : ""
+                }
+              </div>
             </div>
-            <div class="comment-input">
-              <input type="text" id="comment-${index}" placeholder="Add a comment...">
-              <button onclick="addComment(${index})">Post</button>
+            <div class="comment-input-section">
+              <div class="comment-input-container">
+                <img src="/static/images/profile.png" alt="You" class="comment-input-avatar">
+                <input type="text" id="comment-${index}" placeholder="Add a comment..." class="comment-input-field">
+                <button onclick="addComment(${index})" class="comment-submit-btn">
+                  <span class="submit-icon">📤</span>
+                </button>
+              </div>
             </div>
           </div>
           `;
@@ -520,8 +586,12 @@ function initReports() {
       .then((data) => {
         console.log("Saved comment:", data);
 
-        // Update UI immediately
-        reports[i].comments.push(data.comment);
+        // Update UI immediately with the new comment structure
+        reports[i].comments.push({
+          comment: data.comment,
+          added_by: data.added_by,
+          time: data.time,
+        });
 
         renderFeed(); // full re-render
         input.value = "";
