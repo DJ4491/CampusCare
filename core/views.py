@@ -49,12 +49,12 @@ def user_reports(request):
             author_id=user_id
         ).values()  # values() is used to get a dict-like queryset
         report_count = reports.count()
-        return JsonResponse({
-            'user_id': user_id,
-            'reports_count': report_count,
-            })  # safe=False allows non-dict objects
-
-
+        return JsonResponse(
+            {
+                "user_id": user_id,
+                "reports_count": report_count,
+            }
+        )  # safe=False allows non-dict objects
 
 
 @require_http_methods(["GET", "POST"])
@@ -310,7 +310,6 @@ def api_notifications(request):
     return JsonResponse(data, safe=False)
 
 
-
 # POST and GET comment objects
 
 
@@ -318,13 +317,15 @@ def api_notifications(request):
 @require_http_methods(["GET", "POST"])
 def api_comments(request):
     if request.method == "GET":
-        comments = Comments.objects.select_related('added_by').all()
+        comments = Comments.objects.select_related("added_by").all()
         data = [
             {
                 "id": comment.id,
                 "added_by": {
                     "id": comment.added_by.id if comment.added_by else None,
-                    "username": comment.added_by.username if comment.added_by else "Anonymous",
+                    "username": (
+                        comment.added_by.username if comment.added_by else "Anonymous"
+                    ),
                 },
                 "report": comment.report.id,
                 "comment": comment.comment,
@@ -352,9 +353,9 @@ def api_comments(request):
 
             # Create the comment with the current user (if authenticated)
             comment = Comments.objects.create(
-                report=report, 
+                report=report,
                 comment=comment_text,
-                added_by=request.user if request.user.is_authenticated else None
+                added_by=request.user if request.user.is_authenticated else None,
             )
 
             return JsonResponse(
@@ -362,7 +363,11 @@ def api_comments(request):
                     "id": comment.id,
                     "added_by": {
                         "id": comment.added_by.id if comment.added_by else None,
-                        "username": comment.added_by.username if comment.added_by else "Anonymous",
+                        "username": (
+                            comment.added_by.username
+                            if comment.added_by
+                            else "Anonymous"
+                        ),
                     },
                     "report": comment.report.id,
                     "comment": comment.comment,
