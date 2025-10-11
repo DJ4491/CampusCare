@@ -10,6 +10,8 @@
     content="54441714223-lgrhr4om2uj3sm2sbialerl2cdhoucj8.apps.googleusercontent.com">
   <title>Campus Connect</title>
   <!-- <link rel="stylesheet" href="{% static 'css/style.css' %}" /> -->
+  {% load compress %}
+  {% compress css %}
   <style>
     /*############################ Loading Screen ########################*/
     #loader {
@@ -1316,6 +1318,7 @@
       margin-top: 20px;
     }
   </style>
+  {% endcompress %}
 </head>
 
 <body>
@@ -1356,16 +1359,19 @@
   </footer>
   </div>
   <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
+  {% compress js %}
   <script src="{% static 'js/script.js' %}"></script>
+  
+  
   <script>
     const mainBtn = document.querySelector('.main-btn');
     const menu = document.querySelector(".menu");
-
+    
     mainBtn.addEventListener("click", () => {
       menu.classList.toggle("open");
       mainBtn.classList.toggle("open");
     });
-
+    
     document.querySelector('.button1').addEventListener('click', () => {
       menu.classList.toggle("open");
       mainBtn.classList.toggle("open");
@@ -1382,24 +1388,26 @@
         mainBtn.classList.remove("open");
       })
     })
-
-
+    
+    
     /*
     document.querySelector('.searchIcon').addEventListener('click',()=>{
-       menu.classList.toggle("open");
+      menu.classList.toggle("open");
       mainBtn.classList.toggle("open");
-    })
-     document.querySelector('.notificationIcon').addEventListener('click',()=>{
-       menu.classList.toggle("open");
-      mainBtn.classList.toggle("open");
-    })
-     document.querySelector('.profileIcon').addEventListener('click',()=>{
-       menu.classList.toggle("open");
-      mainBtn.classList.toggle("open");
-    })
-      */
-
-  </script>
+      })
+      document.querySelector('.notificationIcon').addEventListener('click',()=>{
+        menu.classList.toggle("open");
+        mainBtn.classList.toggle("open");
+        })
+        document.querySelector('.profileIcon').addEventListener('click',()=>{
+          menu.classList.toggle("open");
+          mainBtn.classList.toggle("open");
+          })
+          */
+          
+          </script>
+      {% endcompress %}
+          
 </body>
 
 </html>

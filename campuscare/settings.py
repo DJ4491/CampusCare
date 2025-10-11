@@ -28,11 +28,7 @@ SECRET_KEY = "django-insecure-on!+kwxqk=_)wbz=16v)arjs+zz@&otf^x8pggjs=86j9yp8z9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "campuscare-ehra.onrender.com",
-    "127.0.0.1",
-    ".vercel.app"
-]
+ALLOWED_HOSTS = ["campuscare-ehra.onrender.com", "127.0.0.1", ".vercel.app"]
 
 
 # Application definition
@@ -46,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "campuscare",
+    "compressor",
 ]
 
 # Authentication backends (plural)
@@ -145,6 +142,12 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+#Compressor 
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True  # Important for production (no runtime compression)
+COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_URL = STATIC_URL
+
 # Storing image urls in db
 
 MEDIA_URL = "/media/"
@@ -158,3 +161,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Redirect unauthenticated users here when using @login_required
 LOGIN_URL = "/log_in/"
+
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "compressor.finders.CompressorFinder",
+]
+
+COMPRESS_CSS_FILTERS = [
+    "compressor.filters.css_default.CssAbsoluteFilter",
+    "compressor.filters.cssmin.CSSMinFilter",
+]
+
+COMPRESS_JS_FILTERS = [
+    "compressor.filters.jsmin.JSMinFilter",
+]
