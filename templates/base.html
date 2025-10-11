@@ -10,8 +10,6 @@
     content="54441714223-lgrhr4om2uj3sm2sbialerl2cdhoucj8.apps.googleusercontent.com">
   <title>Campus Connect</title>
   <!-- <link rel="stylesheet" href="{% static 'css/style.css' %}" /> -->
-  {% load compress %}
-  {% compress css %}
   <style>
     /*############################ Loading Screen ########################*/
     #loader {
@@ -1318,7 +1316,7 @@
       margin-top: 20px;
     }
   </style>
-  {% endcompress %}
+
 </head>
 
 <body>
@@ -1359,7 +1357,6 @@
   </footer>
   </div>
   <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
-  {% compress js %}
   <script src="{% static 'js/script.js' %}"></script>
   
   
@@ -1406,7 +1403,7 @@
           */
           
           </script>
-      {% endcompress %}
+
           
 </body>
 

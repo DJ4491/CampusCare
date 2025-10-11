@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "campuscare",
-    "compressor",
 ]
 
 # Authentication backends (plural)
@@ -142,11 +141,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-#Compressor 
-COMPRESS_ENABLED = True
-COMPRESS_OFFLINE = True  # Important for production (no runtime compression)
-COMPRESS_ROOT = STATIC_ROOT
-COMPRESS_URL = STATIC_URL
+
 
 # Storing image urls in db
 
@@ -165,14 +160,4 @@ LOGIN_URL = "/log_in/"
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    "compressor.finders.CompressorFinder",
-]
-
-COMPRESS_CSS_FILTERS = [
-    "compressor.filters.css_default.CssAbsoluteFilter",
-    "compressor.filters.cssmin.CSSMinFilter",
-]
-
-COMPRESS_JS_FILTERS = [
-    "compressor.filters.jsmin.JSMinFilter",
 ]
