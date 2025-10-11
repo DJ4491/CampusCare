@@ -3,6 +3,7 @@ Django==5.2.6
 asgiref==3.9.1
 sqlparse==0.5.3
 tzdata==2025.2
+django-compressor==4.4
 
 # WSGI server for production
 gunicorn==23.0.0
