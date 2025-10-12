@@ -1,0 +1,4 @@
+[build]
+nixpacksVersion = "latest"  # Or specify if needed
+[build nixpacks]
+packages = ['sqlite']
