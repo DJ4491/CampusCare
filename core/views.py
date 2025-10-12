@@ -5,6 +5,7 @@ import random
 from django.conf import settings
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
@@ -57,6 +58,7 @@ def user_reports(request):
         )  # safe=False allows non-dict objects
 
 
+@cache_page(60 * 15)
 @require_http_methods(["GET", "POST"])
 @login_required
 def current_user(request):
@@ -231,6 +233,7 @@ def get_or_create_user(request):
 ## POST and ADD report objects
 
 
+@cache_page(60 * 15)
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 @login_required
@@ -313,6 +316,7 @@ def api_notifications(request):
 # POST and GET comment objects
 
 
+@cache_page(60 * 15)
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def api_comments(request):
@@ -392,6 +396,7 @@ def create(request):
     return render_fragment_or_full(request, "pages/create.html")
 
 
+@cache_page(60 * 15)
 @login_required
 def loader(request):
     return render_fragment_or_full(request, "pages/loader.html")
@@ -415,6 +420,7 @@ def user_profile(request):
     return render_fragment_or_full(request, "pages/user_profile.html")
 
 
+@cache_page(60 * 15)
 @login_required
 def Edit_user_profile(request):
     return render_fragment_or_full(request, "pages/edit_profile.html")
@@ -424,21 +430,25 @@ def log_in(request):
     return render_fragment_or_full(request, "pages/log_in.html")
 
 
+@cache_page(60 * 15)
 @login_required
 def report(request):
     return render_fragment_or_full(request, "pages/report.html")
 
 
+@cache_page(60 * 15)
 @login_required
 def my_reports(request):
     return render_fragment_or_full(request, "pages/my_reports.html")
 
 
+@cache_page(60 * 15)
 @login_required
 def lost_found(request):
     return render_fragment_or_full(request, "pages/lost_found.html")
 
 
+@cache_page(60 * 15)
 @login_required
 def create_lost_found(request):
     return render_fragment_or_full(request, "pages/create_lost_found.html")

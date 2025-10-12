@@ -49,6 +49,13 @@
   });
 })();
 
+//remove bottom_menu when needed
+
+function removeBottomMenu() {
+  const bottm_menu = document.getElementById("bottom_menu");
+  bottm_menu.style.display = "none";
+}
+
 // Render dashboard skeleton into the container
 function renderDashboardSkeleton(container) {
   if (!container) return;
@@ -428,10 +435,10 @@ function initReports() {
           if (targetEl) {
             targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
             targetEl.focus();
-            
+
             // Apply prominent highlight effect
             targetEl.classList.add("highlight-target");
-            
+
             // Remove highlight after animation completes
             setTimeout(() => {
               targetEl.blur();
@@ -1250,6 +1257,9 @@ function initializePages() {
   ) {
     initializationState.report = true;
     initCategoryDropdown();
+  }
+  if (path.includes("log_in")) {
+    removeBottomMenu();
   }
 }
 
