@@ -49,17 +49,6 @@
   });
 })();
 
-//remove bottom_menu when needed
-
-function removeBottomMenu() {
-  const bottm_menu = document.getElementById("bottom_menu");
-  bottm_menu.style.visibility = "hidden";
-}
-function RestoreBottomMenu() {
-  const bottm_menu = document.getElementById("bottom_menu");
-  bottm_menu.style.visibility = "visible";
-}
-
 // Render dashboard skeleton into the container
 function renderDashboardSkeleton(container) {
   if (!container) return;
@@ -327,14 +316,6 @@ function loadpage(page) {
   let content = document.getElementById("main-content");
   let loader = document.getElementById("loader");
   const home = document.getElementById("home-icon");
-  
-  // Handle bottom menu visibility based on page
-  if (page === "log_in" || page === "login") {
-    removeBottomMenu();
-  } else {
-    RestoreBottomMenu();
-  }
-  
   if (page === "") {
     home.removeAttribute("onclick");
   }
@@ -447,10 +428,10 @@ function initReports() {
           if (targetEl) {
             targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
             targetEl.focus();
-
+            
             // Apply prominent highlight effect
             targetEl.classList.add("highlight-target");
-
+            
             // Remove highlight after animation completes
             setTimeout(() => {
               targetEl.blur();
@@ -1222,15 +1203,6 @@ function initializePages() {
   Object.keys(initializationState).forEach((key) => {
     initializationState[key] = false;
   });
-
-  // Check for login page first and hide bottom menu
-  if (path.includes("log_in") || path.includes("login")) {
-    removeBottomMenu();
-    return; // Exit early for login page
-  }
-
-  // For all other pages, ensure bottom menu is visible
-  RestoreBottomMenu();
 
   if (path.includes("") || (path.includes("/") && !initializationState.home)) {
     initializationState.home = true;

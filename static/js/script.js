@@ -50,14 +50,18 @@
 })();
 
 //remove bottom_menu when needed
-
 function removeBottomMenu() {
   const bottm_menu = document.getElementById("bottom_menu");
-  bottm_menu.style.visibility = "hidden";
+  if (bottm_menu) {
+    bottm_menu.style.visibility = "hidden";
+  }
 }
+
 function RestoreBottomMenu() {
   const bottm_menu = document.getElementById("bottom_menu");
-  bottm_menu.style.visibility = "visible";
+  if (bottm_menu) {
+    bottm_menu.style.visibility = "visible";
+  }
 }
 
 // Render dashboard skeleton into the container
