@@ -331,14 +331,14 @@ function loadpage(page) {
   let content = document.getElementById("main-content");
   let loader = document.getElementById("loader");
   const home = document.getElementById("home-icon");
-  
+
   // Handle bottom menu visibility based on page
   if (page === "log_in" || page === "login") {
     removeBottomMenu();
   } else {
     RestoreBottomMenu();
   }
-  
+
   if (page === "") {
     home.removeAttribute("onclick");
   }
