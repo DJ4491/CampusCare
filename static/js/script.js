@@ -408,7 +408,15 @@ window.addEventListener("popstate", () => {
 //@important:-  ############################## Report Feed ####################################
 
 function initReports() {
+  const feed = document.getElementById("feed");
   let reports = [];
+  const cached = localStorage.getItem("reports_with_comments");
+
+  if (cached) {
+    reports = JSON.parse(cached);
+    renderFeed(reports);
+  }
+
   Promise.all([
     fetch("/api/reports/").then((res) => res.json()), //Once you get the response from the server, parse it as JSON so we can use it  in our JavaScript code
     fetch("/api/comments/").then((res) => res.json()),
@@ -436,13 +444,19 @@ function initReports() {
         author: r.author && r.author.username ? r.author.username : "Anonymous", // fallback if missing
       }));
 
+      //caching the fresh version
+
       console.log("Reports with comments:", reports);
       renderFeed(reports); // pass reports into your feed renderer
+      localStorage.setItem("reports_with_comments", JSON.stringify(reports));
 
-      // Update time display every minute
-      setInterval(() => {
-        renderFeed();
-      }, 60000); // 60000ms = 1 minute
+      // Updating time display every minute
+      // 60000ms = 1 minute
+      if (!window._reportsTimer) {
+        window._reportsTimer = setInterval(() => {
+          renderFeed();
+        }, 60000);
+      }
 
       // If navigation specified a target post, scroll/highlight once items are in DOM
       if (window.__targetPostId) {
@@ -466,7 +480,6 @@ function initReports() {
       }
     })
     .catch((err) => console.error("Error loading reports or comments:", err));
-  const feed = document.getElementById("feed");
 
   function renderFeed() {
     feed.innerHTML = "";
@@ -985,7 +998,7 @@ function initNotifications() {
       post_notification.className = "post_notification";
       post_notification.innerHTML = `
         <div class="noti_list">
-        <a class="noti_item unread" href="#">
+        <a class="noti_item unread">
           <div class="noti_icon">
             <img src="${n.type_icon}" alt="" width="30" height="30" />
           </div>

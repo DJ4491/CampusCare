@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import random
 from django.conf import settings
+from django.views.decorators.cache import cache_page
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -393,6 +394,7 @@ def create(request):
 
 
 @login_required
+@cache_page(60 * 5)
 def loader(request):
     return render_fragment_or_full(request, "pages/loader.html")
 
@@ -416,6 +418,7 @@ def user_profile(request):
 
 
 @login_required
+@cache_page(60 * 5)
 def Edit_user_profile(request):
     return render_fragment_or_full(request, "pages/edit_profile.html")
 
@@ -425,6 +428,7 @@ def log_in(request):
 
 
 @login_required
+@cache_page(60 * 5)
 def report(request):
     return render_fragment_or_full(request, "pages/report.html")
 
@@ -440,5 +444,6 @@ def lost_found(request):
 
 
 @login_required
+@cache_page(60 * 5)
 def create_lost_found(request):
     return render_fragment_or_full(request, "pages/create_lost_found.html")
