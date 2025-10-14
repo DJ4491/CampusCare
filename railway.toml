@@ -2,4 +2,6 @@
 nixpacksVersion = "latest"
 
 [build.nixpacks]
-packages = ["sqlite"]
+packages = ["postgresql"]
+
+# The database section is removed as Railway Builder manages this automatically.
