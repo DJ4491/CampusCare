@@ -31,9 +31,7 @@ class User(AbstractUser):
     # Configure authentication fields
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
-    pfp = models.URLField(
-        default="/static/images/profile.png"
-    )
+    pfp = models.URLField(default="/static/images/profile.png")
     aboutme = models.TextField(default="", blank=True)
 
     def __str__(self):
@@ -44,8 +42,8 @@ class User(AbstractUser):
 class Report(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     avatar = models.URLField()
-    category = models.CharField(default="")
-    location = models.CharField(default="")
+    category = models.CharField(default="", max_length=255)
+    location = models.CharField(default="", max_length=255)
     title = models.CharField(max_length=100)
     time = models.DateTimeField(default=timezone.now)
     desc = models.TextField(default="")
@@ -60,7 +58,7 @@ class Comments(models.Model):
     added_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
     comment = models.TextField(default="", blank=True)
-    
+
     def __str__(self):
         if self.added_by:
             return f"{self.added_by.username}: {self.comment[:50]}..."

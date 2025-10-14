@@ -95,10 +95,14 @@ WSGI_APPLICATION = "campuscare.wsgi.application"
 #         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
-
-if os.getenv("RAILWAY_ENVIRONMENT"):  # running on Railway
-    DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
-else:  # local development
+print(os.getenv("DATABASE_URL"))  # Check if this outputs the correct value in the logs
+if os.getenv("RAILWAY_ENVIRONMENT"):  # Running on Railway
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.getenv("DATABASE_URL")  # Ensure DATABASE_URL is set on Railway
+        )
+    }
+else:  # Local development
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
