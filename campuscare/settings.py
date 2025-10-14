@@ -98,10 +98,9 @@ WSGI_APPLICATION = "campuscare.wsgi.application"
 print(os.getenv("DATABASE_URL"))  # Check if this outputs the correct value in the logs
 if os.getenv("RAILWAY_ENVIRONMENT"):  # Running on Railway
   DATABASES = {
-    "default": dj_database_url.config(
-        default="postgresql://postgres:EiDiDOJpoEcCZRjDhyaDEgLuCuDJnbgB@postgres.railway.internal:5432/railway"
-    )
+    "default": dj_database_url.config(default=os.getenv("DATABASE_URL"))
 }
+
 else:  # Local development
     DATABASES = {
         "default": {
