@@ -1102,14 +1102,7 @@ function initEditUserProfile() {
   const emailInput = document.getElementById("email");
   const aboutMeInput = document.getElementById("aboutme");
 
-  if (
-    !form ||
-    !inputImage ||
-    !profilePic ||
-    !usernameInput ||
-    !emailInput ||
-    !aboutMeInput
-  ) {
+  if (!form || !inputImage || !profilePic || !usernameInput ||!emailInput ||!aboutMeInput) {
     console.warn(
       "Edit profile elements not found; skipping initEditUserProfile"
     );
@@ -1119,11 +1112,20 @@ function initEditUserProfile() {
   inputImage.addEventListener("change", (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    const imageUrl = URL.createObjectURL(file);
-    profilePic.src = imageUrl;
-    profilePic.onload = () => {
-      URL.revokeObjectURL(imageUrl);
-    };
+    // Prefer FileReader for broader Android WebView support; fallback to object URL.
+    try {
+      const reader = new FileReader();
+      reader.onload = () => {
+        profilePic.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      const imageUrl = URL.createObjectURL(file);
+      profilePic.src = imageUrl;
+      profilePic.onload = () => {
+        URL.revokeObjectURL(imageUrl);
+      };
+    }
   });
   form.addEventListener("submit", (e) => {
     e.preventDefault();

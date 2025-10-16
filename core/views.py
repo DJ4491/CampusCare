@@ -389,11 +389,6 @@ def home(request):
 
 
 @login_required
-def create(request):
-    return render_fragment_or_full(request, "pages/create.html")
-
-
-@login_required
 @cache_page(60 * 5)
 def loader(request):
     return render_fragment_or_full(request, "pages/loader.html")
@@ -418,7 +413,6 @@ def user_profile(request):
 
 
 @login_required
-@cache_page(60 * 5)
 def Edit_user_profile(request):
     return render_fragment_or_full(request, "pages/edit_profile.html")
 

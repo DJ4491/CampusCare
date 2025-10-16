@@ -95,7 +95,7 @@ WSGI_APPLICATION = "campuscare.wsgi.application"
 #         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
-print(os.getenv("DATABASE_URL"))  # Check if this outputs the correct value in the logs
+# print(os.getenv("DATABASE_URL"))  # Check if this outputs the correct value in the logs
 if os.getenv("RAILWAY_ENVIRONMENT"):  # Running on Railway
   DATABASES = {
     "default": dj_database_url.config(default=os.getenv("DATABASE_URL"))
