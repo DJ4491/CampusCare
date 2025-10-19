@@ -292,8 +292,8 @@ function initCategoryDropdown() {
     const description = document.getElementById("desc").value.trim();
     const fileInput = document.getElementById("photoInput");
     const file =
-      fileInput && fileInput.files && fileInput.files[0]
-        ? fileInput.files[0]
+      fileInput && fileInput.files && fileInput.files[0]    // Checks if all are truthy (i.e., not null or undefined).
+        ? fileInput.files[0] 
         : null;
 
     const formData = new FormData();
@@ -1102,7 +1102,14 @@ function initEditUserProfile() {
   const emailInput = document.getElementById("email");
   const aboutMeInput = document.getElementById("aboutme");
 
-  if (!form || !inputImage || !profilePic || !usernameInput ||!emailInput ||!aboutMeInput) {
+  if (
+    !form ||
+    !inputImage ||
+    !profilePic ||
+    !usernameInput ||
+    !emailInput ||
+    !aboutMeInput
+  ) {
     console.warn(
       "Edit profile elements not found; skipping initEditUserProfile"
     );
