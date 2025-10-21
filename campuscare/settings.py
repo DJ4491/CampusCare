@@ -14,9 +14,6 @@ import os
 import dj_database_url
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # from telnetlib import AUTHENTICATION
 
@@ -36,11 +33,8 @@ SECRET_KEY = "django-insecure-on!+kwxqk=_)wbz=16v)arjs+zz@&otf^x8pggjs=86j9yp8z9
 # Enable DEBUG locally; disable on Railway/production
 
 DEBUG = True
-# "campuscare-ehra.onrender.com",
-#     "127.0.0.1",
-#     ".railway.app",
-#     "campuscare-production-e8a0.up.railway.app",
-ALLOWED_HOSTS = ["*"]
+
+ALLOWED_HOSTS = ["campuscare-ehra.onrender.com", "127.0.0.1"]
 
 
 # Application definition
@@ -110,25 +104,14 @@ WSGI_APPLICATION = "campuscare.wsgi.application"
 # if os.getenv("RAILWAY_ENVIRONMENT"):  # Running on Railway
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT"),
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
 }
-# else:  # Local development
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.sqlite3",
-#             "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-#         }
-#     }
 
 
 # Password validation
-
+# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
