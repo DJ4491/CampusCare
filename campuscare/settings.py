@@ -27,7 +27,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-on!+kwxqk=_)wbz=16v)arjs+zz@&otf^x8pggjs=86j9yp8z9"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# Enable DEBUG locally; disable on Railway/production
+if os.getenv("RAILWAY_ENVIRONMENT"):
+    DEBUG = False
+else:
+    DEBUG = True
 
 ALLOWED_HOSTS = ["campuscare-ehra.onrender.com", "127.0.0.1", ".railway.app","campuscare-production-e8a0.up.railway.app"]
 
@@ -171,10 +175,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Redirect unauthenticated users here when using @login_required
 LOGIN_URL = "/log_in/"
 
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-]
+# STATICFILES_FINDERS = [
+#     "django.contrib.staticfiles.finders.FileSystemFinder",
+#     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+# ]
 
 # Caching
 

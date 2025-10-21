@@ -48,7 +48,7 @@ class Report(models.Model):
     time = models.DateTimeField(default=timezone.now)
     desc = models.TextField(default="")
     likes = models.IntegerField(default=0)
-    image = models.ImageField(upload_to="media/", default="")
+    image = models.ImageField(upload_to="", default="")
 
     def __str__(self):
         return self.title
