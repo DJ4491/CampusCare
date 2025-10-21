@@ -34,10 +34,8 @@ SECRET_KEY = "django-insecure-on!+kwxqk=_)wbz=16v)arjs+zz@&otf^x8pggjs=86j9yp8z9
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Enable DEBUG locally; disable on Railway/production
-if os.getenv("RAILWAY_ENVIRONMENT"):
-    DEBUG = False
-else:
-    DEBUG = True
+
+DEBUG = True
 # "campuscare-ehra.onrender.com",
 #     "127.0.0.1",
 #     ".railway.app",
@@ -113,11 +111,11 @@ WSGI_APPLICATION = "campuscare.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT"),
     }
 }
 # else:  # Local development
