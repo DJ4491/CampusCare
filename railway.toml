@@ -1,7 +1,0 @@
-[build]
-nixpacksVersion = "latest"
-
-[build.nixpacks]
-packages = ["postgresql"]
-
-# The database section is removed as Railway Builder manages this automatically.
