@@ -14,6 +14,10 @@ import os
 import dj_database_url
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # from telnetlib import AUTHENTICATION
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,14 +30,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-on!+kwxqk=_)wbz=16v)arjs+zz@&otf^x8pggjs=86j9yp8z9"
 
+# DB_DEBUG = os.getenv("DB_LIVE")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 # Enable DEBUG locally; disable on Railway/production
 if os.getenv("RAILWAY_ENVIRONMENT"):
     DEBUG = False
 else:
     DEBUG = True
-
-ALLOWED_HOSTS = ["campuscare-ehra.onrender.com", "127.0.0.1", ".railway.app","campuscare-production-e8a0.up.railway.app"]
+# "campuscare-ehra.onrender.com",
+#     "127.0.0.1",
+#     ".railway.app",
+#     "campuscare-production-e8a0.up.railway.app",
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -100,18 +109,24 @@ WSGI_APPLICATION = "campuscare.wsgi.application"
 #     }
 # }
 # print(os.getenv("DATABASE_URL"))  # Check if this outputs the correct value in the logs
-if os.getenv("RAILWAY_ENVIRONMENT"):  # Running on Railway
-  DATABASES = {
-    "default": dj_database_url.config(default=os.getenv("DATABASE_URL"))
-}
-
-else:  # Local development
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-        }
+# if os.getenv("RAILWAY_ENVIRONMENT"):  # Running on Railway
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
+}
+# else:  # Local development
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+#         }
+#     }
 
 
 # Password validation
@@ -166,6 +181,12 @@ STATICFILES_DIRS = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+# Cloud Storage
+# DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+# AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+# AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+# AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+# MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
