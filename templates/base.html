@@ -1472,6 +1472,183 @@
       font-size: 14px;
       margin-top: 20px;
     }
+
+    /*########################## Profile Skeleton Loading ###############################*/
+    
+    /* Profile skeleton container */
+    .profile_skeleton {
+      animation: slideUpFade 720ms cubic-bezier(0.2, 0.65, 0.2, 1) both;
+    }
+
+    /* Profile picture skeleton */
+    .pfp_skeleton {
+      width: 120px;
+      height: 120px;
+      border-radius: 22%;
+      background: #e5e7eb;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pfp_skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    /* Username skeleton */
+    .username_skeleton {
+      height: 20px;
+      width: 40px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .username_skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    /* Edit button skeleton */
+    .edit_btn_skeleton {
+      width: 40px;
+      height: 40px;
+      background: #e5e7eb;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .edit_btn_skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    /* About section skeleton */
+    .about_head_skeleton {
+      height: 18px;
+      width: 60px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about_head_skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    .about_text_skeleton {
+      height: 16px;
+      width: 100%;
+      background: #e5e7eb;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about_text_skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    /* Detail row skeletons */
+    .detail_label_skeleton {
+      height: 14px;
+      width: 80px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .detail_label_skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    .detail_value_skeleton {
+      height: 14px;
+      width: 120px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .detail_value_skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    /* Staggered animation delays for profile skeleton elements */
+    .profile_skeleton .pfp_skeleton {
+      animation-delay: 0ms;
+    }
+
+    .profile_skeleton .username_skeleton {
+      animation-delay: 120ms;
+    }
+
+    .profile_skeleton .edit_btn_skeleton {
+      animation-delay: 240ms;
+    }
+
+    .profile_skeleton .about_head_skeleton {
+      animation-delay: 360ms;
+    }
+
+    .profile_skeleton .about_text_skeleton {
+      animation-delay: 480ms;
+    }
+
+    .profile_skeleton .detail_label_skeleton:nth-child(1) {
+      animation-delay: 600ms;
+    }
+
+    .profile_skeleton .detail_value_skeleton:nth-child(2) {
+      animation-delay: 720ms;
+    }
+
+    .profile_skeleton .detail_label_skeleton:nth-child(3) {
+      animation-delay: 840ms;
+    }
+
+    .profile_skeleton .detail_value_skeleton:nth-child(4) {
+      animation-delay: 960ms;
+    }
   </style>
 
 </head>
