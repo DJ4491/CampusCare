@@ -8,26 +8,36 @@
       <!-- keeps title centered -->
     </div>
     <div class="msg_wrapper" id="msg_wrapper">
-        <!-- <a class="noti_item" href="#">
-            <div class="noti_icon">
-              <img src="{% static 'images/add-fill.svg' %}" alt="" width="20" height="20" />
-            </div>
-            <div class="noti_content">
-              <p class="noti_title">Report submitted successfully</p>
-              <p class="noti_body">We’ll notify you as soon as there’s an update.</p>
-              <span class="noti_meta">Yesterday</span>
-            </div>
-          </a>
-          <a class="noti_item" href="#">
-            <div class="noti_icon">
-              <img src="{% static 'images/help.png' %}" alt="" width="20" height="20" />
-            </div>
-            <div class="noti_content">
-              <p class="noti_title">Tips for faster resolutions</p>
-              <p class="noti_body">Add a clear description and location details.</p>
-              <span class="noti_meta">2 days ago</span>
-            </div>
-          </a> -->
+        <!-- Skeleton loading items -->
+        <div class="noti_skeleton_item" id="skeleton-1">
+          <div class="noti_skeleton_icon"></div>
+          <div class="noti_skeleton_content">
+            <div class="noti_skeleton_title"></div>
+            <div class="noti_skeleton_body"></div>
+            <div class="noti_skeleton_meta"></div>
+          </div>
+        </div>
+        
+        <div class="noti_skeleton_item" id="skeleton-2">
+          <div class="noti_skeleton_icon"></div>
+          <div class="noti_skeleton_content">
+            <div class="noti_skeleton_title"></div>
+            <div class="noti_skeleton_body"></div>
+            <div class="noti_skeleton_meta"></div>
+          </div>
+        </div>
+        
+        <div class="noti_skeleton_item" id="skeleton-3">
+          <div class="noti_skeleton_icon"></div>
+          <div class="noti_skeleton_content">
+            <div class="noti_skeleton_title"></div>
+            <div class="noti_skeleton_body"></div>
+            <div class="noti_skeleton_meta"></div>
+          </div>
+        </div>
+        
+        <!-- Content will be injected here by JavaScript -->
+        <div id="notifications-content" class="skeleton-hidden"></div>
     </div>
     <div class="noti_empty" hidden>
       <img

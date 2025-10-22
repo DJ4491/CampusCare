@@ -292,8 +292,8 @@ function initCategoryDropdown() {
     const description = document.getElementById("desc").value.trim();
     const fileInput = document.getElementById("photoInput");
     const file =
-      fileInput && fileInput.files && fileInput.files[0]    // Checks if all are truthy (i.e., not null or undefined).
-        ? fileInput.files[0] 
+      fileInput && fileInput.files && fileInput.files[0] // Checks if all are truthy (i.e., not null or undefined).
+        ? fileInput.files[0]
         : null;
 
     const formData = new FormData();

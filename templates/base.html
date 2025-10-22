@@ -481,7 +481,12 @@
       animation: slideUpFade 620ms cubic-bezier(0.2, 0.65, 0.2, 1) both;
       animation-delay: 0ms;
     }
-
+    .screen-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
     .floattext {
       width: 100%;
       padding: 20px;
@@ -1078,6 +1083,155 @@
 
     .empty_body {
       font-size: 14px;
+    }
+
+    /*########################## Notification Skeleton Loading ###############################*/
+    
+    /* Skeleton notification item */
+    .noti_skeleton_item {
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+      padding: 12px;
+      background: linear-gradient(135deg, #ffffff, #f8fafc);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 14px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      animation: slideUpFade 720ms cubic-bezier(0.2, 0.65, 0.2, 1) both;
+    }
+
+    /* Skeleton icon placeholder */
+    .noti_skeleton_icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #e5e7eb;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .noti_skeleton_icon::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    /* Skeleton content container */
+    .noti_skeleton_content {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 8px;
+    }
+
+    /* Skeleton title placeholder */
+    .noti_skeleton_title {
+      height: 16px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      width: 70%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .noti_skeleton_title::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    /* Skeleton body placeholder */
+    .noti_skeleton_body {
+      height: 14px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      width: 85%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .noti_skeleton_body::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    /* Skeleton meta placeholder */
+    .noti_skeleton_meta {
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      width: 40%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .noti_skeleton_meta::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #e5e7eb 40%, #f3f4f6 60%, #e5e7eb 80%);
+      transform: translateX(-100%);
+      animation: skeletonShimmer 1.4s infinite;
+    }
+
+    /* Shimmer animation for skeleton loading */
+    @keyframes skeletonShimmer {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    /* Staggered animation delays for skeleton items */
+    .noti_skeleton_item:nth-child(1) {
+      animation-delay: 0ms;
+    }
+
+    .noti_skeleton_item:nth-child(2) {
+      animation-delay: 120ms;
+    }
+
+    .noti_skeleton_item:nth-child(3) {
+      animation-delay: 240ms;
+    }
+
+    /* Fade transition for content reveal */
+    .noti_content_reveal {
+      animation: contentReveal 400ms ease both;
+    }
+
+    @keyframes contentReveal {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Hide skeleton when content loads */
+    .skeleton-hidden {
+      display: none !important;
+    }
+
+    /* Show content when loaded */
+    .content-loaded {
+      display: block !important;
     }
 
     @keyframes slideUpFade {
