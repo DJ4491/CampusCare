@@ -14,6 +14,7 @@ import json
 from .models import Report, Comments, Notification, User, Like
 
 
+
 def is_ajax(request):
     return request.headers.get("x-requested-with") == "XMLHttpRequest"
 
@@ -228,6 +229,29 @@ def get_or_create_user(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
+# Like Notifications
+
+def create_like_notification(liker_user, report):
+    """
+    Create a notification when a user likes a report.
+    The notification goes to the report author (if different from the liker).
+    """
+    # Don't notify if user likes their own report
+    if liker_user.id == report.author.id:
+        return None
+    
+    # Create notification for the report author
+    notification = Notification.objects.create(
+        user=report.author,  # The report author receives the notification
+        type_icon="/static/images/upvote_anim.webm",  # WebM animation will now work
+        title="New Upvote",
+        desc=f"{liker_user.username} upvoted your report",
+        related_report=report,
+        related_user=liker_user
+    )
+    return notification
+
+
 
 ## POST and ADD report objects
 
@@ -291,6 +315,9 @@ def api_reports(request):
                             Like.objects.create(user=user, report=report)
                             report.likes += 1
                             report.save()
+                            
+                            # Create notification for the report author
+                            create_like_notification(user, report)
                             
                         elif action == "unlike":
                             # Check if user has liked this report
@@ -368,8 +395,25 @@ def get_media_image_url(request, image_name):
     return JsonResponse({"image_url": image_url})
 
 
+@login_required
 def api_notifications(request):
-    data = list(Notification.objects.all().values())
+    # Filter notifications for the current user only
+    user_notifications = Notification.objects.filter(user=request.user).order_by('-time')
+    data = []
+    for notification in user_notifications:
+        data.append({
+            "id": notification.id,
+            "type_icon": notification.type_icon,
+            "title": notification.title,
+            "desc": notification.desc,
+            "time": notification.time,
+            "Latest": notification.Latest,
+            "related_report_id": notification.related_report.id if notification.related_report else None,
+            "related_user": {
+                "id": notification.related_user.id if notification.related_user else None,
+                "username": notification.related_user.username if notification.related_user else None,
+            } if notification.related_user else None
+        })
     return JsonResponse(data, safe=False)
 
 
@@ -484,7 +528,6 @@ def log_in(request):
 
 
 @login_required
-@cache_page(60 * 5)
 def report(request):
     return render_fragment_or_full(request, "pages/report.html")
 

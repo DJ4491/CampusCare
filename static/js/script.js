@@ -546,7 +546,7 @@ function initReports() {
             <div class="container">
             <div class="post-header">
               <img src="${
-                r.avatar || "/static/images/profile.png"
+                r.avatar || "{% static 'images/profile.svg' %}"
               }" class="avatar" alt="Profile">
               <div class="post-meta">
                 <div class="author">${r.author}</div>
@@ -581,7 +581,7 @@ function initReports() {
               <button class="action-btn like-btn ${
                 r.user_liked ? "liked" : ""
               }" onclick="toggleLike(${index})">
-                <span class="action-icon">❤️</span>
+                <span class="action-icon"><img src="/static/images/upvote.svg" alt="Upvote" style="width:35px; height:35px; vertical-align:middle;"/></span>
                 <span class="action-count">${r.likes}</span>
               </button>
               <button class="action-btn comment-btn" onclick="toggleComments(${index})">
@@ -1090,7 +1090,10 @@ function initNotifications() {
         <div class="noti_list">
         <a class="noti_item unread">
           <div class="noti_icon">
-            <img src="${n.type_icon}" alt="" width="30" height="30" />
+            ${n.type_icon.endsWith('.webm') 
+              ? `<video autoplay muted loop width="30" height="30"><source src="${n.type_icon}" type="video/webm"></video>`
+              : `<img src="${n.type_icon}" alt="" width="30" height="30" />`
+            }
           </div>
           <div class="noti_content">
             <p class="noti_title">${n.title}</p>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Notification, Report, Comments, User
+from .models import Notification, Report, Comments, User, Like
 
 
 # Register your models here.
@@ -10,6 +10,8 @@ class NotificationsAdmin(admin.ModelAdmin):
     search_fields = ("title", "desc")
     list_filter = ("time", "Latest")
 
+
 admin.site.register(Report)
 admin.site.register(Comments)
 admin.site.register(User)
+admin.site.register(Like)

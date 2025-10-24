@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.db.models import Deferrable, UniqueConstraint
 
 
 # Using Django's built-in AbstractUser for extensibility and authentication
@@ -73,19 +74,27 @@ class Like(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
 
-    class Meta:
-        unique_together = ("user", "report")  # Prevent duplicate likes
+    # class Meta:
+    #     unique_together = ("user", "report")  
+    class Meta:  # is a nested class within a model that provides metadata (data about data) about the model. It's used to define various options and constraints that affect the model's behavior, database schema, and interactions.
+        constraints = [
+            models.UniqueConstraint(fields=["user", "report"], name="UniqueLikes")  # Prevent duplicate likes
+        ]
 
     def __str__(self):
-        return f"{self.user.username} liked {self.report.title}"
+        return f"{self.user.username} Upvoted {self.report.title}"
 
 
 class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # User who receives the notification
     type_icon = models.URLField()
     title = models.CharField(max_length=50)
     desc = models.TextField(default="")
     time = models.DateTimeField(default=timezone.now)
     Latest = models.IntegerField(default=0)
+    # Optional: Add fields to track what triggered the notification
+    related_report = models.ForeignKey(Report, on_delete=models.CASCADE, null=True, blank=True)
+    related_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='notification_trigger')
 
     def __str__(self):
         return self.title

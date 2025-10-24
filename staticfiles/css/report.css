@@ -282,6 +282,11 @@ body {
     color: #be185d;
 }
 
+.category-badge.lab {
+    background: #96f3e7bb;
+    color: #0ea5e9;
+}
+
 .category-badge.other {
     background: #f1f5f9;
     color: #475569;
