@@ -39,8 +39,8 @@ The app is accessible both via **web browser** and as a **mobile app (WebView)**
 ## 📂 Project Structure
 
 ```
-CampusApp/
-│── backend/              # Flask backend
+CampusCareApp/
+│── /              # Flask backend
 │   ├── app.py            # Main Flask app
 │   ├── models.py         # Database models
 │   ├── templates/        # HTML templates (Jinja2)

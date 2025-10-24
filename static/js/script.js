@@ -654,11 +654,11 @@ function initReports() {
     const reportId = reports[i].id;
     const currentLiked = reports[i].user_liked;
     const action = currentLiked ? "unlike" : "like";
-    
+
     // Optimistic update
     reports[i].user_liked = !currentLiked;
     reports[i].likes += currentLiked ? -1 : 1;
-    
+
     fetch("/api/reports/", {
       method: "POST",
       headers: { "Content-type": "application/json" },
@@ -1090,9 +1090,10 @@ function initNotifications() {
         <div class="noti_list">
         <a class="noti_item unread">
           <div class="noti_icon">
-            ${n.type_icon.endsWith('.webm') 
-              ? `<video autoplay muted loop width="30" height="30"><source src="${n.type_icon}" type="video/webm"></video>`
-              : `<img src="${n.type_icon}" alt="" width="30" height="30" />`
+            ${
+              n.type_icon.endsWith(".webm")
+                ? `<video autoplay muted loop width="30" height="30"><source src="${n.type_icon}" type="video/webm"></video>`
+                : `<img src="${n.type_icon}" alt="" width="30" height="30" />`
             }
           </div>
           <div class="noti_content">

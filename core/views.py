@@ -1,4 +1,5 @@
 # core/views.py
+from imp import cache_from_source
 from django.shortcuts import render
 from django.http import JsonResponse
 import random
@@ -285,7 +286,7 @@ def api_reports(request):
                 "time": r.time,
                 "desc": r.desc,
                 "likes": r.likes,
-                "user_liked": user_liked,  # Add this field
+                "user_liked": user_liked,  # This returns true or false depending upon the condition 
                 "image": r.image.url if r.image else "",
             })
         return JsonResponse(data, safe=False)
@@ -295,12 +296,17 @@ def api_reports(request):
             if request.content_type == "application/json":
                 data = json.loads(request.body)
                 report_id = data.get("report_id")
-                action = data.get("action")  # "like" or "unlike"
+                # This retrieves the 'action' the user wants to perform (either "like" or "unlike")
+                action = data.get("action")
                 
+                # This statement checks whether a valid report_id is provided
+                # and if the requested action is either "like" or "unlike".
+                # Only in this case does the API continue to process the like/unlike logic;
+                # otherwise, it will return an error.
                 if report_id and action in ["like", "unlike"]:
                     try:
-                        user = request.user
-                        report = Report.objects.get(id=report_id)
+                        user = request.user # Current User 
+                        report = Report.objects.get(id=report_id)  # Which Report by ID
                         
                         if action == "like":
                             # Check if user already liked this report
