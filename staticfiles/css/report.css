@@ -536,17 +536,23 @@ body {
 /* Animations */
 @keyframes highlightPulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(54, 165, 255, 0.7); /* campuscare blue */
+        box-shadow: 0 0 0 0 rgba(54, 165, 255, 0.7);
+        /* campuscare blue */
         transform: scale(1);
     }
+
     33% {
-        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0.25); /* campuscare red */
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0.25);
+        /* campuscare red */
         transform: scale(1.02);
     }
+
     66% {
-        box-shadow: 0 0 0 18px rgba(54, 165, 255, 0.2); /* campuscare blue */
+        box-shadow: 0 0 0 18px rgba(54, 165, 255, 0.2);
+        /* campuscare blue */
         transform: scale(1.01);
     }
+
     100% {
         box-shadow: 0 0 0 0 rgba(54, 165, 255, 0);
         transform: scale(1);
@@ -558,14 +564,17 @@ body {
         box-shadow: 0 0 5px rgba(54, 165, 255, 0.5), 0 0 10px rgba(255, 0, 0, 0.33);
         border-color: #36a5ff;
     }
+
     33% {
         box-shadow: 0 0 16px rgba(255, 0, 0, 0.6), 0 0 10px rgba(54, 165, 255, 0.4);
         border-color: rgba(255, 0, 0, 0.664);
     }
+
     66% {
         box-shadow: 0 0 22px rgba(54, 165, 255, 0.8), 0 0 14px rgba(255, 0, 0, 0.33);
         border-color: #36a5ff;
     }
+
     100% {
         box-shadow: 0 0 5px rgba(54, 165, 255, 0.5), 0 0 10px rgba(255, 0, 0, 0.33);
         border-color: #36a5ff;
@@ -574,7 +583,8 @@ body {
 
 .highlight-target {
     animation: highlightPulse 1.5s ease-in-out;
-    border: 2px solid #36a5ff !important; /* campuscare blue */
+    border: 2px solid #36a5ff !important;
+    /* campuscare blue */
     position: relative;
     z-index: 10;
 }
@@ -586,7 +596,8 @@ body {
     left: -2px;
     right: -2px;
     bottom: -2px;
-    background: linear-gradient(45deg, #36a5ff, rgba(255, 0, 0, 0.664), #36a5ff); /* campuscare theme */
+    background: linear-gradient(45deg, #36a5ff, rgba(255, 0, 0, 0.664), #36a5ff);
+    /* campuscare theme */
     border-radius: inherit;
     z-index: -1;
     animation: highlightGlow 2.3s ease-in-out;

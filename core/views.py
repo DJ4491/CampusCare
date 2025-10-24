@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout, get_user_model
 import json
-from .models import Report, Comments, Notification, User
+from .models import Report, Comments, Notification, User, Like
 
 
 def is_ajax(request):
@@ -238,8 +238,16 @@ def get_or_create_user(request):
 def api_reports(request):
     if request.method == "GET":
         reports = Report.objects.select_related("author").all().order_by("-id")
-        data = [
-            {
+        current_user = request.user
+        
+        data = []
+        for r in reports:
+            # Check if current user has liked this report
+            user_liked = False
+            if current_user.is_authenticated:
+                user_liked = Like.objects.filter(user=current_user, report=r).exists()
+            
+            data.append({
                 "id": r.id,
                 "author": {
                     "id": r.author.id if r.author else None,
@@ -253,14 +261,66 @@ def api_reports(request):
                 "time": r.time,
                 "desc": r.desc,
                 "likes": r.likes,
+                "user_liked": user_liked,  # Add this field
                 "image": r.image.url if r.image else "",
-            }
-            for r in reports
-        ]
+            })
         return JsonResponse(data, safe=False)
     elif request.method == "POST":
         try:
-            # Expecting multipart form data from FormData()
+            # Check if this is a like update request (JSON data)
+            if request.content_type == "application/json":
+                data = json.loads(request.body)
+                report_id = data.get("report_id")
+                action = data.get("action")  # "like" or "unlike"
+                
+                if report_id and action in ["like", "unlike"]:
+                    try:
+                        user = request.user
+                        report = Report.objects.get(id=report_id)
+                        
+                        if action == "like":
+                            # Check if user already liked this report
+                            like_exists = Like.objects.filter(user=user, report=report).exists()
+                            if like_exists:
+                                return JsonResponse(
+                                    {"error": "You have already liked this report"}, 
+                                    status=400
+                                )
+                            
+                            # Create new like
+                            Like.objects.create(user=user, report=report)
+                            report.likes += 1
+                            report.save()
+                            
+                        elif action == "unlike":
+                            # Check if user has liked this report
+                            like_obj = Like.objects.filter(user=user, report=report).first()
+                            if not like_obj:
+                                return JsonResponse(
+                                    {"error": "You haven't liked this report"}, 
+                                    status=400
+                                )
+                            
+                            # Remove like
+                            like_obj.delete()
+                            report.likes = max(0, report.likes - 1)  # Prevent negative likes
+                            report.save()
+                        
+                        return JsonResponse({
+                            "id": report.id, 
+                            "likes": report.likes, 
+                            "action": action,
+                            "success": True
+                        })
+                        
+                    except Report.DoesNotExist:
+                        return JsonResponse({"error": "Report not found"}, status=404)
+                else:
+                    return JsonResponse(
+                        {"error": "Missing report_id or invalid action"}, status=400
+                    )
+
+            # Original report creation logic for form data
             author = request.user
             # sourcing avatar from the current user's profile picture URL
             avatar = getattr(author, "pfp", "")
@@ -269,6 +329,7 @@ def api_reports(request):
             title = request.POST.get("title", "")
             desc = request.POST.get("desc", "")
             image = request.FILES.get("image")
+            likes = request.POST.get("likes", "")
 
             report = Report.objects.create(
                 author=author,
@@ -277,6 +338,7 @@ def api_reports(request):
                 location=location,
                 title=title,
                 desc=desc,
+                likes=likes or 0,
                 image=image or "",
             )
             return JsonResponse(

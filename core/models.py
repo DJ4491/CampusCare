@@ -47,6 +47,9 @@ class Report(models.Model):
     title = models.CharField(max_length=100)
     time = models.DateTimeField(default=timezone.now)
     desc = models.TextField(default="")
+    liked = models.BooleanField(
+        choices=[(True, "True"), (False, "False")], default=False
+    )
     likes = models.IntegerField(default=0)
     image = models.ImageField(upload_to="", default="")
 
@@ -63,6 +66,18 @@ class Comments(models.Model):
         if self.added_by:
             return f"{self.added_by.username}: {self.comment[:50]}..."
         return f"Anonymous: {self.comment[:50]}..."
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    report = models.ForeignKey(Report, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ("user", "report")  # Prevent duplicate likes
+
+    def __str__(self):
+        return f"{self.user.username} liked {self.report.title}"
 
 
 class Notification(models.Model):

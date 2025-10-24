@@ -332,6 +332,16 @@ function loadpage(page) {
   let loader = document.getElementById("loader");
   const home = document.getElementById("home-icon");
 
+  // Reset initialization flags when navigating to a new page
+  window.reportsInitialized = false;
+  window.notificationsInitialized = false;
+  window.userProfileInitialized = false;
+  window.lostFoundInitialized = false;
+  window.createLostFoundInitialized = false;
+  window.searchInitialized = false;
+  window.reportInitialized = false;
+  window.homeInitialized = false;
+
   // Handle bottom menu visibility based on page
   if (page === "log_in" || page === "login") {
     removeBottomMenu();
@@ -407,14 +417,57 @@ window.addEventListener("popstate", () => {
 
 //@important:-  ############################## Report Feed ####################################
 
+function showSkeletonLoading() {
+  const skeletonLoading = document.getElementById("skeleton-loading");
+  if (skeletonLoading) {
+    skeletonLoading.style.display = "block";
+    console.log("Skeleton loading shown");
+  } else {
+    console.error("Skeleton loading element not found!");
+  }
+}
+
+function hideSkeletonLoading() {
+  const skeletonLoading = document.getElementById("skeleton-loading");
+  if (skeletonLoading) {
+    skeletonLoading.style.display = "none";
+    console.log("Skeleton loading hidden");
+  }
+}
+
 function initReports() {
+  console.log("initReports() called");
+
+  // Prevent multiple initializations
+  if (window.reportsInitialized) {
+    console.log("Reports already initialized, skipping...");
+    return;
+  }
+  window.reportsInitialized = true;
+
   const feed = document.getElementById("feed");
   let reports = [];
   const cached = localStorage.getItem("reports_with_comments");
 
+  console.log("Feed element:", feed);
+  console.log("Cached data:", cached ? "exists" : "none");
+
+  // Ensure skeleton is visible
+  showSkeletonLoading();
+
+  // Always show skeleton loading first, even if we have cached data
+  // This ensures skeleton is visible during navigation
   if (cached) {
     reports = JSON.parse(cached);
-    renderFeed(reports);
+    console.log("Will render cached data in 1200ms");
+    // Show skeleton for a minimum duration to ensure it's visible during navigation
+    setTimeout(() => {
+      console.log("Rendering cached data now");
+      hideSkeletonLoading();
+      renderFeed(reports);
+    }, 1200); // Increased to 1200ms to ensure skeleton is visible during navigation
+  } else {
+    console.log("No cached data, will wait for API response");
   }
 
   Promise.all([
@@ -425,12 +478,12 @@ function initReports() {
       // Step 1: Organize comments into a Object grouped by report_id
       console.log("Reports Data:", reportsData);
       console.log("Comments Data:", commentsData);
-      const commentsByReport = {};
+      const commentsByReportID = {};
       commentsData.forEach((c) => {
-        if (!commentsByReport[c.report]) {
-          commentsByReport[c.report] = [];
+        if (!commentsByReportID[c.report]) {
+          commentsByReportID[c.report] = [];
         }
-        commentsByReport[c.report].push({
+        commentsByReportID[c.report].push({
           comment: c.comment,
           added_by: c.added_by,
           time: c.time,
@@ -440,13 +493,15 @@ function initReports() {
       reports = reportsData.map((r) => ({
         ...r,
         liked: false,
-        comments: commentsByReport[r.id] || [],
+        comments: commentsByReportID[r.id] || [],
         author: r.author && r.author.username ? r.author.username : "Anonymous", // fallback if missing
       }));
 
       //caching the fresh version
 
       console.log("Reports with comments:", reports);
+      // Always render fresh data, this will replace any skeleton loading
+      hideSkeletonLoading();
       renderFeed(reports); // pass reports into your feed renderer
       localStorage.setItem("reports_with_comments", JSON.stringify(reports));
 
@@ -524,7 +579,7 @@ function initReports() {
             </div>
             <div class="actions">
               <button class="action-btn like-btn ${
-                r.liked ? "liked" : ""
+                r.user_liked ? "liked" : ""
               }" onclick="toggleLike(${index})">
                 <span class="action-icon">❤️</span>
                 <span class="action-count">${r.likes}</span>
@@ -596,9 +651,44 @@ function initReports() {
   };
 
   window.toggleLike = function (i) {
-    reports[i].liked = !reports[i].liked;
-    reports[i].likes += reports[i].liked ? 1 : -1;
-    renderFeed();
+    const reportId = reports[i].id;
+    const currentLiked = reports[i].user_liked;
+    const action = currentLiked ? "unlike" : "like";
+    
+    // Optimistic update
+    reports[i].user_liked = !currentLiked;
+    reports[i].likes += currentLiked ? -1 : 1;
+    
+    fetch("/api/reports/", {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify({
+        report_id: reportId,
+        action: action,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          console.log("Like updated successfully:", data);
+          // Update the local data with server response
+          reports[i].likes = data.likes;
+          reports[i].user_liked = data.action === "like";
+        } else {
+          console.error("Error updating likes:", data.error);
+          // Revert the local changes if server update failed
+          reports[i].user_liked = currentLiked;
+          reports[i].likes += currentLiked ? 1 : -1;
+        }
+        renderFeed();
+      })
+      .catch((err) => {
+        console.error("Error adding likes", err);
+        // Revert the local changes if request failed
+        reports[i].user_liked = currentLiked;
+        reports[i].likes += currentLiked ? 1 : -1;
+        renderFeed();
+      });
   };
 
   window.addComment = function (i, comment) {
