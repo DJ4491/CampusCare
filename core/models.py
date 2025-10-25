@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.db.models import Deferrable, UniqueConstraint
+from django.db.models import Deferrable
 
 
 # Using Django's built-in AbstractUser for extensibility and authentication

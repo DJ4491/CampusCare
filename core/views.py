@@ -1,5 +1,4 @@
 # core/views.py
-from imp import cache_from_source
 from django.shortcuts import render
 from django.http import JsonResponse
 import random
@@ -233,10 +232,10 @@ def get_or_create_user(request):
 # Like Notifications
 
 def create_like_notification(liker_user, report):
-    """
-    Create a notification when a user likes a report.
-    The notification goes to the report author (if different from the liker).
-    """
+    # """
+    # Create a notification when a user likes a report.
+    # The notification goes to the report author (if different from the liker).
+    # """
     # Don't notify if user likes their own report
     if liker_user.id == report.author.id:
         return None
@@ -536,7 +535,6 @@ def log_in(request):
 @login_required
 def report(request):
     return render_fragment_or_full(request, "pages/report.html")
-
 
 @login_required
 def my_reports(request):
