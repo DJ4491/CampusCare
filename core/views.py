@@ -433,6 +433,7 @@ def api_comments(request):
         data = [
             {
                 "id": comment.id,
+                "avatar": getattr(comment.added_by, "pfp", "") or comment.avatar,
                 "added_by": {
                     "id": comment.added_by.id if comment.added_by else None,
                     "username": (
@@ -451,6 +452,9 @@ def api_comments(request):
             data = json.loads(request.body)
             report_id = data.get("report")
             comment_text = data.get("comment")
+            added_by = request.user
+            # sourcing avatar from the current user's profile picture URL
+            avatar = getattr(added_by, "pfp", "")
 
             if not report_id or not comment_text:
                 return JsonResponse(
@@ -465,14 +469,16 @@ def api_comments(request):
 
             # Create the comment with the current user (if authenticated)
             comment = Comments.objects.create(
+                avatar = avatar,
                 report=report,
                 comment=comment_text,
-                added_by=request.user if request.user.is_authenticated else None,
+                added_by=added_by if added_by.is_authenticated else None,
             )
 
             return JsonResponse(
                 {
                     "id": comment.id,
+                    "avatar":comment.avatar,
                     "added_by": {
                         "id": comment.added_by.id if comment.added_by else None,
                         "username": (

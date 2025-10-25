@@ -484,6 +484,7 @@ function initReports() {
           commentsByReportID[c.report] = [];
         }
         commentsByReportID[c.report].push({
+          avatar: c.avatar,
           comment: c.comment,
           added_by: c.added_by,
           time: c.time,
@@ -601,10 +602,13 @@ function initReports() {
                     (c) => `
                     <div class="comment-item">
                       <div class="comment-avatar">
-                        <img src="/static/images/profile.png" alt="User" class="comment-user-avatar">
+                        <img src="${
+                          c.avatar
+                        }" alt="User" class="comment-user-avatar">
                       </div>
                       <div class="comment-content">
                         <div class="comment-author">${
+                          // Show username if "added_by" exists and has "username", otherwise fallback to "Anonymous"
                           c.added_by?.username || "Anonymous"
                         }</div>
                         <div class="comment-text">${c.comment || c}</div>
@@ -712,6 +716,7 @@ function initReports() {
 
         // Update UI immediately with the new comment structure
         reports[i].comments.push({
+          avatar: data.avatar,
           comment: data.comment,
           added_by: data.added_by,
           time: data.time,
