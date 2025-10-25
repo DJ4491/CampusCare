@@ -1109,23 +1109,34 @@ function initNotifications() {
     });
   }
 
-  fetch("/api/notifications")
-    .then((res) => res.json())
-    .then((notes) => {
-      notifications = notes.map((n) => ({
-        ...n,
-        isLatest: false,
-      }));
-      renderFeed(); // Call renderFeed after data is loaded
+  // This code will fetch the notifications API every 10 seconds and update the frontend dynamically,
+  // ensuring that any new notifications are displayed without the user needing to refresh the page.
 
-      // Update time display every minute
-      setInterval(() => {
-        renderFeed();
-      }, 60000); // 60000ms = 1 minute
-    })
-    .catch((error) => {
-      console.error("Error fetching notifications:", error);
-    });
+  function fetchNotificationsAndRender() {
+    fetch("/api/notifications")
+      .then((res) => res.json())
+      .then((notes) => {
+        notifications = notes.map((n) => ({
+          ...n,
+          isLatest: false,
+        }));
+        renderFeed(); // Update UI after each fetch
+      })
+      .catch((error) => {
+        console.error("Error fetching notifications:", error);
+      });
+  }
+
+  // Fetch once immediately at startup
+  fetchNotificationsAndRender();
+
+  // Fetch every 10 seconds to keep frontend dynamic
+  const notificationsInterval = setInterval(fetchNotificationsAndRender, 10000);
+
+  // Update time display every minute without re-fetching notifications
+  setInterval(() => {
+    renderFeed();
+  }, 60000); // 60000ms = 1 minute
 }
 
 function initUserProfile() {
