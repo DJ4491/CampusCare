@@ -3,228 +3,231 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Events & Activities</title>
+  <title>Campus Connect — Events & Activities</title>
+
   <style>
-    * {
-      box-sizing: border-box;
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #f6f7fb;
       margin: 0;
       padding: 0;
-      font-family: sans-serif;
-    }
-
-    body {
-      background: #f6f8fb;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
 
     header {
-      width: 100%;
-      max-width: 500px;
-      padding: 14px;
+      background-color: #004aad;
+      color: white;
+      text-align:center;
+      padding: 15px 25px;
+      font-size: 1.6rem;
       font-weight: 600;
-      font-size: 18px;
-      background: #fff;
-      border-bottom: 1px solid #ccc;
       position: sticky;
-      top: 0;
-      z-index: 2;
-      text-align: center;
+      top: 0%;
     }
 
-    .feed {
-      margin-top: 2rem;
-      width: 100%;
-      max-width: 500px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-top: 10px;
-      height:32rem;
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 10px;
+      height: 35rem;
       overflow: scroll;
       scrollbar-width: none;
     }
 
-    .post {
+    .event-card {
       background: #fff;
       border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: transform 0.2s;
     }
 
-    .user {
+    .event-card:hover {
+      transform: scale(1.02);
+    }
+
+    .event-header {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
+      flex-wrap: wrap;
     }
 
-    .user img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
+    .event-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #222;
     }
 
-    .user-info {
-      display: flex;
-      flex-direction: column;
+    .event-date {
+      background-color: #004aad;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
     }
 
-    .user-info span {
-      font-size: 12px;
+    .event-desc {
+      margin-top: 10px;
+      font-size: 0.95rem;
       color: #555;
     }
 
-    .title {
-     font-weight: 600;
-    position: relative;
-    font-size: 18px;
-    margin-bottom: 8px;
-    }
-
-    .date {
-      font-size: 12px;
-      color: #777;
-      margin-bottom: 6px;
-    }
-
-    .desc {
-      font-size: 14px;
-      margin-bottom: 6px;
-    }
-
-    .desc .more {
-      color: #007bff;
-      cursor: pointer;
-      font-size: 13px;
-      display: inline-block;
-      margin-left: 4px;
-    }
-
-    .post-img {
-      width: 100%;
-      max-height: 200px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-bottom: 6px;
-    }
-
-    .likes {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 14px;
-      margin-bottom: 6px;
-    }
-
-    .like-btn {
-      background: none;
+    .view-btn {
+      margin-top: 12px;
+      background-color: #004aad;
+      color: #fff;
       border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 18px;
+      transition: 0.3s;
     }
 
-    .like-btn.active {
-      color: #ff2d55;
+    .view-btn:hover {
+      background-color: #003a88;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 10px;
+      padding: 25px;
+      width: 400px;
+      max-width: 90%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      position: relative;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px; right: 15px;
+      font-size: 20px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .modal-content h3 {
+      margin: 0;
+      color: #004aad;
+      font-size: 1.3rem;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.9);}
+      to {opacity: 1; transform: scale(1);}
+    }
+
+    @media (max-width: 600px) {
+      .event-header { flex-direction: column; align-items: flex-start; }
+      .event-date { margin-top: 8px; }
     }
   </style>
 </head>
 <body>
 
-  <header>Events and Activities</header>
+  <header>Events & Activities</header>
 
-  <div class="feed" id="feed"></div>
+  <div class="container" id="eventsContainer">
+    <!-- Events will be dynamically added here -->
+  </div>
+
+  <!-- Modal for event details -->
+  <div class="modal" id="eventModal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <h3 id="modalTitle"></h3>
+      <p><strong>Date:</strong> <span id="modalDate"></span></p>
+      <p id="modalDesc"></p>
+      <p><strong>Organizer:</strong> <span id="modalOrganizer"></span></p>
+    </div>
+  </div>
 
   <script>
-    // Default avatar for users
-    const defaultAvatar = 'https://i.pravatar.cc/40?img=65';
-
-    // Dynamic posts array
-    let posts = [
+    // Example event data (replace this with API call)
+    const events = [
       {
-        user: 'Mr. Sharma',
-        date: '2025-10-22',
-        title: 'Cultural Night',
-        desc: 'An evening full of dance, music, and fun! Everyone is invited to showcase their talents. This event will include singing, dancing, drama performances, and much more. Students from all departments are encouraged to participate and enjoy the celebration of art and culture on campus. Refreshments will be served after performances.',
-        img: 'https://tse4.mm.bing.net/th/id/OIP.68sBS2oXiLBjVwxVx8RRDQHaEo?rs=1&pid=ImgDetMain&o=7&rm=3',
-        likes: 4,
-        liked: false
+        title: "Science Fair 2025",
+        date: "2025-11-03",
+        description: "A showcase of innovative science and tech projects by college students.",
+        organizer: "Department of Science"
       },
       {
-        user: 'Priya',
-        date: '2025-10-20',
-        title: 'Tech Workshop',
-        desc: 'Hands-on ML workshop for beginners. Learn the basics of machine learning algorithms and implement your first project using Python and scikit-learn. Don’t miss this opportunity to boost your coding skills and learn from experts in the field.',
-        img: 'https://tse1.mm.bing.net/th/id/OIP.eUUpZVsMF8yAHi6uW44f5gHaD-?rs=1&pid=ImgDetMain&o=7&rm=3',
-        likes: 2,
-        liked: false
+        title: "Cultural Fest",
+        date: "2025-11-10",
+        description: "Annual cultural celebration with music, dance, and performances.",
+        organizer: "Cultural Committee"
+      },
+      {
+        title: "Hackathon 3.0",
+        date: "2025-11-18",
+        description: "48-hour coding marathon where teams develop creative software solutions.",
+        organizer: "Tech Club"
+      },
+      {
+        title: "Blood Donation Camp",
+        date: "2025-11-25",
+        description: "Join hands to save lives! Organized in collaboration with Dehradun Hospital.",
+        organizer: "NSS Unit"
       }
     ];
 
-    // Render posts dynamically
-    function renderPosts() {
-      const feed = document.getElementById('feed');
-      let fullHtml = ``;
-      posts.forEach((p, i) => {
-        let html = `<div class="post">
-          <div class="user">
-            <img src="${defaultAvatar}" onerror="this.src='${defaultAvatar}'">
-            <div class="user-info">
-              <span>${p.user}</span>
-              <span class="date">${p.date}</span>
-            </div>
-          </div>
-          <div class="title">${p.title}</div>
-          ${p.img ? `<img src="${p.img}" class="post-img" onerror="this.style.display='none'"/>` : ''}
-          <div class="desc">
-            ${p.desc}
-          </div>
-          <div class="likes">
-            <button class="like-btn ${p.liked ? 'active' : ''}" data-index="${i}">${p.liked ? '❤️' : '🤍'}</button>
-            <span>${p.likes} Likes</span>
-          </div>
-        </div>
-        `;
-        fullHtml = fullHtml + html;
-      });
-      feed.innerHTML = fullHtml;
-      // Like button toggle
-      document.querySelectorAll('.like-btn').forEach(btn => {
-        btn.onclick = () => {
-          const idx = btn.dataset.index;
-          posts[idx].liked = !posts[idx].liked;
-          posts[idx].likes += posts[idx].liked ? 1 : -1;
-          renderPosts();
-        };
-      });
+    const container = document.getElementById("eventsContainer");
+    const modal = document.getElementById("eventModal");
+    const closeModal = document.getElementById("closeModal");
 
-      // Show more toggle
-      document.querySelectorAll('.desc .more').forEach(el => {
-        el.onclick = () => {
-          const parent = el.parentElement;
-          parent.textContent = parent.dataset.full;
-        };
+    // Function to truncate long description
+    function shortText(text, limit = 70) {
+      return text.length > limit ? text.substring(0, limit) + "..." : text;
+    }
+
+    // Render events dynamically
+    function renderEvents() {
+      container.innerHTML = "";
+      events.forEach((event, index) => {
+        const card = document.createElement("div");
+        card.classList.add("event-card");
+        card.innerHTML = `
+          <div class="event-header">
+            <span class="event-title">${event.title}</span>
+            <span class="event-date">${event.date}</span>
+          </div>
+          <p class="event-desc">${shortText(event.description)}</p>
+          <button class="view-btn" onclick="viewEvent(${index})">View Details</button>
+        `;
+        container.appendChild(card);
       });
     }
 
-    // Initial render
-    renderPosts();
+    // View event details in modal
+    function viewEvent(index) {
+      const event = events[index];
+      document.getElementById("modalTitle").innerText = event.title;
+      document.getElementById("modalDate").innerText = event.date;
+      document.getElementById("modalDesc").innerText = event.description;
+      document.getElementById("modalOrganizer").innerText = event.organizer;
+      modal.style.display = "flex";
+    }
 
-    // Example of dynamically adding a new post object
-    // posts.unshift({
-    //   user: 'Student: Aman',
-    //   date: '2025-10-25',
-    //   title: 'New Event',
-    //   desc: 'This is a new event description...',
-    //   img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=60',
-    //   likes: 0,
-    //   liked: false
-    // });
-    // renderPosts();
+    // Close modal
+    closeModal.addEventListener("click", () => modal.style.display = "none");
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) modal.style.display = "none";
+    });
+
+    renderEvents();
   </script>
-
 </body>
 </html>
