@@ -556,3 +556,8 @@ def lost_found(request):
 @cache_page(60 * 5)
 def create_lost_found(request):
     return render_fragment_or_full(request, "pages/create_lost_found.html")
+
+
+@login_required
+def event_activity(request):
+    return render_fragment_or_full(request, "pages/event_activity.html")

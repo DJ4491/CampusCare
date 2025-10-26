@@ -1,55 +1,48 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reports Feed</title>
-    <link rel="stylesheet" href="{% static 'css/report.css' %}" />
-  </head>
-  <body>
-    <!-- Top Navbar -->
-    <div class="navbar">
-      <div class="nav-btn active" id="homeBtn">🏠</div>
-      <div class="navbar-title">Reports</div>
-      <div class="nav-btn" id="moreBtn">☰</div>
-    </div>
 
-    <!-- Feed -->
-    <div class="feed" id="feed">
-      <!-- Skeleton loading -->
-      <div class="loading-skeleton" id="skeleton-loading">
-        <div class="skeleton-post">
-          <div class="skeleton-header">
-            <div class="skeleton-avatar"></div>
-            <div class="skeleton-text">
-              <div class="skeleton-line short"></div>
-              <div class="skeleton-line shorter"></div>
-            </div>
-          </div>
-          <div class="skeleton-content">
-            <div class="skeleton-line long"></div>
-            <div class="skeleton-line medium"></div>
-            <div class="skeleton-image"></div>
+<link rel="stylesheet" href="{% static 'css/report.css' %}" />
+<body>
+  <!-- Top Navbar -->
+  <div class="navbar">
+    <div class="nav-btn active" id="homeBtn">🏠</div>
+    <div class="navbar-title">Reports</div>
+    <div class="nav-btn" id="moreBtn">☰</div>
+  </div>
+
+  <!-- Feed -->
+  <div class="feed" id="feed">
+    <!-- Skeleton loading -->
+    <div class="loading-skeleton" id="skeleton-loading">
+      <div class="skeleton-post">
+        <div class="skeleton-header">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-text">
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line shorter"></div>
           </div>
         </div>
-      </div>
-      <div class="loading-skeleton">
-        <div class="skeleton-post">
-          <div class="skeleton-header">
-            <div class="skeleton-avatar"></div>
-            <div class="skeleton-text">
-              <div class="skeleton-line short"></div>
-              <div class="skeleton-line shorter"></div>
-            </div>
-          </div>
-          <div class="skeleton-content">
-            <div class="skeleton-line long"></div>
-            <div class="skeleton-line medium"></div>
-            <div class="skeleton-image"></div>
-          </div>
+        <div class="skeleton-content">
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-image"></div>
         </div>
       </div>
     </div>
-  </body>
-</html>
+    <div class="loading-skeleton">
+      <div class="skeleton-post">
+        <div class="skeleton-header">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-text">
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line shorter"></div>
+          </div>
+        </div>
+        <div class="skeleton-content">
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line medium"></div>
+          <div class="skeleton-image"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>

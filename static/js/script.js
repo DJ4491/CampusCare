@@ -341,6 +341,7 @@ function loadpage(page) {
   window.searchInitialized = false;
   window.reportInitialized = false;
   window.homeInitialized = false;
+  window.eventActivityInitialized = false;
 
   // Handle bottom menu visibility based on page
   if (page === "log_in" || page === "login") {
@@ -402,6 +403,9 @@ function loadpage(page) {
           }
           if (page === "create_lost_found") {
             initCreateLostFound();
+          }
+          if (page === "event_activity") {
+            initEventActivity();
           }
         }, 2400); // Adjust this delay as needed (e.g., 1000ms = 1 second)
       })
@@ -1269,6 +1273,387 @@ function initEditUserProfile() {
   });
 }
 
+//@important:- ############################### Events & Activities Page ############################
+
+function initEventActivity() {
+  console.log("Initializing Events & Activities page...");
+
+  // Preventing multiple initializations
+  if (window.eventActivityInitialized) {
+    console.log("Event Activity already initialized, skipping...");
+    return;
+  }
+  window.eventActivityInitialized = true;
+
+  // Events data 
+  const eventsData = [
+    {
+      id: 1,
+      title: "Cultural Night",
+      start: "2025-01-22",
+      description:
+        "An evening full of dance, music, and fun! Showcase your talent and enjoy performances by students from all departments. Join us for an unforgettable cultural experience.",
+      image:
+        "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=300&fit=crop",
+      location: "Main Auditorium",
+      time: "6:00 PM - 10:00 PM",
+    },
+    {
+      id: 2,
+      title: "Tech Workshop",
+      start: "2025-01-20",
+      description:
+        "Hands-on ML workshop for beginners. Learn Python, algorithms, and scikit-learn with practical examples. Perfect for students starting their AI journey.",
+      image:
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop",
+      location: "Computer Lab 1",
+      time: "2:00 PM - 5:00 PM",
+    },
+    {
+      id: 3,
+      title: "Blood Donation Camp",
+      start: "2025-02-05",
+      description:
+        "Join our college blood donation drive and contribute to a noble cause. Organized by the NSS unit. Every drop counts!",
+      image:
+        "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop",
+      location: "Health Center",
+      time: "9:00 AM - 4:00 PM",
+    },
+    {
+      id: 4,
+      title: "Sports Day",
+      start: "2025-01-25",
+      description:
+        "Annual sports day with various competitions including athletics, football, basketball, and more. Show your sports spirit!",
+      image:
+        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      location: "Sports Complex",
+      time: "8:00 AM - 6:00 PM",
+    },
+  ];
+
+  let calendar;
+  let currentEvent = null;
+
+  // Load FullCalendar from CDN (more reliable than local files)
+  function loadFullCalendar() {
+    return new Promise((resolve, reject) => {
+      // Check if already loaded
+      if (typeof FullCalendar !== "undefined") {
+        resolve();
+        return;
+      }
+
+      // Load CSS from CDN
+      const cssLink = document.createElement("link");
+      cssLink.rel = "stylesheet";
+      cssLink.href =
+        "https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.19/main.min.css";
+      document.head.appendChild(cssLink);
+
+      // Load daygrid CSS
+      const daygridCssLink = document.createElement("link");
+      daygridCssLink.rel = "stylesheet";
+      daygridCssLink.href =
+        "https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.19/main.min.css";
+      document.head.appendChild(daygridCssLink);
+
+      // Load core JS from CDN
+      const coreScript = document.createElement("script");
+      coreScript.src =
+        "https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.19/index.global.min.js";
+
+      coreScript.onload = () => {
+        // Load daygrid plugin
+        const daygridScript = document.createElement("script");
+        daygridScript.src =
+          "https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.19/index.global.min.js";
+
+        daygridScript.onload = () => {
+          console.log("FullCalendar loaded successfully from CDN");
+          resolve();
+        };
+
+        daygridScript.onerror = () => {
+          console.error("Failed to load FullCalendar daygrid plugin");
+          reject(new Error("Failed to load FullCalendar daygrid plugin"));
+        };
+
+        document.head.appendChild(daygridScript);
+      };
+
+      coreScript.onerror = () => {
+        console.error("Failed to load FullCalendar core from CDN");
+        reject(new Error("Failed to load FullCalendar core"));
+      };
+
+      document.head.appendChild(coreScript);
+    });
+  }
+
+  // Initialize FullCalendar
+  function initializeCalendar() {
+    const calendarEl = document.getElementById("calendar");
+
+    if (!calendarEl) {
+      console.error("Calendar element not found");
+      return;
+    }
+
+    // Load FullCalendar and then create calendar
+    loadFullCalendar()
+      .then(() => {
+        createCalendar();
+      })
+      .catch((error) => {
+        console.error("Error loading FullCalendar:", error);
+        showEventError(
+          "Calendar library failed to load. Please refresh the page."
+        );
+      });
+  }
+
+  function createCalendar() {
+    const calendarEl = document.getElementById("calendar");
+
+    try {
+      // Ensure events data is properly formatted
+      const formattedEvents = eventsData.map((event) => ({
+        id: event.id,
+        title: event.title,
+        start: event.start,
+        extendedProps: {
+          description: event.description,
+          image: event.image,
+          location: event.location,
+          time: event.time,
+        },
+      }));
+
+      calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "dayGridMonth",
+        events: formattedEvents,
+        eventClick: function (info) {
+          openEventModal(info.event);
+        },
+        headerToolbar: {
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth",
+        },
+        height: "auto",
+        aspectRatio: 1.35,
+        dayMaxEvents: 3,
+        moreLinkClick: "popover",
+        eventDisplay: "block",
+        eventTimeFormat: {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        },
+        eventDidMount: function (info) {
+          // Add custom styling to events
+          info.el.style.borderRadius = "6px";
+          info.el.style.border = "none";
+          info.el.style.fontSize = "12px";
+          info.el.style.fontWeight = "600";
+        },
+      });
+
+      calendar.render();
+      // Make calendar globally accessible for theme switching
+      window.calendar = calendar;
+      console.log("Calendar rendered successfully");
+    } catch (error) {
+      console.error("Error initializing calendar:", error);
+      showEventError("Failed to load calendar. Please refresh the page.");
+    }
+  }
+
+  // Modal functions
+  function openEventModal(event) {
+    try {
+      currentEvent = event;
+
+      // Get event data from extendedProps (FullCalendar v6 format)
+      const eventData = event.extendedProps;
+
+      if (!eventData) {
+        console.error("Event data not found");
+        return;
+      }
+
+      // Update modal content
+      document.getElementById("modalTitle").textContent = event.title;
+      document.getElementById("modalDesc").textContent = eventData.description;
+
+      const imageEl = document.getElementById("modalImage");
+      imageEl.src = eventData.image;
+      imageEl.alt = `${event.title} image`;
+
+      // Show modal
+      const modal = document.getElementById("eventModal");
+      modal.style.display = "flex";
+
+      // Prevent body scroll
+      document.body.style.overflow = "hidden";
+
+      // Focus management
+      modal.focus();
+    } catch (error) {
+      console.error("Error opening modal:", error);
+    }
+  }
+
+  function closeEventModal() {
+    try {
+      const modal = document.getElementById("eventModal");
+      modal.style.display = "none";
+
+      // Restore body scroll
+      document.body.style.overflow = "";
+
+      // Clear current event
+      currentEvent = null;
+    } catch (error) {
+      console.error("Error closing modal:", error);
+    }
+  }
+
+  function shareEvent() {
+    if (!currentEvent) return;
+
+    try {
+      // Get event data from extendedProps (FullCalendar v6 format)
+      const eventData = currentEvent.extendedProps;
+
+      if (navigator.share) {
+        navigator.share({
+          title: currentEvent.title,
+          text: eventData.description,
+          url: window.location.href,
+        });
+      } else {
+        // Fallback: copy to clipboard
+        const shareText = `${currentEvent.title}\n\n${eventData.description}\n\nView more events at: ${window.location.href}`;
+        navigator.clipboard.writeText(shareText).then(() => {
+          showEventNotification("Event details copied to clipboard!");
+        });
+      }
+    } catch (error) {
+      console.error("Error sharing event:", error);
+      showEventNotification("Unable to share event");
+    }
+  }
+
+  // Utility functions
+  function showEventError(message) {
+    const calendarEl = document.getElementById("calendar");
+    if (calendarEl) {
+      calendarEl.innerHTML = `
+        <div class="events-empty">
+          <div class="events-empty-icon">⚠️</div>
+          <div class="events-empty-title">Error</div>
+          <div class="events-empty-description">${message}</div>
+        </div>
+      `;
+    }
+  }
+
+  function showEventNotification(message) {
+    // Create a simple notification
+    const notification = document.createElement("div");
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #2563eb;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: "Fira Sans", sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 10000;
+      animation: slideInRight 0.3s ease;
+    `;
+    notification.textContent = message;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.style.animation = "slideOutRight 0.3s ease";
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300);
+    }, 3000);
+  }
+
+  // Event listeners for modal
+  function setupEventListeners() {
+    // Close modal when clicking outside
+    document.addEventListener("click", function (event) {
+      const modal = document.getElementById("eventModal");
+      if (event.target === modal) {
+        closeEventModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeEventModal();
+      }
+    });
+
+    // Add CSS animations for notifications if not already added
+    if (!document.getElementById("event-animations")) {
+      const style = document.createElement("style");
+      style.id = "event-animations";
+      style.textContent = `
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+          from { transform: translateX(0); opacity: 1; }
+          to { transform: translateX(100%); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }
+
+  // Make functions globally available
+  window.openEventModal = openEventModal;
+  window.closeEventModal = closeEventModal;
+  window.shareEvent = shareEvent;
+
+  // Initialize everything
+  setupEventListeners();
+  initializeCalendar();
+
+  // Future: Replace with Django API call
+  /*
+  async function loadEvents() {
+    try {
+      const response = await fetch('/api/events/');
+      if (!response.ok) throw new Error('Failed to fetch events');
+      const events = await response.json();
+      
+      if (calendar) {
+        calendar.removeAllEvents();
+        calendar.addEventSource(events);
+      }
+    } catch (error) {
+      console.error('Error loading events:', error);
+      showEventError('Failed to load events. Please try again later.');
+    }
+  }
+  */
+}
+
 //note:- ############################### Search Page ################################
 // SPA helper: navigate to my_reports and scroll to a specific post id
 function goToMyReport(reportId) {
@@ -1348,6 +1733,7 @@ let initializationState = {
   edit_profile: false,
   search: false,
   report: false,
+  event_activity: false,
 };
 
 function initializePages() {
@@ -1415,6 +1801,10 @@ function initializePages() {
     initializationState.report = true;
     initCategoryDropdown();
   }
+  if (path.includes("event_activity") && !initializationState.event_activity) {
+    initializationState.event_activity = true;
+    initEventActivity();
+  }
 }
 
 // If user directly loads page, initialize immediately
@@ -1427,3 +1817,120 @@ window.addEventListener("load", () => {
     initializePages();
   }
 });
+
+// Theme Management System
+class ThemeManager {
+  constructor() {
+    this.storageKey = "campuscare-theme";
+    this.themes = ["light", "dark"];
+    this.currentTheme = this.getStoredTheme() || this.getSystemTheme();
+    this.init();
+  }
+
+  init() {
+    this.applyTheme(this.currentTheme);
+    this.updateThemeToggle();
+  }
+
+  getStoredTheme() {
+    try {
+      return localStorage.getItem(this.storageKey);
+    } catch (e) {
+      console.warn("LocalStorage not available for theme storage");
+      return null;
+    }
+  }
+
+  getSystemTheme() {
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      return "dark";
+    }
+    return "light";
+  }
+
+  storeTheme(theme) {
+    try {
+      localStorage.setItem(this.storageKey, theme);
+    } catch (e) {
+      console.warn("Could not store theme preference");
+    }
+  }
+
+  applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    this.currentTheme = theme;
+    this.storeTheme(theme);
+
+    // Update FullCalendar theme if it exists
+    if (window.calendar && window.calendar.render) {
+      // Force calendar re-render to apply new theme
+      setTimeout(() => {
+        window.calendar.render();
+      }, 100);
+    }
+  }
+
+  toggleTheme() {
+    const newTheme = this.currentTheme === "light" ? "dark" : "light";
+
+    // Add transition class for smooth theme switching
+    document.documentElement.classList.add("theme-transitioning");
+
+    this.applyTheme(newTheme);
+    this.updateThemeToggle();
+
+    // Remove transition class after animation completes
+    setTimeout(() => {
+      document.documentElement.classList.remove("theme-transitioning");
+    }, 300);
+  }
+
+  updateThemeToggle() {
+    const toggleBtn = document.querySelector(".theme-toggle-btn");
+    if (toggleBtn) {
+      const sunIcon = toggleBtn.querySelector(".sun-icon");
+      const moonIcon = toggleBtn.querySelector(".moon-icon");
+
+      if (this.currentTheme === "dark") {
+        sunIcon.style.opacity = "0";
+        sunIcon.style.transform = "rotate(180deg) scale(0.8)";
+        moonIcon.style.opacity = "1";
+        moonIcon.style.transform = "rotate(0deg) scale(1)";
+      } else {
+        sunIcon.style.opacity = "1";
+        sunIcon.style.transform = "rotate(0deg) scale(1)";
+        moonIcon.style.opacity = "0";
+        moonIcon.style.transform = "rotate(180deg) scale(0.8)";
+      }
+    }
+  }
+
+  // Listen for system theme changes
+  listenForSystemThemeChanges() {
+    if (window.matchMedia) {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      mediaQuery.addEventListener("change", (e) => {
+        // Only update if user hasn't manually set a preference
+        if (!this.getStoredTheme()) {
+          const newTheme = e.matches ? "dark" : "light";
+          this.applyTheme(newTheme);
+          this.updateThemeToggle();
+        }
+      });
+    }
+  }
+}
+
+// Initialize theme manager
+const themeManager = new ThemeManager();
+
+// Global function for theme toggle button
+function toggleTheme() {
+  themeManager.toggleTheme();
+}
+
+// Listen for system theme changes
+themeManager.listenForSystemThemeChanges();

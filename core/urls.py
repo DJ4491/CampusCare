@@ -28,6 +28,6 @@ urlpatterns = [
     path("api/notifications/", views.api_notifications, name="api_notifications"),
     path("lost_found/", views.lost_found, name="lost_found"),
     path("create_lost_found/", views.create_lost_found, name="create_lost_found"),
-    # path("events/", views.events, name="events"),
+    path("event_activity/", views.event_activity, name="event_activity"),
     # ... other routes
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
