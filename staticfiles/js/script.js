@@ -456,11 +456,26 @@ function initReports() {
   window.reportsInitialized = true;
 
   const feed = document.getElementById("feed");
+
+  // Check if feed element exists before initializing smooth scroll
+  if (!feed) {
+    console.warn(
+      "Feed element not found, skipping smooth scroll initialization"
+    );
+    return;
+  }
+
   // --- Lenis Smooth Scroll Setup for Feed ---
   let lenis;
 
   function initSmoothScroll() {
     if (lenis) return; // prevent reinit on refresh
+
+    // Check if Lenis is available
+    if (typeof Lenis === 'undefined') {
+      console.warn("Lenis library not loaded, skipping smooth scroll initialization");
+      return;
+    }
 
     // Wrap inner feed content in a scrollable container
     const feedContent = document.createElement("div");
@@ -572,6 +587,10 @@ function initReports() {
     .catch((err) => console.error("Error loading reports or comments:", err));
 
   function renderFeed() {
+    if (!feed) {
+      console.warn("Feed element not found, cannot render feed");
+      return;
+    }
     const feedContent = feed.querySelector(".feed-content") || feed;
     feedContent.innerHTML = "";
     reports.forEach((r, index) => {
