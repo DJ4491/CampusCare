@@ -1,3 +1,9 @@
+// Restricting Options in App
+// Disable right-click
+document.addEventListener("contextmenu", function (e) {
+  e.preventDefault();
+});
+
 //@important ########################  IIFE function for login page and accquiring user details ###################################
 
 (function () {
@@ -450,6 +456,30 @@ function initReports() {
   window.reportsInitialized = true;
 
   const feed = document.getElementById("feed");
+  // --- Lenis Smooth Scroll Setup for Feed ---
+  let lenis;
+
+  function initSmoothScroll() {
+    if (lenis) return; // prevent reinit on refresh
+
+    // Wrap inner feed content in a scrollable container
+    const feedContent = document.createElement("div");
+    feedContent.className = "feed-content";
+    while (feed.firstChild) feedContent.appendChild(feed.firstChild);
+    feed.appendChild(feedContent);
+
+    lenis = new Lenis({
+      wrapper: feed, // your scroll container
+      content: feedContent, // actual content inside feed
+      lerp: 0.15,
+      smoothWheel: true,
+      smoothTouch: true,
+      autoRaf: true,
+    });
+  }
+
+  initSmoothScroll();
+
   let reports = [];
   const cached = localStorage.getItem("reports_with_comments");
 
@@ -542,7 +572,8 @@ function initReports() {
     .catch((err) => console.error("Error loading reports or comments:", err));
 
   function renderFeed() {
-    feed.innerHTML = "";
+    const feedContent = feed.querySelector(".feed-content") || feed;
+    feedContent.innerHTML = "";
     reports.forEach((r, index) => {
       const post = document.createElement("div");
       post.className = "post";
@@ -646,8 +677,9 @@ function initReports() {
             </div>
           </div>
           `;
-      feed.appendChild(post);
+      feedContent.appendChild(post);
     });
+    if (lenis) lenis.resize();
   }
 
   window.toggleComments = function (i) {
@@ -1285,7 +1317,7 @@ function initEventActivity() {
   }
   window.eventActivityInitialized = true;
 
-  // Events data 
+  // Events data
   const eventsData = [
     {
       id: 1,
