@@ -1,6 +1,5 @@
 from datetime import date
 from email.policy import default
-from turtle import title
 from django.core.files import images
 from django.db import models
 from django.utils import timezone
