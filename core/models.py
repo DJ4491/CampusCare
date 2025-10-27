@@ -1,10 +1,12 @@
+from datetime import date
 from email.policy import default
+from turtle import title
 from django.core.files import images
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.db.models import Deferrable
+from django.db.models import CharField, DateField, DateTimeField, Deferrable
 
 
 # Using Django's built-in AbstractUser for extensibility and authentication
@@ -111,3 +113,15 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class EventsAndActivity(models.Model):
+    title = models.CharField(max_length=50, default="")
+    start = models.DateField(default=date.today)
+    description = models.TextField(default="")
+    image = models.URLField()
+    location = models.CharField(max_length=50, default="", null=True, blank=True)
+    time = models.CharField(max_length=75, default="", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.title} is on {self.start}"

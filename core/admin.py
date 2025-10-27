@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Notification, Report, Comments, User, Like
+from .models import Notification, Report, Comments, User, Like, EventsAndActivity
 
 
 # Register your models here.
@@ -13,5 +13,6 @@ class NotificationsAdmin(admin.ModelAdmin):
 
 admin.site.register(Report)
 admin.site.register(Comments)
+admin.site.register(EventsAndActivity)
 admin.site.register(User)
 admin.site.register(Like)

@@ -1,4 +1,5 @@
 # core/views.py
+from django.contrib.auth.views import login_not_required
 from django.shortcuts import render
 from django.http import JsonResponse
 import random
@@ -11,8 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout, get_user_model
 import json
-from .models import Report, Comments, Notification, User, Like
-
+from .models import Report, Comments, Notification, User, Like, EventsAndActivity
 
 
 def is_ajax(request):
@@ -229,7 +229,9 @@ def get_or_create_user(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
+
 # Like Notifications
+
 
 def create_like_notification(liker_user, report):
     # """
@@ -239,7 +241,7 @@ def create_like_notification(liker_user, report):
     # Don't notify if user likes their own report
     if liker_user.id == report.author.id:
         return None
-    
+
     # Create notification for the report author
     notification = Notification.objects.create(
         user=report.author,  # The report author receives the notification
@@ -247,10 +249,9 @@ def create_like_notification(liker_user, report):
         title="New Upvote",
         desc=f"{liker_user.username} upvoted your report",
         related_report=report,
-        related_user=liker_user
+        related_user=liker_user,
     )
     return notification
-
 
 
 ## POST and ADD report objects
@@ -263,31 +264,33 @@ def api_reports(request):
     if request.method == "GET":
         reports = Report.objects.select_related("author").all().order_by("-id")
         current_user = request.user
-        
+
         data = []
         for r in reports:
             # Check if current user has liked this report
             user_liked = False
             if current_user.is_authenticated:
                 user_liked = Like.objects.filter(user=current_user, report=r).exists()
-            
-            data.append({
-                "id": r.id,
-                "author": {
-                    "id": r.author.id if r.author else None,
-                    "username": r.author.username if r.author else "",
-                },
-                # Always reflect the author's CURRENT profile picture
-                "avatar": getattr(r.author, "pfp", "") or r.avatar,
-                "category": r.category,
-                "location": r.location,
-                "title": r.title,
-                "time": r.time,
-                "desc": r.desc,
-                "likes": r.likes,
-                "user_liked": user_liked,  # This returns true or false depending upon the condition 
-                "image": r.image.url if r.image else "",
-            })
+
+            data.append(
+                {
+                    "id": r.id,
+                    "author": {
+                        "id": r.author.id if r.author else None,
+                        "username": r.author.username if r.author else "",
+                    },
+                    # Always reflect the author's CURRENT profile picture
+                    "avatar": getattr(r.author, "pfp", "") or r.avatar,
+                    "category": r.category,
+                    "location": r.location,
+                    "title": r.title,
+                    "time": r.time,
+                    "desc": r.desc,
+                    "likes": r.likes,
+                    "user_liked": user_liked,  # This returns true or false depending upon the condition
+                    "image": r.image.url if r.image else "",
+                }
+            )
         return JsonResponse(data, safe=False)
     elif request.method == "POST":
         try:
@@ -297,54 +300,62 @@ def api_reports(request):
                 report_id = data.get("report_id")
                 # This retrieves the 'action' the user wants to perform (either "like" or "unlike")
                 action = data.get("action")
-                
+
                 # This statement checks whether a valid report_id is provided
                 # and if the requested action is either "like" or "unlike".
                 # Only in this case does the API continue to process the like/unlike logic;
                 # otherwise, it will return an error.
                 if report_id and action in ["like", "unlike"]:
                     try:
-                        user = request.user # Current User 
+                        user = request.user  # Current User
                         report = Report.objects.get(id=report_id)  # Which Report by ID
-                        
+
                         if action == "like":
                             # Check if user already liked this report
-                            like_exists = Like.objects.filter(user=user, report=report).exists()
+                            like_exists = Like.objects.filter(
+                                user=user, report=report
+                            ).exists()
                             if like_exists:
                                 return JsonResponse(
-                                    {"error": "You have already liked this report"}, 
-                                    status=400
+                                    {"error": "You have already liked this report"},
+                                    status=400,
                                 )
-                            
+
                             # Create new like
                             Like.objects.create(user=user, report=report)
                             report.likes += 1
                             report.save()
-                            
+
                             # Create notification for the report author
                             create_like_notification(user, report)
-                            
+
                         elif action == "unlike":
                             # Check if user has liked this report
-                            like_obj = Like.objects.filter(user=user, report=report).first()
+                            like_obj = Like.objects.filter(
+                                user=user, report=report
+                            ).first()
                             if not like_obj:
                                 return JsonResponse(
-                                    {"error": "You haven't liked this report"}, 
-                                    status=400
+                                    {"error": "You haven't liked this report"},
+                                    status=400,
                                 )
-                            
+
                             # Remove like
                             like_obj.delete()
-                            report.likes = max(0, report.likes - 1)  # Prevent negative likes
+                            report.likes = max(
+                                0, report.likes - 1
+                            )  # Prevent negative likes
                             report.save()
-                        
-                        return JsonResponse({
-                            "id": report.id, 
-                            "likes": report.likes, 
-                            "action": action,
-                            "success": True
-                        })
-                        
+
+                        return JsonResponse(
+                            {
+                                "id": report.id,
+                                "likes": report.likes,
+                                "action": action,
+                                "success": True,
+                            }
+                        )
+
                     except Report.DoesNotExist:
                         return JsonResponse({"error": "Report not found"}, status=404)
                 else:
@@ -403,22 +414,42 @@ def get_media_image_url(request, image_name):
 @login_required
 def api_notifications(request):
     # Filter notifications for the current user only
-    user_notifications = Notification.objects.filter(user=request.user).order_by('-time')
+    user_notifications = Notification.objects.filter(user=request.user).order_by(
+        "-time"
+    )
     data = []
     for notification in user_notifications:
-        data.append({
-            "id": notification.id,
-            "type_icon": notification.type_icon,
-            "title": notification.title,
-            "desc": notification.desc,
-            "time": notification.time,
-            "Latest": notification.Latest,
-            "related_report_id": notification.related_report.id if notification.related_report else None,
-            "related_user": {
-                "id": notification.related_user.id if notification.related_user else None,
-                "username": notification.related_user.username if notification.related_user else None,
-            } if notification.related_user else None
-        })
+        data.append(
+            {
+                "id": notification.id,
+                "type_icon": notification.type_icon,
+                "title": notification.title,
+                "desc": notification.desc,
+                "time": notification.time,
+                "Latest": notification.Latest,
+                "related_report_id": (
+                    notification.related_report.id
+                    if notification.related_report
+                    else None
+                ),
+                "related_user": (
+                    {
+                        "id": (
+                            notification.related_user.id
+                            if notification.related_user
+                            else None
+                        ),
+                        "username": (
+                            notification.related_user.username
+                            if notification.related_user
+                            else None
+                        ),
+                    }
+                    if notification.related_user
+                    else None
+                ),
+            }
+        )
     return JsonResponse(data, safe=False)
 
 
@@ -469,7 +500,7 @@ def api_comments(request):
 
             # Create the comment with the current user (if authenticated)
             comment = Comments.objects.create(
-                avatar = avatar,
+                avatar=avatar,
                 report=report,
                 comment=comment_text,
                 added_by=added_by if added_by.is_authenticated else None,
@@ -478,7 +509,7 @@ def api_comments(request):
             return JsonResponse(
                 {
                     "id": comment.id,
-                    "avatar":comment.avatar,
+                    "avatar": comment.avatar,
                     "added_by": {
                         "id": comment.added_by.id if comment.added_by else None,
                         "username": (
@@ -497,6 +528,26 @@ def api_comments(request):
             return JsonResponse({"error": "Invalid JSON"}, status=400)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
+def api_eventsAndActivity(request):
+    events = EventsAndActivity.objects.all()
+    data = []
+    for e in events:
+        data.append(
+            {
+                "id": e.id,
+                "title": e.title,
+                "start": e.start,
+                "description": e.description,
+                "image": e.image,
+                "location": e.location,
+                "time": e.time,
+            }
+        )
+    return JsonResponse(data, safe=False)
 
 
 @login_required
@@ -541,6 +592,7 @@ def log_in(request):
 @login_required
 def report(request):
     return render_fragment_or_full(request, "pages/report.html")
+
 
 @login_required
 def my_reports(request):

@@ -472,8 +472,10 @@ function initReports() {
     if (lenis) return; // prevent reinit on refresh
 
     // Check if Lenis is available
-    if (typeof Lenis === 'undefined') {
-      console.warn("Lenis library not loaded, skipping smooth scroll initialization");
+    if (typeof Lenis === "undefined") {
+      console.warn(
+        "Lenis library not loaded, skipping smooth scroll initialization"
+      );
       return;
     }
 
@@ -1337,55 +1339,28 @@ function initEventActivity() {
   window.eventActivityInitialized = true;
 
   // Events data
-  const eventsData = [
-    {
-      id: 1,
-      title: "Cultural Night",
-      start: "2025-01-22",
-      description:
-        "An evening full of dance, music, and fun! Showcase your talent and enjoy performances by students from all departments. Join us for an unforgettable cultural experience.",
-      image:
-        "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=300&fit=crop",
-      location: "Main Auditorium",
-      time: "6:00 PM - 10:00 PM",
-    },
-    {
-      id: 2,
-      title: "Tech Workshop",
-      start: "2025-01-20",
-      description:
-        "Hands-on ML workshop for beginners. Learn Python, algorithms, and scikit-learn with practical examples. Perfect for students starting their AI journey.",
-      image:
-        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop",
-      location: "Computer Lab 1",
-      time: "2:00 PM - 5:00 PM",
-    },
-    {
-      id: 3,
-      title: "Blood Donation Camp",
-      start: "2025-02-05",
-      description:
-        "Join our college blood donation drive and contribute to a noble cause. Organized by the NSS unit. Every drop counts!",
-      image:
-        "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop",
-      location: "Health Center",
-      time: "9:00 AM - 4:00 PM",
-    },
-    {
-      id: 4,
-      title: "Sports Day",
-      start: "2025-01-25",
-      description:
-        "Annual sports day with various competitions including athletics, football, basketball, and more. Show your sports spirit!",
-      image:
-        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
-      location: "Sports Complex",
-      time: "8:00 AM - 6:00 PM",
-    },
-  ];
-
+  let eventsData = [];
   let calendar;
   let currentEvent = null;
+
+  // Function to fetch events data
+  function fetchEventsData() {
+    return fetch("/api/events/", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        eventsData = data.map((e) => ({
+          ...e,
+        }));
+        console.log("Events data fetched:", eventsData);
+        return eventsData;
+      })
+      .catch((err) => {
+        console.error("Couldn't fetch events api", err);
+        return [];
+      });
+  }
 
   // Load FullCalendar from CDN (more reliable than local files)
   function loadFullCalendar() {
@@ -1452,16 +1427,17 @@ function initEventActivity() {
       return;
     }
 
-    // Load FullCalendar and then create calendar
-    loadFullCalendar()
+    // First fetch events data, then load FullCalendar, then create calendar
+    fetchEventsData()
+      .then(() => {
+        return loadFullCalendar();
+      })
       .then(() => {
         createCalendar();
       })
       .catch((error) => {
-        console.error("Error loading FullCalendar:", error);
-        showEventError(
-          "Calendar library failed to load. Please refresh the page."
-        );
+        console.error("Error initializing calendar:", error);
+        showEventError("Calendar failed to load. Please refresh the page.");
       });
   }
 
