@@ -191,16 +191,31 @@ function RenderSkeleton(count = 0) {
   }
 }
 //note:-####################### Transition and Load Page ####################################
-const cards_home = document.querySelectorAll(".icon");
-cards_home.forEach((card) => {
-  card.addEventListener("touchstart", () => {
-    card.style.transform = "scale(1.04)";
-    card.style.transition = "transform 2s ease-in-out";
+function initIconInteractions() {
+  const cards = document.querySelectorAll(".icon");
+  cards.forEach((card) => {
+    if (card.dataset.interactive === "1") return; // avoid duplicate bindings
+    card.dataset.interactive = "1";
+
+    const down = () => {
+      card.style.transform = "scale(1.02)";
+      card.style.transition = "transform 160ms ease";
+      card.classList.add("icon-ripple");
+      setTimeout(() => card.classList.remove("icon-ripple"), 560);
+    };
+    const up = () => {
+      card.style.transform = "scale(1)";
+    };
+
+    // Use pointer events to support mouse/touch
+    card.addEventListener("pointerdown", down, { passive: true });
+    card.addEventListener("pointerup", up, { passive: true });
+    card.addEventListener("pointerleave", up, { passive: true });
+    // Fallback for older browsers
+    card.addEventListener("touchstart", down, { passive: true });
+    card.addEventListener("touchend", up, { passive: true });
   });
-  card.addEventListener("touchend", () => {
-    card.style.transform = "scale(1)";
-  });
-});
+}
 
 // Functions for the buttons
 
@@ -417,6 +432,8 @@ function loadpage(page) {
           if (page === "support") {
             initSupport();
           }
+          // Re-bind micro-interactions for icons on each page load
+          initIconInteractions();
         }, 2400); // Adjust this delay as needed (e.g., 1000ms = 1 second)
       })
       .catch((err) => console.error("Error loading page:", err));

@@ -332,7 +332,34 @@
         border-color 180ms ease;
       will-change: transform, box-shadow;
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
     }
+
+    /* Material-like ripple + subtle inner glow */
+    @keyframes iconRipple {
+      0% { transform: scale(0); opacity: 0.35; }
+      80% { transform: scale(4); opacity: 0.14; }
+      100% { transform: scale(5.2); opacity: 0; }
+    }
+    .icon::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 24px;
+      height: 24px;
+      border-radius: 9999px;
+      background: rgba(23, 102, 209, 0.22);
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .icon.icon-ripple::after {
+      animation: iconRipple 560ms ease-out forwards;
+    }
+    .icon:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.14); border-color: rgba(0,0,0,0.12); }
+    .icon:active { transform: translateY(0) scale(0.98); box-shadow: 0 6px 14px rgba(0,0,0,0.12); }
 
     .icon:hover {
       transform: translateY(-2px);
