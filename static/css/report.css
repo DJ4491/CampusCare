@@ -322,6 +322,7 @@ body {
     color: var(--text-primary);
     margin-bottom: var(--spacing-md);
     line-height: 1.4;
+    background: transparent !important;
 }
 
 .post-location {
@@ -350,6 +351,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     margin-bottom: var(--spacing-lg);
+    background: transparent !important;
 }
 
 .post-image-container {
@@ -588,44 +590,67 @@ body {
     0% {
         box-shadow: 0 0 5px rgba(54, 165, 255, 0.5), 0 0 10px rgba(255, 0, 0, 0.33);
         border-color: #36a5ff;
+        opacity: 0.7;
     }
 
     33% {
         box-shadow: 0 0 16px rgba(255, 0, 0, 0.6), 0 0 10px rgba(54, 165, 255, 0.4);
         border-color: rgba(255, 0, 0, 0.664);
+        opacity: 0.5;
     }
 
     66% {
         box-shadow: 0 0 22px rgba(54, 165, 255, 0.8), 0 0 14px rgba(255, 0, 0, 0.33);
         border-color: #36a5ff;
+        opacity: 0.35;
     }
 
     100% {
         box-shadow: 0 0 5px rgba(54, 165, 255, 0.5), 0 0 10px rgba(255, 0, 0, 0.33);
         border-color: #36a5ff;
+        opacity: 0;
+    }
+}
+
+@keyframes ringPulseSoft {
+    0% {
+        box-shadow: 0 0 0 0 rgba(54, 165, 255, 0.35), 0 6px 14px rgba(0, 0, 0, 0.10);
+        transform: translateY(0) scale(1);
+    }
+
+    40% {
+        box-shadow: 0 0 0 6px rgba(54, 165, 255, 0.22), 0 10px 22px rgba(0, 0, 0, 0.14);
+        transform: translateY(-1px) scale(1.006);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(54, 165, 255, 0.12), 0 8px 18px rgba(0, 0, 0, 0.12);
+        transform: translateY(0) scale(1.002);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(54, 165, 255, 0), 0 6px 14px rgba(0, 0, 0, 0.10);
+        transform: translateY(0) scale(1);
     }
 }
 
 .highlight-target {
-    animation: highlightPulse 1.5s ease-in-out;
+    animation: ringPulseSoft 1.2s ease-out;
     border: 2px solid #36a5ff !important;
     /* campuscare blue */
     position: relative;
     z-index: 10;
+    background: transparent;
 }
 
 .highlight-target::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #36a5ff, rgba(255, 0, 0, 0.664), #36a5ff);
-    /* campuscare theme */
-    border-radius: inherit;
-    z-index: -1;
-    animation: highlightGlow 2.3s ease-in-out;
+    content: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .highlight-target {
+        animation: none !important;
+    }
 }
 
 /* Scrollbar Styling */

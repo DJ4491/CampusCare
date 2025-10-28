@@ -1,6 +1,17 @@
 {
+  "name": "campuscare",
+  "private": true,
   "dependencies": {
     "@fullcalendar/core": "^6.1.19",
     "@fullcalendar/daygrid": "^6.1.19"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.14"
+  },
+  "scripts": {
+    "build:css": "tailwindcss -i ./static/css/tailwind.css -o ./static/css/tailwind.build.css --minify",
+    "watch:css": "tailwindcss -i ./static/css/tailwind.css -o ./static/css/tailwind.build.css --watch"
   }
 }

@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens for CampusCare (optional, future custom components) */
+@layer base {
+  :root {
+    --cc-brand: #1766d1;
+  }
+}
+

@@ -348,6 +348,7 @@ function loadpage(page) {
   window.reportInitialized = false;
   window.homeInitialized = false;
   window.eventActivityInitialized = false;
+  window.supportInitialized = false;
 
   // Handle bottom menu visibility based on page
   if (page === "log_in" || page === "login") {
@@ -412,6 +413,9 @@ function loadpage(page) {
           }
           if (page === "event_activity") {
             initEventActivity();
+          }
+          if (page === "support") {
+            initSupport();
           }
         }, 2400); // Adjust this delay as needed (e.g., 1000ms = 1 second)
       })
@@ -570,20 +574,35 @@ function initReports() {
         setTimeout(() => {
           const targetEl = document.getElementById(window.__targetPostId);
           if (targetEl) {
+            // first scroll into view
             targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
-            targetEl.focus();
 
-            // Apply prominent highlight effect
+            // restart highlight animation reliably
+            targetEl.classList.remove("highlight-target");
+            void targetEl.offsetWidth; // force reflow to reset animation state
+
+            // focus for a11y without showing outline changes
+            try {
+              targetEl.focus({ preventScroll: true });
+            } catch (_) {}
+
             targetEl.classList.add("highlight-target");
 
-            // Remove highlight after animation completes
-            setTimeout(() => {
-              targetEl.blur();
+            // Prefer animationend over fixed timeout to avoid premature removal
+            const removeHighlight = () => {
+              targetEl.removeEventListener("animationend", removeHighlight);
+              try {
+                targetEl.blur();
+              } catch (_) {}
               targetEl.classList.remove("highlight-target");
-            }, 2300);
+            };
+            targetEl.addEventListener("animationend", removeHighlight);
+
+            // Safety fallback removal in case animationend doesn't fire
+            setTimeout(removeHighlight, 2600);
           }
           window.__targetPostId = null;
-        }, 0);
+        }, 120); // slight delay to ensure layout settles
       }
     })
     .catch((err) => console.error("Error loading reports or comments:", err));
@@ -600,7 +619,6 @@ function initReports() {
       post.className = "post";
       post.id = `post-${r.id}`; //ID to match the hash fragment
       post.innerHTML = `
-            <div class="container">
             <div class="post-header">
               <img src="${
                 r.avatar || "{% static 'images/profile.svg' %}"
@@ -696,7 +714,6 @@ function initReports() {
                 </button>
               </div>
             </div>
-          </div>
           `;
       feedContent.appendChild(post);
     });
@@ -1681,6 +1698,277 @@ function initEventActivity() {
   */
 }
 
+//note:-############################## Support Page ###########################################
+
+function initSupport() {
+  // endpoints (make these in Django)
+  const API_TICKETS = "/api/support/tickets/"; // GET returns list, POST creates
+
+  // DOM refs
+  const ticketsList = document.getElementById("tickets-list");
+  const ticketsEmpty = document.getElementById("tickets-empty");
+  const statOpen = document.getElementById("stat-open");
+  const statResolved = document.getElementById("stat-resolved");
+  const statAvg = document.getElementById("stat-avg");
+  const form = document.getElementById("ticket-form");
+  const feedback = document.getElementById("ticket-feedback");
+  // custom dropdown refs
+  const dd = document.getElementById("supportCategoryDropdown");
+  const ddToggle = dd ? dd.querySelector(".dropdown-toggle") : null;
+  const ddMenu = dd ? dd.querySelector(".dropdown-menu") : null;
+  const ddLabel = dd ? dd.querySelector(".dropdown-label") : null;
+  const ddBackdrop = dd ? dd.nextElementSibling : null; // .dropdown-backdrop
+  const categoryHidden = document.getElementById("ticket-category");
+
+  let tickets = []; // local cache
+
+  // load tickets on fragment init
+  function loadTickets() {
+    fetch(API_TICKETS)
+      .then((r) => r.json())
+      .then((data) => {
+        tickets = Array.isArray(data) ? data : [];
+        renderTickets();
+        computeStats();
+      })
+      .catch((err) => {
+        console.error("Failed to load tickets", err);
+        feedback.textContent = "Couldn't load support tickets right now.";
+      });
+  }
+
+  function renderTickets() {
+    ticketsList.innerHTML = "";
+    if (!tickets.length) {
+      ticketsEmpty.style.display = "block";
+      return;
+    }
+    ticketsEmpty.style.display = "none";
+
+    tickets.forEach((t) => {
+      const div = document.createElement("div");
+      const statusLabel = (t.status || "open").toLowerCase();
+      const statusClass =
+        statusLabel === "resolved"
+          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+          : statusLabel === "pending"
+          ? "bg-amber-50 text-amber-700 border border-amber-200"
+          : "bg-rose-50 text-rose-700 border border-rose-200";
+      const created = new Date(
+        t.created_at || t.time || t.created || Date.now()
+      ).toLocaleString();
+
+      div.className =
+        "ticket rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition p-3";
+      div.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div class="subject font-bold text-slate-900 text-[15px]">${escapeHtml(
+              t.subject || t.title || "No subject"
+            )}</div>
+            <div class="status-pill ${statusClass} text-xs px-2 py-1 rounded-full capitalize">${statusLabel}</div>
+          </div>
+          <div class="desc text-slate-600 text-sm mt-1">${escapeHtml(
+            t.description || ""
+          )}</div>
+          <div class="flex items-center justify-between text-[12px] text-slate-500 mt-2">
+            <small class="muted">#${t.id || ""} • ${created}</small>
+            <div>
+              <button class="inline-flex items-center rounded-lg px-3 py-1 border text-slate-600 hover:bg-slate-50 transition text-sm" onclick="markResolved(${
+                t.id
+              })">Mark resolved</button>
+            </div>
+          </div>
+        `;
+      ticketsList.appendChild(div);
+    });
+  }
+
+  function computeStats() {
+    const open = tickets.filter((t) => t.status !== "resolved").length;
+    const resolved = tickets.filter((t) => t.status === "resolved").length;
+    statOpen.textContent = open;
+    statResolved.textContent = resolved;
+    statAvg.textContent = "—"; // placeholder; implement server-side average response time if wanted
+  }
+
+  // create ticket handler (optimistic UI, shows server response)
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    feedback.textContent = "";
+    const subject = document.getElementById("ticket-subject").value.trim();
+    const category = document.getElementById("ticket-category").value;
+    const description = document.getElementById("ticket-desc").value.trim();
+
+    if (!subject) {
+      feedback.textContent = "Subject is required.";
+      return;
+    }
+
+    const payload = { subject, category, description };
+
+    // optimistic update (show brief entry)
+    const optimistic = {
+      id: `temp-${Date.now()}`,
+      subject,
+      description,
+      category,
+      status: "pending",
+      created_at: new Date().toISOString(),
+    };
+    tickets.unshift(optimistic);
+    renderTickets();
+    computeStats();
+    feedback.textContent = "Sending...";
+
+    fetch(API_TICKETS, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error("Network response not ok");
+        const saved = await res.json();
+        // replace optimistic item with saved data (match by temp id if server returns some marker)
+        tickets = tickets.filter((t) => !String(t.id).startsWith("temp-")); // drop temp
+        tickets.unshift(saved);
+        renderTickets();
+        computeStats();
+        feedback.textContent = "Request submitted. We'll get back soon.";
+        form.reset();
+      })
+      .catch((err) => {
+        console.error("Post ticket error", err);
+        // revert optimistic
+        tickets = tickets.filter((t) => !String(t.id).startsWith("temp-"));
+        renderTickets();
+        computeStats();
+        feedback.textContent = "Failed to send. Try again later.";
+      });
+  });
+
+  // simple mark resolved action (sends PATCH if your API supports it)
+  function markResolved(id) {
+    if (!id) return;
+    // optimistic change locally
+    tickets = tickets.map((t) =>
+      t.id === id ? { ...t, status: "resolved" } : t
+    );
+    renderTickets();
+    computeStats();
+
+    fetch(API_TICKETS + id + "/", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "resolved" }),
+    }).then((r) => {
+      if (!r.ok) {
+        // revert if failed
+        tickets = tickets.map((t) =>
+          t.id === id ? { ...t, status: "open" } : t
+        );
+        renderTickets();
+        computeStats();
+      }
+    });
+  }
+
+  // helper: escape text for safe insertion
+  function escapeHtml(s) {
+    if (!s) return "";
+    return String(s)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
+  }
+
+  // clear button
+  document
+    .getElementById("clear-btn")
+    .addEventListener("click", () => form.reset());
+
+  // accordion toggles
+  document.querySelectorAll(".accordion .acc").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const panel = btn.nextElementSibling;
+      const isOpen = panel.style.display === "block";
+      document
+        .querySelectorAll(".accordion .panel")
+        .forEach((p) => (p.style.display = "none"));
+      panel.style.display = isOpen ? "none" : "block";
+    });
+  });
+
+  // init
+  loadTickets();
+
+  // ===== Custom Animated Dropdown (category) =====
+  if (dd && ddToggle && ddMenu && ddLabel && categoryHidden) {
+    const openDropdown = () => {
+      dd.classList.add("open");
+      dd.setAttribute("aria-expanded", "true");
+      ddToggle.setAttribute("aria-expanded", "true");
+      // Tailwind: ensure menu/backdrop are visible
+      if (ddMenu.classList.contains("hidden"))
+        ddMenu.classList.remove("hidden");
+      if (ddBackdrop) {
+        ddBackdrop.hidden = false;
+        ddBackdrop.classList.remove("hidden");
+      }
+    };
+    const closeDropdown = () => {
+      dd.classList.remove("open");
+      dd.setAttribute("aria-expanded", "false");
+      ddToggle.setAttribute("aria-expanded", "false");
+      // Tailwind: hide menu/backdrop after transition
+      if (!ddMenu.classList.contains("hidden")) ddMenu.classList.add("hidden");
+      if (ddBackdrop) {
+        setTimeout(() => {
+          ddBackdrop.hidden = true;
+          if (!ddBackdrop.classList.contains("hidden"))
+            ddBackdrop.classList.add("hidden");
+        }, 160);
+      }
+    };
+    const toggleDropdown = () => {
+      if (dd.classList.contains("open")) closeDropdown();
+      else openDropdown();
+    };
+
+    // click handlers
+    ddToggle.addEventListener("click", (e) => {
+      e.preventDefault();
+      toggleDropdown();
+    });
+    if (ddBackdrop) ddBackdrop.addEventListener("click", closeDropdown);
+
+    // select item
+    ddMenu.addEventListener("click", (e) => {
+      const item = e.target.closest(".dropdown-item");
+      if (!item) return;
+      const value = item.getAttribute("data-value") || item.textContent.trim();
+      ddLabel.textContent = value;
+      categoryHidden.value = value;
+      ddMenu.querySelectorAll(".dropdown-item").forEach((el) => {
+        el.removeAttribute("aria-selected");
+      });
+      item.setAttribute("aria-selected", "true");
+      closeDropdown();
+    });
+
+    // keyboard support
+    ddToggle.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleDropdown();
+      }
+      if (e.key === "Escape") closeDropdown();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeDropdown();
+    });
+  }
+}
+
 //note:- ############################### Search Page ################################
 // SPA helper: navigate to my_reports and scroll to a specific post id
 function goToMyReport(reportId) {
@@ -1761,6 +2049,7 @@ let initializationState = {
   search: false,
   report: false,
   event_activity: false,
+  support: false,
 };
 
 function initializePages() {
@@ -1831,6 +2120,10 @@ function initializePages() {
   if (path.includes("event_activity") && !initializationState.event_activity) {
     initializationState.event_activity = true;
     initEventActivity();
+  }
+  if (path.includes("support") && !initializationState.support) {
+    initializationState.support = true;
+    initSupport();
   }
 }
 

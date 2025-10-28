@@ -1,13 +1,13 @@
 {% load static %}
-<div class="container">
-  <div class="heading">
+<div class="container mx-auto max-w-[500px] px-4">
+  <div class="heading" role="banner">
     <img
       class="title_image"
       src="{% static 'images/CamCare.png' %}"
       alt="CamConnect"
     />
   </div>
-  <section class="home_dashboard home_card" aria-label="Overview">
+  <section class="home_dashboard home_card" aria-label="Overview" role="region">
     <div style="display: flex; visibility: hidden">
       <div
         class="stat_card skeleton"
@@ -42,15 +42,13 @@
     </div>
   </section>
   <div class="content">
-    <div class="iconwrapper">
-      <div onclick="loadpage('my_reports')" class="icon icon1"></div>
-      <div onclick="loadpage('lost_found')" class="icon icon2"></div>
-      <div onclick="loadpage('event_activity')" class="icon icon3"></div>
-      <div class="icon icon4"></div>
-      <div class="icon icon5">
-        <!-- <p>Support</p> -->
-      </div>
-      <div class="icon icon6"></div>
+    <div class="iconwrapper" role="grid" aria-label="Quick actions">
+      <div onclick="loadpage('my_reports')" class="icon icon1" role="button" aria-label="My Reports"></div>
+      <div onclick="loadpage('lost_found')" class="icon icon2" role="button" aria-label="Lost and Found"></div>
+      <div onclick="loadpage('event_activity')" class="icon icon3" role="button" aria-label="Events and Activities"></div>
+      <div class="icon icon4" role="button" aria-label="Campus Map"></div>
+      <div onclick="loadpage('support')" class="icon icon5" role="button" aria-label="Support"></div>
+      <div class="icon icon6" role="button" aria-label="Help"></div>
     </div>
   </div>
 </div>
