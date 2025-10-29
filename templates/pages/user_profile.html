@@ -33,5 +33,25 @@
 
     <!-- Actual content will be injected here -->
   </div>
+  <button id="logoutFab" class="logout_fab" aria-label="Log out" aria-haspopup="dialog" aria-controls="logoutConfirm">
+    <span class="fab_icon" aria-hidden="true"><img src="{% static 'images/logout.png' %}" width="60px" alt=""></span>
+    <span class="label">Log out</span>
+  </button>
+  
+  <!-- Confirmation modal -->
+  <div id="logoutConfirm" class="logout_confirm" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="logoutTitle" tabindex="-1">
+    <div class="logout_confirm_backdrop" data-close></div>
+    <div class="logout_confirm_card" role="document">
+      <h3 id="logoutTitle">Confirm logout</h3>
+      <p>Are you sure you want to sign out? Any unsaved changes will be lost.</p>
+      <div class="confirm_actions">
+        <button type="button" class="btn btn-ghost" data-cancel>Cancel</button>
+        <button type="button" class="btn btn-primary" data-confirm>
+          <span class="btn_text">Log out</span>
+          <span class="btn_loader" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </div>
   <div id="editProfile"></div>
 </div>

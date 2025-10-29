@@ -55,6 +55,97 @@ document.addEventListener("contextmenu", function (e) {
   });
 })();
 
+//@important ############################################# logout ################################################################
+
+function setupLogoutConfirm() {
+  const fab = document.getElementById("logoutFab");
+  const modal = document.getElementById("logoutConfirm");
+  if (!fab || !modal) return; // Not on this page yet
+
+  if (fab.dataset.bound === "1") return; // idempotent
+  fab.dataset.bound = "1";
+
+  const btnConfirm = modal.querySelector("[data-confirm]");
+  const btnCancel = modal.querySelector("[data-cancel]");
+  const backdrop = modal.querySelector("[data-close]");
+  const REDIRECT_URL = "/logout/"; // keep your logout path
+
+  // ripple on click
+  fab.addEventListener(
+    "pointerdown",
+    (e) => {
+      const rect = fab.getBoundingClientRect();
+      const ripple = document.createElement("span");
+      ripple.className = "ripple";
+      ripple.style.left = e.clientX - rect.left + "px";
+      ripple.style.top = e.clientY - rect.top + "px";
+      fab.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    },
+    { passive: true }
+  );
+
+  // subtle attention pulse
+  requestAnimationFrame(() => fab.classList.add("pulse"));
+  setTimeout(() => fab.classList.remove("pulse"), 1500);
+
+  function openConfirm() {
+    // ensure modal is a direct child of body to escape transformed ancestors
+    try {
+      if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
+    } catch (_) {}
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+    // focus cancel for quick escape
+    btnCancel && btnCancel.focus();
+    document.addEventListener("keydown", handleKey);
+  }
+  function closeConfirm() {
+    modal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+    document.removeEventListener("keydown", handleKey);
+    fab.focus();
+  }
+  function handleKey(e) {
+    if (e.key === "Escape") closeConfirm();
+    if (e.key === "Tab") {
+      const focusables = modal.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (!first || !last) return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  fab.addEventListener("click", openConfirm);
+  btnCancel && btnCancel.addEventListener("click", closeConfirm);
+  backdrop && backdrop.addEventListener("click", closeConfirm);
+
+  btnConfirm &&
+    btnConfirm.addEventListener("click", () => {
+      // allow loader to fade in smoothly before navigation
+      btnConfirm.classList.add("loading");
+      const original = btnConfirm.querySelector(".btn_text");
+      if (original) original.textContent = "Signing out...";
+      setTimeout(() => {
+        window.location.href = REDIRECT_URL;
+      }, 850);
+    });
+}
+
+// Try binding once DOM is ready (in case profile is the first page)
+document.addEventListener("DOMContentLoaded", setupLogoutConfirm);
+
 //remove bottom_menu when needed
 function removeBottomMenu() {
   const bottm_menu = document.getElementById("bottom_menu");
@@ -364,6 +455,7 @@ function loadpage(page) {
   window.homeInitialized = false;
   window.eventActivityInitialized = false;
   window.supportInitialized = false;
+  window.helpInitialized = false;
 
   // Handle bottom menu visibility based on page
   if (page === "log_in" || page === "login") {
@@ -421,7 +513,10 @@ function loadpage(page) {
             initCategoryDropdown();
           }
           if (page === "lost_found") {
-            initLostFound();
+            if (!initializationState.lost_found) {
+              initializationState.lost_found = true;
+              initLostFound();
+            }
           }
           if (page === "create_lost_found") {
             initCreateLostFound();
@@ -431,6 +526,9 @@ function loadpage(page) {
           }
           if (page === "support") {
             initSupport();
+          }
+          if (page === "help") {
+            initHelp();
           }
           // Re-bind micro-interactions for icons on each page load
           initIconInteractions();
@@ -849,39 +947,41 @@ function formatTimeAgo(dateString) {
 function initLostFound() {
   // Sample dynamic posts with images
   const posts = [
-    {
-      id: 1,
-      user: "Aman",
-      branch: "CS",
-      avatar: "👨",
-      time: "2025-09-30 10:30 AM",
-      item: "Wallet",
-      status: "Lost",
-      description: "Blue leather wallet with multiple cards",
-      image:
-        "https://thumbs.dreamstime.com/z/brown-wallet-sitting-table-ai-296869590.jpg",
-      comments: [
-        "I think I saw it near canteen",
-        "Check library counter",
-        "Hope you find it soon!",
-      ],
-    },
-    {
-      id: 2,
-      user: "Aisha",
-      branch: "IT",
-      avatar: "👩",
-      time: "2025-09-30 11:00 AM",
-      item: "Headphones",
-      status: "Found",
-      description: "Black over-ear headphones with a green stripe",
-      image:
-        "https://img.freepik.com/premium-photo/headphones-resting-wooden-table_118124-198357.jpg",
-      comments: ["Might be mine!", "Good work returning it"],
-    },
+    // {
+    //   id: 1,
+    //   user: "Aman",
+    //   branch: "CS",
+    //   avatar: "👨",
+    //   time: "2025-09-30 10:30 AM",
+    //   item: "Wallet",
+    //   status: "Lost",
+    //   description: "Blue leather wallet with multiple cards",
+    //   image:
+    //     "https://thumbs.dreamstime.com/z/brown-wallet-sitting-table-ai-296869590.jpg",
+    //   comments: [
+    //     "I think I saw it near canteen",
+    //     "Check library counter",
+    //     "Hope you find it soon!",
+    //   ],
+    // },
+    // {
+    //   id: 2,
+    //   user: "Aisha",
+    //   branch: "IT",
+    //   avatar: "👩",
+    //   time: "2025-09-30 11:00 AM",
+    //   item: "Headphones",
+    //   status: "Found",
+    //   description: "Black over-ear headphones with a green stripe",
+    //   image:
+    //     "https://img.freepik.com/premium-photo/headphones-resting-wooden-table_118124-198357.jpg",
+    //   comments: ["Might be mine!", "Good work returning it"],
+    // },
   ];
-
+  hideSkeletonLoading();
   const postsContainer = document.getElementById("posts");
+  // Ensure idempotent rendering (avoid duplicates if init gets called again)
+  if (postsContainer) postsContainer.innerHTML = "";
 
   posts.forEach((post) => {
     const card = document.createElement("div");
@@ -1292,6 +1392,8 @@ function initUserProfile() {
         }
       }
       renderFeed();
+      // bind logout confirm interactions after content is rendered
+      setupLogoutConfirm();
     });
 }
 
@@ -1986,6 +2088,134 @@ function initSupport() {
   }
 }
 
+//note:- ####################### help page ###############################3
+function initHelp() {
+  // Utility: debounce
+  function debounce(fn, wait) {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), wait);
+    };
+  }
+
+  // Accordion behavior (accessible, animated)
+  const accButtons = document.querySelectorAll(".accordion .acc");
+  accButtons.forEach((btn) => {
+    const panel = btn.parentElement.querySelector(".panel");
+    // ensure initial ARIA states
+    btn.setAttribute("aria-expanded", "false");
+    panel.setAttribute("aria-hidden", "true");
+
+    btn.addEventListener("click", () => {
+      const expanded = btn.getAttribute("aria-expanded") === "true";
+      // close all
+      accButtons.forEach((b) => {
+        b.setAttribute("aria-expanded", "false");
+        const p = b.parentElement.querySelector(".panel");
+        p.classList.remove("open");
+        p.setAttribute("aria-hidden", "true");
+        p.style.maxHeight = null;
+      });
+      // open toggled one if previously closed
+      if (!expanded) {
+        btn.setAttribute("aria-expanded", "true");
+        panel.classList.add("open");
+        panel.setAttribute("aria-hidden", "false");
+        // animate to scrollHeight for smooth open
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      }
+    });
+
+    // ensure smooth height recalculation on content/resize
+    window.addEventListener("resize", () => {
+      if (panel.classList.contains("open")) {
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      }
+    });
+  });
+
+  // Search: live filter for accordion questions + cards with debounce
+  const input = document.getElementById("helpSearch");
+  const clearBtn = document.getElementById("clearSearch");
+  const cards = document.querySelectorAll(".help-card");
+  const accItems = document.querySelectorAll(".accordion .acc_item");
+
+  function updateClearBtn() {
+    const v = (input.value || "").trim();
+    clearBtn.hidden = !v;
+  }
+
+  function filterAll(q) {
+    q = (q || "").toLowerCase().trim();
+
+    // filter accordion items (match both question and panel text)
+    accItems.forEach((item) => {
+      const btn = item.querySelector(".acc");
+      const panel = item.querySelector(".panel");
+      const text = (btn.textContent + " " + panel.textContent).toLowerCase();
+      const match = !q || text.includes(q);
+      item.style.display = match ? "" : "none";
+      // close panels that are hidden
+      if (!match && panel.classList.contains("open")) {
+        btn.click(); // close it via existing handler
+      }
+    });
+
+    // filter cards (match heading + paragraph)
+    cards.forEach((c) => {
+      const txt = c.textContent.toLowerCase();
+      c.style.display = !q || txt.includes(q) ? "" : "none";
+    });
+
+    updateClearBtn();
+  }
+
+  const debouncedFilter = debounce((e) => filterAll(e.target.value), 180);
+
+  if (input) {
+    input.addEventListener("input", debouncedFilter);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        input.value = "";
+        filterAll("");
+        input.blur();
+      }
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      input.focus();
+      filterAll("");
+    });
+  }
+
+  // progressive enhancement: ensure card clicks still work if no inline onclick available.
+  // For now we leave existing onclick handlers intact but add data-action support.
+  document.querySelectorAll(".help-card[data-action]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const act = el.dataset.action;
+      if (typeof window[act] === "function") window[act]();
+    });
+  });
+
+  // initial state
+  updateClearBtn();
+
+  // keyboard accessibility: allow Enter/Space on cards that are anchors/links
+  document.querySelectorAll(".help-card").forEach((card) => {
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        card.click();
+      }
+    });
+    card.tabIndex = card.getAttribute("href") ? 0 : 0; // make focusable
+  });
+}
+
 //note:- ############################### Search Page ################################
 // SPA helper: navigate to my_reports and scroll to a specific post id
 function goToMyReport(reportId) {
@@ -2067,6 +2297,7 @@ let initializationState = {
   report: false,
   event_activity: false,
   support: false,
+  help: false,
 };
 
 function initializePages() {
@@ -2141,6 +2372,10 @@ function initializePages() {
   if (path.includes("support") && !initializationState.support) {
     initializationState.support = true;
     initSupport();
+  }
+  if (path.includes("help") && !initializationState.help) {
+    initializationState.help = true;
+    initHelp();
   }
 }
 

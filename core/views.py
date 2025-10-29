@@ -1,6 +1,6 @@
 # core/views.py
 from django.contrib.auth.views import login_not_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 import random
 from django.conf import settings
@@ -617,3 +617,27 @@ def event_activity(request):
 @login_required
 def support(request):
     return render_fragment_or_full(request, "pages/support.html")
+
+
+@login_required
+def help(request):
+    return render_fragment_or_full(request, "pages/help.html")
+
+
+@require_http_methods(["GET"])
+def logout_view(request):
+    """Log out the current user and redirect to login page.
+
+    - For normal navigation, redirect to /log_in/
+    - For AJAX callers, return JSON with a redirect hint
+    """
+    try:
+        logout(request)
+    except Exception:
+        # ignore logout errors; proceed to redirect
+        pass
+
+    if is_ajax(request):
+        return JsonResponse({"success": True, "redirect": "/log_in/"})
+
+    return redirect("/log_in/")

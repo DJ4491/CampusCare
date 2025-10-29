@@ -234,29 +234,30 @@ body>.container {
 }
 
 /*#################### Skeleton Loading ##########################*/
-/* Loading Skeleton */
 .loading-skeleton {
-    padding: var(--spacing-lg);
+    /* match .posts inner padding for consistent gutters */
+    padding: 15px;
 }
 
 .skeleton-post {
-    background: var(--surface);
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
-    box-shadow: var(--shadow-sm);
+    /* match .card */
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .skeleton-header {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
+    gap: 10px; /* match .avatar margin-right */
+    margin-bottom: 8px; /* match .card-header bottom spacing */
 }
 
 .skeleton-avatar {
-    width: 48px;
-    height: 48px;
+    width: 40px; /* match .avatar */
+    height: 40px;
     border-radius: 50%;
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
@@ -268,20 +269,22 @@ body>.container {
 }
 
 .skeleton-line {
-    height: 16px;
+    height: 14px; /* closer to 14-15px text */
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
-    border-radius: var(--radius-sm);
-    margin-bottom: var(--spacing-sm);
+    border-radius: 6px;
+    margin-bottom: 6px;
     animation: skeleton-loading 1.5s infinite;
 }
 
 .skeleton-line.short {
-    width: 60%;
+    width: 50%; /* approximate .name width */
 }
 
 .skeleton-line.shorter {
-    width: 40%;
+    width: 30%; /* approximate .time width */
+    height: 12px; /* smaller meta line */
+    opacity: 0.85;
 }
 
 .skeleton-line.medium {
@@ -293,16 +296,17 @@ body>.container {
 }
 
 .skeleton-content {
-    margin-top: var(--spacing-md);
+    margin-top: 8px; /* match .item-title/.item-desc spacing */
 }
 
 .skeleton-image {
     width: 100%;
-    height: 200px;
+    height: 200px; /* match .item-image max-height */
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
-    border-radius: var(--radius-md);
-    margin-top: var(--spacing-md);
+    border-radius: 10px; /* match .item-image radius */
+    margin-top: 8px;
+    margin-bottom: 8px;
     animation: skeleton-loading 1.5s infinite;
 }
 

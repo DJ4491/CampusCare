@@ -768,6 +768,223 @@
       font-weight: 700;
     }
 
+    /* Logout floating action button (FAB) inside profile pane */
+    /* Logout FAB (floating) */
+    .logout_fab {
+      position: fixed; /* stays visible even when page scrolls */
+      right: clamp(12px, 2vw, 22px);
+      bottom: calc(clamp(12px, 3vh, 22px) + 100px);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #3b83f636, #6365f12f);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow:
+        0 10px 30px rgba(66, 75, 120, 0.24),
+        inset 0 -3px 8px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transform: translateZ(0);
+      transition: transform 220ms cubic-bezier(.22,.9,.26,1), box-shadow 220ms, opacity 180ms;
+      z-index: 1400;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* icon and label remain same */
+    .logout_fab .fab_icon {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:34px; height:34px;
+      border-radius:10px;
+      background: rgba(255, 255, 255, 0.014);
+      backdrop-filter: blur(2px);
+      font-size:16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+    
+    .logout_fab .label {
+      margin-left: 2px;
+      letter-spacing: 0.2px;
+      transform-origin: left center;
+    }
+    
+    /* hover / focus / active states */
+    .logout_fab:hover,
+    .logout_fab:focus {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow:
+        0 18px 40px rgba(66, 75, 120, 0.28),
+        inset 0 -3px 8px rgba(0,0,0,0.06);
+    }
+    
+    .logout_fab:active { transform: translateY(-2px) scale(0.995); }
+    
+    /* RESPONSIVE label behavior */
+    @media (max-width: 520px) {
+      .logout_fab {
+        padding: 10px; /* tighter padding */
+        gap: 6px;
+      }
+      .logout_fab .label {
+        display: none; /* hide text on very small screens */
+      }
+    }
+    .logout_fab:active { transform: translateY(-2px) scale(0.995); }
+
+    .logout_fab:focus-visible {
+      outline: none;
+      box-shadow: 0 18px 40px rgba(66,75,120,0.28), 0 0 0 4px rgba(99,101,241,0.18);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    /* subtle attention pulse (not intrusive) */
+    .logout_fab::before {
+      content: "";
+      position: absolute;
+      right: -10px; bottom: -10px;
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,101,241,0.12) 0%, transparent 40%);
+      opacity: 0;
+      transform: scale(.8);
+      transition: opacity 420ms, transform 420ms;
+      pointer-events: none;
+    }
+    .logout_fab.pulse::before { opacity: 1; transform: scale(1.04); }
+
+    /* ripple */
+    .logout_fab .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0.1);
+      pointer-events: none;
+      background: rgba(255,255,255,0.18);
+      animation: ripple 520ms cubic-bezier(.22,.9,.26,1);
+    }
+    @keyframes ripple { to { transform: translate(-50%, -50%) scale(3.6); opacity: 0; } }
+
+    /* Confirmation modal */
+    .logout_confirm {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none; /* enable only children to receive events */
+    }
+    .logout_confirm[aria-hidden="false"] { display:flex; }
+
+    /* backdrop blur */
+    .logout_confirm_backdrop {
+      position: absolute; inset:0;
+      background:
+        radial-gradient(120% 80% at 50% -10%, rgba(99,101,241,0.16), transparent 60%),
+        radial-gradient(100% 70% at 20% 100%, rgba(59,130,246,0.12), transparent 60%),
+        rgba(6,8,20,0.5);
+      backdrop-filter: blur(6px) saturate(1.1);
+      opacity: 0;
+      animation: backdropIn 260ms ease forwards;
+      pointer-events: all;
+    }
+
+    /* card */
+    .logout_confirm_card {
+      position: relative;
+      z-index: 1;
+      width: min(420px, calc(100% - 48px));
+      padding: 18px;
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,248,251,0.98));
+      box-shadow:
+        0 24px 60px rgba(3,10,30,0.20),
+        0 6px 18px rgba(3,10,30,0.10);
+      border: 1px solid rgba(15,23,42,0.06);
+      transform: translateY(8px) scale(.98);
+      transition: transform 260ms cubic-bezier(.22,.9,.26,1), opacity 200ms;
+      pointer-events: all;
+      animation: modalReveal 320ms cubic-bezier(.22,.9,.26,1) both;
+    }
+    /* top accent loader bar on open */
+    .logout_confirm_card::after {
+      content: "";
+      position: absolute; left: 0; top: 0;
+      height: 3px; width: 0;
+      background: linear-gradient(90deg,#3b83f6,#6365f1);
+      border-top-left-radius: 16px; border-top-right-radius: 16px;
+      opacity: 0.9;
+    }
+    .logout_confirm[aria-hidden="false"] .logout_confirm_card::after {
+      animation: loadBar 700ms cubic-bezier(.22,.9,.26,1) forwards;
+    }
+    .logout_confirm[aria-hidden="false"] .logout_confirm_card { transform: translateY(0); }
+
+    .logout_confirm_card h3 { margin: 0 0 6px; font-size: 1.05rem; color: #0f172a; }
+    .logout_confirm_card p { margin: 0 0 14px; color: #374151; line-height: 1.45; }
+
+    /* actions */
+    .confirm_actions { display:flex; gap:10px; justify-content:flex-end; }
+    .btn { padding:10px 14px; border-radius:12px; font-weight:700; border:1px solid rgba(0,0,0,0.06); cursor:pointer; }
+    .btn-ghost { background: linear-gradient(180deg,#ffffff,#f8fafc); color: #1f2937; box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+    .btn-primary {
+      background: linear-gradient(90deg,#3b83f6,#6365f1);
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      min-width: 96px;
+      box-shadow: 0 8px 18px rgba(99,101,241,0.28);
+    }
+    .btn-primary:active { transform: translateY(1px); }
+
+    /* loader inside button */
+    .btn_loader {
+      display:inline-block;
+      width:18px; height:18px; border-radius:50%;
+      border: 2px solid rgba(255,255,255,0.18);
+      border-top-color: rgba(255,255,255,0.9);
+      margin-left:8px;
+      vertical-align: middle;
+      opacity: 0;
+      transform: scale(.8);
+      transition: opacity 180ms, transform 180ms;
+    }
+    .btn.loading .btn_loader { opacity:1; transform: scale(1); animation: spin 900ms linear infinite; }
+    .btn.loading .btn_text { opacity: .8; filter: saturate(.9); transition: opacity 160ms ease; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes modalReveal {
+      0% { opacity: 0; transform: translateY(18px) scale(.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes backdropIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes loadBar {
+      0% { width: 0; }
+      60% { width: 86%; }
+      100% { width: 100%; }
+    }
+
+    /* Reduced motion fallback */
+    @media (prefers-reduced-motion: reduce) {
+      .logout_fab, .logout_confirm_card { transition: none; animation: none; }
+      .logout_fab::before { display:none; }
+      .logout_fab .ripple { animation: none; opacity: 0; }
+    }
+
+    /* lock scroll when modal is open */
+    body.modal-open {
+      overflow: hidden;
+      height: 100vh;
+      touch-action: none;
+    }
     /*######################### Edit User Profile ###############################*/
     /* Edit Profile - Bottom sheet page (scoped) */
     #edit-profile-page {

@@ -1,0 +1,437 @@
+{% load static %}
+<section class="help-page" aria-label="Help & FAQ">
+  <header class="help-header">
+    <div class="logo_row">
+      <img
+        src="{% static 'images/CamCare.png' %}"
+        alt="CampusCare+"
+        class="brand"
+        width="56"
+        height="56"
+      />
+      <div class="title_block">
+        <h1>Help Center</h1>
+        <p class="sub">
+          Find quick answers, contact support, and learn how to use CampusCare+
+        </p>
+      </div>
+    </div>
+
+    <div class="search_bar" role="search" aria-label="Search help topics">
+      <input
+        id="helpSearch"
+        type="search"
+        placeholder="Search help topics, e.g. 'report' or 'profile'"
+        aria-label="Search help"
+        autocomplete="off"
+      />
+      <button
+        id="clearSearch"
+        class="clear-btn"
+        aria-label="Clear search"
+        title="Clear"
+        hidden
+      >
+        ✕
+      </button>
+    </div>
+  </header>
+
+  <main class="help-grid" role="region" aria-label="Help actions">
+    <button
+      class="help-card"
+      onclick="loadpage('support')"
+      aria-label="Contact Support — Open support page"
+    >
+      <div class="icon" aria-hidden="true">🛠️</div>
+      <div class="card_text">
+        <h3>Contact Support</h3>
+        <p>Open a private ticket with our team</p>
+      </div>
+    </button>
+
+    <a class="help-card" href="#faq" aria-label="View FAQ">
+      <div class="icon" aria-hidden="true">📚</div>
+      <div class="card_text">
+        <h3>FAQ</h3>
+        <p>Common questions and answers</p>
+      </div>
+    </a>
+
+    <button
+      class="help-card"
+      onclick="loadpage('event_activity')"
+      aria-label="Events Guide — open"
+    >
+      <div class="icon" aria-hidden="true">🗓️</div>
+      <div class="card_text">
+        <h3>Events Guide</h3>
+        <p>Using calendars and activities</p>
+      </div>
+    </button>
+
+    <button
+      class="help-card"
+      onclick="loadpage('my_reports')"
+      aria-label="Reporting — best practices"
+    >
+      <div class="icon" aria-hidden="true">📢</div>
+      <div class="card_text">
+        <h3>Reporting</h3>
+        <p>Best practices for reports</p>
+      </div>
+    </button>
+  </main>
+
+  <section id="faq" class="faq-section" aria-label="Frequently Asked Questions">
+    <h2>Frequently Asked Questions</h2>
+    <div class="accordion" role="list">
+      <div class="acc_item" role="listitem">
+        <button class="acc" aria-expanded="false">
+          How do I submit a report?
+        </button>
+        <div class="panel" role="region" aria-hidden="true">
+          Go to Report Issues, fill in details, and submit. You can add an image
+          for clarity.
+        </div>
+      </div>
+
+      <div class="acc_item" role="listitem">
+        <button class="acc" aria-expanded="false">
+          How long does support take to respond?
+        </button>
+        <div class="panel" role="region" aria-hidden="true">
+          Most tickets receive a response within 24–48 hours. Urgent matters are
+          prioritized.
+        </div>
+      </div>
+
+      <div class="acc_item" role="listitem">
+        <button class="acc" aria-expanded="false">
+          Can I edit my profile information?
+        </button>
+        <div class="panel" role="region" aria-hidden="true">
+          Yes — navigate to Profile → Edit Profile to update your info and
+          image.
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<style>
+  /* -------------------------
+     Mobile-first design vars
+     ------------------------- */
+  :root {
+    --bg: #fbfdff;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --accent: #2563eb; /* indigo-600 */
+    --accent-600: #1e40af;
+    --border: #e6eefc;
+    --radius-lg: 14px;
+    --radius-md: 10px;
+    --shadow-sm: 0 6px 18px rgba(13, 20, 33, 0.06);
+    --shadow-lg: 0 14px 40px rgba(13, 20, 33, 0.1);
+    --space: 14px;
+    --tap-size: 56px;
+    --max-width: 760px;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+      Roboto, "Helvetica Neue", Arial;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+      animation-duration: 0.001ms !important;
+    }
+  }
+
+  /* Container */
+  .help-page {
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: calc(env(safe-area-inset-top, 12px) + 18px) 16px 48px;
+    width: 100%;
+    max-width: var(--max-width);
+    background: var(--bg);
+    color: #0f172a;
+  }
+
+  /* Header */
+  .help-header {
+    text-align: left;
+    margin-bottom: 14px;
+    animation: fadeUp 0.36s ease both;
+  }
+
+  .logo_row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .brand {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    object-fit: contain;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.4)
+    );
+    box-shadow: var(--shadow-sm);
+    padding: 6px;
+  }
+
+  .title_block h1 {
+    margin: 0;
+    font-size: clamp(18px, 4.2vw, 22px);
+    font-weight: 700;
+    letter-spacing: -0.2px;
+  }
+
+  .title_block .sub {
+    margin: 6px 0 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* Search */
+  .search_bar {
+    margin-top: 14px;
+    position: relative;
+  }
+
+  .search_bar input {
+    width: 100%;
+    padding: 12px 44px 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    font-size: 14px;
+    box-shadow: 0 6px 18px rgba(2, 6, 23, 0.025) inset;
+    transition: box-shadow 0.16s ease, border-color 0.12s ease,
+      transform 0.08s ease;
+    min-height: 44px;
+  }
+
+  .search_bar input::placeholder {
+    color: #94a3b8;
+  }
+  .search_bar input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 6px 30px rgba(37, 99, 235, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 36px;
+    width: 36px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  /* Help grid & cards */
+  .help-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .help-card {
+    appearance: none;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    background: linear-gradient(180deg, #fff, #fbfdff);
+    padding: 12px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    text-align: left;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    min-height: var(--tap-size);
+    transition: transform 0.14s ease, box-shadow 0.14s ease,
+      border-color 0.14s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .help-card:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.12);
+    outline-offset: 2px;
+    border-color: rgba(37, 99, 235, 0.16);
+  }
+  .help-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(15, 23, 42, 0.06);
+  }
+  .help-card:active {
+    transform: translateY(0) scale(0.998);
+  }
+
+  .help-card .icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    background: rgba(243, 244, 246, 1);
+    border-radius: 12px;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .card_text h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .card_text p {
+    margin: 4px 0 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* FAQ / accordion */
+  .faq-section {
+    margin-top: 18px;
+  }
+  .faq-section h2 {
+    font-size: 15px;
+    margin: 0 0 10px 0;
+  }
+
+  .accordion .acc_item {
+    margin-bottom: 10px;
+  }
+
+  .accordion .acc {
+    width: 100%;
+    text-align: left;
+    padding: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .accordion .acc::after {
+    content: "▸";
+    transform-origin: 50% 50%;
+    transition: transform 0.18s ease;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .accordion .acc[aria-expanded="true"]::after {
+    transform: rotate(90deg);
+  }
+
+  .accordion .panel {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    overflow: hidden;
+    font-size: 10px;
+    max-height: 0;
+    transition: max-height 0.28s cubic-bezier(0.2, 0.9, 0.2, 1),
+      padding 0.18s ease;
+    padding: 0 12px;
+    background: var(--card);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(230, 238, 252, 0.9);
+    margin-top: 8px;
+    color: var(--muted);
+  }
+
+  .accordion .panel.open {
+    padding: 12px;
+    max-height: 400px; /* large enough for typical content; actual set via JS for smoothness */
+  }
+
+  /* Accessibility: keyboard focus visible */
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.12);
+    outline-offset: 2px;
+  }
+
+  /* Larger screens: two columns */
+  @media (min-width: 640px) {
+    .help-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .help-page {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  (function(){
+    const accs = document.querySelectorAll('.accordion .acc');
+    accs.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const panel = btn.nextElementSibling;
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        document.querySelectorAll('.accordion .acc').forEach(b=>b.setAttribute('aria-expanded','false'));
+        document.querySelectorAll('.accordion .panel').forEach(p=>{p.classList.remove('open');p.setAttribute('aria-hidden','true')});
+        if (!expanded) { btn.setAttribute('aria-expanded','true'); panel.classList.add('open'); panel.setAttribute('aria-hidden','false'); }
+      });
+    });
+
+    const input = document.getElementById('helpSearch');
+    const clearBtn = document.getElementById('clearSearch');
+    if (input){
+      let t;
+      const run = () => {
+        const q = (input.value || '').toLowerCase().trim();
+        if (clearBtn) clearBtn.hidden = q.length === 0;
+        document.querySelectorAll('.accordion .acc_item').forEach(item => {
+          const btn = item.querySelector('.acc');
+          const panel = item.querySelector('.panel');
+          const text = (btn.textContent + ' ' + panel.textContent).toLowerCase();
+          const match = text.includes(q);
+          item.style.display = match ? 'block' : 'none';
+          if (!match) { btn.setAttribute('aria-expanded','false'); panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); }
+        });
+      };
+      input.addEventListener('input', ()=>{ clearTimeout(t); t = setTimeout(run, 120); });
+      if (clearBtn) clearBtn.addEventListener('click', ()=>{ input.value=''; run(); input.focus(); });
+    }
+  })();
+</script>
