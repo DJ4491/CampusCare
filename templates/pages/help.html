@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - CampusCare</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            height: -webkit-fill-available;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f9fafb, #eef2f3);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            padding: 16px;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .help-wrapper {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 16px;
+            height: 30rem;
+            overflow: scroll;
+            scrollbar-width: none;
+        }
+
+        .help-header {
+            position:sticky;
+            top: 0%;
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #3b83f6e0 0%, #6365f1d7 100%);
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .help-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .help-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .guide-section {
+            margin-bottom: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .guide-section h2 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .guide-section h2 span {
+            width: 32px;
+            height: 32px;
+            background: #f0f4ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .guide-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .guide-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .guide-card h3 {
+            font-size: 18px;
+            color: #1f2937;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .guide-card p {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .steps-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: #3b83f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h3 {
+            color: #1f2937;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .tips-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .tip-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .tip-card h3 {
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tip-card p {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .help-wrapper {
+                padding: 12px;
+            }
+
+            .help-header {
+                padding: 10px 10px;
+                margin-bottom: 22px;
+            }
+
+            .help-header h1 {
+                font-size: 24px;
+            }
+
+            .help-header p {
+                font-size: 14px;
+            }
+
+            .guide-section {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .guide-section h2 {
+                font-size: 20px;
+                margin-bottom: 16px;
+            }
+
+            .guide-cards {
+                gap: 16px;
+            }
+
+            .guide-card {
+                padding: 16px;
+            }
+
+            .step-item {
+                padding: 12px;
+                margin-bottom: 16px;
+            }
+
+            .step-number {
+                width: 24px;
+                height: 24px;
+                font-size: 14px;
+            }
+
+            .tips-section {
+                gap: 16px;
+            }
+
+            .tip-card {
+                padding: 16px;
+            }
+        }
+
+        /* Touch optimizations */
+        @media (hover: none) {
+            .step-item:active,
+            .guide-card:active,
+            .tip-card:active {
+                opacity: 0.75;
+            }
+        }
+
+        /* iOS safe area */
+        @supports (-webkit-touch-callout: none) {
+            .help-wrapper {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="help-header">
+            <h1>Welcome to CampusCare Help</h1>
+
+        </div>
+    <div class="help-wrapper">
+        <div class="guide-section">
+            <h2><span>📱</span>Getting Started</h2>
+            <div class="guide-cards">
+                <div class="guide-card">
+                    <h3>📝 Creating Reports</h3>
+                    <p>Learn how to submit issues and track their progress through our reporting system.</p>
+                </div>
+                <div class="guide-card">
+                    <h3>👤 Profile Management</h3>
+                    <p>Customize your profile, manage notifications, and update your preferences.</p>
+                </div>
+                <div class="guide-card">
+                    <h3>🔍 Finding Information</h3>
+                    <p>Search for reports, browse categories, and find relevant information quickly.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2><span>📋</span>How to Report an Issue</h2>
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Start a New Report</h3>
+                        <p>Click the "+" button in the navigation menu and select "Report Issue" to begin.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Select Category & Location</h3>
+                        <p>Choose the appropriate category for your issue and specify the location on campus.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Add Details & Photos</h3>
+                        <p>Describe the issue in detail and add photos if available to help explain the problem.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Submit & Track</h3>
+                        <p>Submit your report and track its status through your dashboard.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <h2><span>💡</span>Pro Tips</h2>
+            <div class="tips-section">
+                <div class="tip-card">
+                    <h3>📸 Better Photos</h3>
+                    <p>Take clear, well-lit photos that show the entire issue. Include multiple angles if necessary.</p>
+                </div>
+                <div class="tip-card">
+                    <h3>📍 Precise Location</h3>
+                    <p>Be as specific as possible with the location to help maintenance teams find the issue quickly.</p>
+                </div>
+                <div class="tip-card">
+                    <h3>🔔 Stay Updated</h3>
+                    <p>Enable notifications to receive updates when your reported issues are addressed.</p>
+                </div>
+                <div class="tip-card">
+                    <h3>📊 Track Progress</h3>
+                    <p>Check your dashboard regularly to see the status of your reports and any required actions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

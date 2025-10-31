@@ -550,3 +550,11 @@ def create_lost_found(request):
 @login_required
 def event_activity(request):
     return render_fragment_or_full(request, "pages/event_activity.html")
+
+@login_required
+def support(request):
+    return render_fragment_or_full(request, "pages/support.html")
+
+@login_required
+def help(request):
+    return render_fragment_or_full(request, "pages/help.html")

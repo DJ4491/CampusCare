@@ -29,6 +29,8 @@ urlpatterns = [
     path("lost_found/", views.lost_found, name="lost_found"),
     path("create_lost_found/", views.create_lost_found, name="create_lost_found"),
     path("event_activity/", views.event_activity, name="event_activity"),
+    path("support/", views.support, name="support"),
+    path("help/", views.help, name="help"),
     # path("events/", views.events, name="events"),
     # ... other routes
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

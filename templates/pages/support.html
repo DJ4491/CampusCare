@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - CampusCare</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            height: -webkit-fill-available;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f9fafb, #eef2f3);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            padding: 16px;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .support-wrapper {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 16px;
+            height: 35rem;
+            overflow: scroll;
+            scrollbar-width: none;
+        }
+
+        .support-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #3b83f6e0 0%, #6365f1d7 100%);
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .support-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .support-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .faq-section {
+            margin-bottom: 40px;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-section h2 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 20px;
+        }
+
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .faq-question::after {
+            content: '+';
+            position: absolute;
+            right: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active {
+            background: #f0f4ff;
+            color: #3b83f6;
+        }
+
+        .faq-question.active::after {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .faq-answer.show {
+            padding: 15px 20px;
+            max-height: 300px;
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .contact-form {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-form h2 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b83f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3b83f6 0%, #6365f1 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .contact-info {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-info h2 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #4b5563;
+        }
+
+        .info-icon {
+            width: 36px;
+            height: 36px;
+            background: #f0f4ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #3b83f6;
+            font-size: 18px;
+        }
+
+        .emergency-box {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            color: #92400e;
+        }
+
+        .emergency-box h3 {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .support-wrapper {
+                padding: 12px;
+            }
+
+            body {
+                padding: 12px;
+            }
+
+            .support-header {
+                padding: 24px 16px;
+                margin-bottom: 24px;
+            }
+
+            .support-header h1 {
+                font-size: 24px;
+            }
+
+            .support-header p {
+                font-size: 14px;
+            }
+
+            .faq-section {
+                padding: 20px;
+                margin-bottom: 24px;
+            }
+
+            .faq-section h2 {
+                font-size: 20px;
+            }
+
+            .faq-question {
+                padding: 16px;
+                font-size: 15px;
+            }
+
+            .faq-answer.show {
+                padding: 16px;
+                line-height: 1.5;
+                font-size: 14px;
+            }
+
+            .contact-form,
+            .contact-info {
+                padding: 20px;
+            }
+
+            .contact-form h2,
+            .contact-info h2 {
+                font-size: 20px;
+                margin-bottom: 16px;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+            }
+
+            .form-group label {
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                padding: 10px;
+                font-size: 16px; /* Prevent zoom on iOS */
+                border-radius: 6px;
+            }
+
+            .submit-btn {
+                padding: 14px;
+                font-size: 16px;
+                border-radius: 6px;
+                margin-top: 8px;
+                height: 48px; /* Better touch target */
+            }
+
+            .info-item {
+                margin-bottom: 12px;
+                font-size: 14px;
+            }
+
+            .info-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+
+            .emergency-box {
+                margin-top: 20px;
+                padding: 12px;
+            }
+
+            .emergency-box h3 {
+                font-size: 15px;
+            }
+
+            .emergency-box p {
+                font-size: 14px;
+                line-height: 1.5;
+            }
+        }
+
+        /* Additional touch optimizations */
+        @media (hover: none) {
+            .faq-question:active,
+            .submit-btn:active {
+                opacity: 0.75;
+            }
+
+            .form-group input:focus,
+            .form-group textarea:focus {
+                font-size: 16px;
+            }
+        }
+
+        /* Fix viewport height issues on mobile */
+        @supports (-webkit-touch-callout: none) {
+            .support-wrapper {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="support-wrapper">
+        <div class="support-header">
+            <h1>How can we help you?</h1>
+            <p>We're here to help and answer any question you might have</p>
+        </div>
+
+        <div class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">How do I report an issue on campus?</div>
+                    <div class="faq-answer">
+                        Click on the "+" button in the navigation menu and select "Report Issue". Fill in the required details including the location, category, and description of the issue. You can also add an image to better illustrate the problem.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">How can I track my reported issues?</div>
+                    <div class="faq-answer">
+                        Visit "My Reports" section in your profile to view all your submitted reports and their current status. You can also receive notifications about updates on your reports.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">How do I update my profile information?</div>
+                    <div class="faq-answer">
+                        Click on your profile picture in the navigation bar and select "Edit Profile". Here you can update your personal information, profile picture, and notification preferences.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-container">
+            <div class="contact-form">
+                <h2>Contact Support</h2>
+                <form id="supportForm">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit</button>
+                </form>
+            </div>
+
+            <div class="contact-info">
+                <h2>Contact Information</h2>
+                <div class="info-item">
+                    <div class="info-icon">✉</div>
+                    <span>support@campuscare.com</span>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">📞</div>
+                    <span>(555) 123-4567</span>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">🕒</div>
+                    <span>Monday-Friday, 9:00 AM - 5:00 PM</span>
+                </div>
+                
+                <div class="emergency-box">
+                    <h3>⚠ Emergency Contact</h3>
+                    <p>For urgent campus-related emergencies:<br>
+                    Emergency Hotline: (555) 911-0000</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FAQ Accordion functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const isActive = question.classList.contains('active');
+                
+                // Close all other answers
+                document.querySelectorAll('.faq-question').forEach(q => {
+                    q.classList.remove('active');
+                    q.nextElementSibling.classList.remove('show');
+                });
+
+                // Toggle current answer
+                if (!isActive) {
+                    question.classList.add('active');
+                    answer.classList.add('show');
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('supportForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (this.checkValidity()) {
+                alert('Thank you for contacting support. We will get back to you soon!');
+                this.reset();
+            }
+        });
+    </script>
+</body>
+</html>
