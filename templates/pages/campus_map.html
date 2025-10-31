@@ -1,0 +1,512 @@
+{% load static %}
+<section class="comingsoon-page" aria-label="Campus Map — Coming Soon">
+  <header class="cs-hero">
+    <img
+      src="{% static 'images/CamCare.png' %}"
+      alt="CampusCare+"
+      class="brand"
+      width="52"
+      height="52"
+    />
+    <div class="hero_text">
+      <div class="eyebrow" aria-hidden="true">New</div>
+      <h1>Campus Map</h1>
+      <p>We're mapping the entire campus experience. Coming soon.</p>
+    </div>
+  </header>
+
+  <main class="cs-body" role="region" aria-label="Coming soon message">
+    <div class="cs-card">
+      <img
+        src="{% static 'images/campus_map.png' %}"
+        alt="Coming soon"
+        class="cs-image"
+      />
+      <h2 class="cs-title">Almost there</h2>
+      <p class="muted">
+        Turn-by-turn navigation, buildings, facilities, and smart search.
+        Optimized for mobile.
+      </p>
+      <div class="chip_row" role="list" aria-label="Planned features">
+        <span class="chip" role="listitem">Smart search</span>
+        <span class="chip" role="listitem">Live wayfinding</span>
+        <span class="chip" role="listitem">Facilities</span>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn primary" onclick="loadpage('support')">
+          Notify me
+        </button>
+        <button type="button" class="btn ghost" onclick="loadpage('')">
+          Back to Home
+        </button>
+      </div>
+    </div>
+  </main>
+</section>
+
+<style>
+  :root {
+    /* theme tokens */
+    --bg-start: #3b83f6;
+    --bg-end: #6365f1;
+    --accent-1: #36a5ff;
+    --accent-2: #3b83f6;
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --muted: #475569;
+    --text-1: #0f172a;
+    --radius-lg: 18px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+
+    --motion-fast: 160ms;
+    --motion-medium: 320ms;
+    --motion-spring: cubic-bezier(0.22, 0.9, 0.26, 1);
+    --shadow-1: 0 8px 24px rgba(3, 10, 30, 0.08);
+    --shadow-2: 0 18px 48px rgba(3, 10, 30, 0.12);
+  }
+
+  /* natural system font stack (fast & native) */
+  * {
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+      Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--text-1);
+    background: #fbfdff;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* page container */
+  .comingsoon-page {
+    margin: 0 auto;
+    padding: 20px 16px 84px;
+    width: 100%;
+    max-width: 540px;
+    position: relative;
+    min-height: 100vh;
+    overflow-x: clip;
+    overscroll-behavior: contain;
+    touch-action: manipulation;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* decorative blobs (responsive & subtle) */
+  .comingsoon-page::before,
+  .comingsoon-page::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(14px);
+    opacity: 0.9;
+    transition: transform var(--motion-medium) var(--motion-spring),
+      opacity var(--motion-medium);
+  }
+  .comingsoon-page::before {
+    width: 280px;
+    height: 280px;
+    right: 12%;
+    top: -6%;
+    background: radial-gradient(
+      closest-side,
+      rgba(99, 101, 241, 0.14),
+      transparent 58%
+    );
+    transform: translateY(0);
+  }
+  .comingsoon-page::after {
+    width: 220px;
+    height: 220px;
+    left: -6%;
+    bottom: 8%;
+    background: radial-gradient(
+      closest-side,
+      rgba(59, 130, 246, 0.12),
+      transparent 58%
+    );
+  }
+
+  /* HERO */
+  .cs-hero {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 14px;
+    border-radius: 16px;
+    color: #fff;
+    background: linear-gradient(
+      135deg,
+      rgba(59, 131, 246, 0.92) 0%,
+      rgba(99, 101, 241, 0.92) 100%
+    );
+    box-shadow: var(--shadow-2);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    transform-origin: center;
+    will-change: transform, opacity;
+    animation: heroEntrance var(--motion-medium) var(--motion-spring) both;
+  }
+  @keyframes heroEntrance {
+    from {
+      transform: translateY(8px) scale(0.995);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+  .cs-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      120% 100% at 100% -10%,
+      rgba(255, 255, 255, 0.12),
+      transparent 36%
+    );
+    pointer-events: none;
+  }
+
+  /* brand */
+  .cs-hero .brand {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+  }
+
+  /* hero text */
+  .cs-hero .hero_text {
+    z-index: 1;
+    display: block;
+  }
+  .cs-hero .eyebrow {
+    display: inline-block;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(4px) saturate(1.05);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    margin-bottom: 6px;
+  }
+  .cs-hero h1 {
+    margin: 0;
+    font-weight: 800;
+    font-size: clamp(18px, 4.6vw, 24px);
+    letter-spacing: -0.02em;
+  }
+  .cs-hero p {
+    margin: 4px 0 0;
+    opacity: 0.96;
+    font-size: 13px;
+  }
+
+  /* Main card */
+  .cs-body {
+    display: grid;
+    place-items: center;
+    margin-top: 6px;
+    z-index: 1;
+  }
+  .cs-card {
+    width: 100%;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    background: var(--card-bg);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 14px 44px rgba(3, 10, 30, 0.09),
+      0 6px 18px rgba(3, 10, 30, 0.06);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: cardReveal var(--motion-medium) var(--motion-spring) both;
+    transform-origin: center;
+  }
+  @keyframes cardReveal {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.994);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* animated subtle border (reduced intensity) */
+  .cs-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: calc(var(--radius-lg) + 1px);
+    padding: 1px;
+    background: conic-gradient(
+      from 0deg,
+      rgba(54, 165, 255, 0.08),
+      rgba(99, 101, 241, 0.06),
+      rgba(54, 165, 255, 0.08)
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.98;
+    transition: transform 9s linear;
+  }
+  /* image */
+  .cs-image {
+    width: 72%;
+    max-width: 360px;
+    height: auto;
+    display: block;
+    margin: 6px auto 12px;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.08));
+    transition: transform var(--motion-medium) var(--motion-spring),
+      filter var(--motion-medium);
+    max-inline-size: 100%;
+    border-radius: 10px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cs-card:hover .cs-image {
+      transform: translateY(-4px) scale(1.01);
+    }
+  }
+
+  /* title + muted */
+  .cs-title {
+    margin: 6px 0 6px;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--text-1);
+  }
+  .cs-card .muted {
+    margin: 0 auto 10px;
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 44ch;
+  }
+
+  /* chips */
+  .chip_row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 6px;
+    z-index: 2;
+  }
+  .chip {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-1);
+    border-radius: 999px;
+    background: linear-gradient(180deg, #fff, #f7f9fb);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 6px 18px rgba(3, 10, 30, 0.04);
+    transition: transform var(--motion-fast) var(--motion-spring),
+      box-shadow var(--motion-fast);
+    cursor: default;
+    -webkit-user-select: none;
+  }
+  .chip:active {
+    transform: translateY(1px) scale(0.995);
+    box-shadow: 0 4px 12px rgba(3, 10, 30, 0.05);
+  }
+
+  /* actions / buttons: improved natural font + touch targets */
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* button baseline: use bold natural font and larger hit area on touch */
+  .btn {
+    -webkit-appearance: none;
+    appearance: none;
+    font-family: inherit;
+    font-weight: 800;
+    border: 0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 15px;
+    min-height: 48px; /* mobile-friendly touch target */
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--motion-fast) var(--motion-spring),
+      box-shadow var(--motion-fast), filter var(--motion-fast),
+      opacity var(--motion-fast);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+    -webkit-tap-highlight-color: transparent;
+    z-index: 2;
+  }
+
+  /* primary button */
+  .btn.primary {
+    background: linear-gradient(90deg, var(--accent-2), #6365f1);
+    color: #fff;
+    box-shadow: 0 12px 30px rgba(99, 101, 241, 0.16),
+      0 6px 18px rgba(0, 0, 0, 0.06);
+  }
+  .btn.primary:active {
+    transform: translateY(1px) scale(0.998);
+    box-shadow: 0 8px 22px rgba(99, 101, 241, 0.14);
+  }
+
+  /* ghost / secondary */
+  .btn.ghost {
+    background: linear-gradient(180deg, #fff, #f7f9fb);
+    color: var(--text-1);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 8px 20px rgba(3, 10, 30, 0.06);
+  }
+  .btn.ghost:active {
+    transform: translateY(1px) scale(0.998);
+  }
+
+  /* button focus ring (accessible) */
+  .btn:focus-visible {
+    outline: none;
+    box-shadow: 0 12px 28px rgba(3, 10, 30, 0.12),
+      0 0 0 6px rgba(99, 101, 241, 0.12);
+    border-color: rgba(99, 101, 241, 0.16);
+  }
+
+  /* subtle press ripple for touch devices via ::after (no JS) */
+  .btn::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    transition: transform 420ms var(--motion-spring), opacity 420ms;
+    pointer-events: none;
+  }
+  .btn:active::after {
+    transform: translate(-50%, -50%) scale(6);
+    opacity: 0;
+  }
+
+  /* layout refinement on tiny viewports */
+  @media (max-width: 520px) {
+    .comingsoon-page {
+      padding: 16px 14px 84px;
+      max-width: 100%;
+    }
+    .cs-hero {
+      padding: 12px;
+      border-radius: 14px;
+      gap: 10px;
+    }
+    .cs-hero .brand {
+      width: 48px;
+      height: 48px;
+      padding: 6px;
+    }
+    .cs-image {
+      width: 86%;
+      max-width: 320px;
+    }
+    .actions {
+      gap: 10px;
+      flex-direction: column-reverse;
+      align-items: stretch;
+      width: 100%;
+    }
+    .btn {
+      width: 100%;
+      min-height: 52px;
+      font-size: 15px;
+      padding: 14px;
+      border-radius: 12px;
+    }
+    .chip {
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    /* reduce blob blur on small devices for performance */
+    .comingsoon-page::before,
+    .comingsoon-page::after {
+      filter: blur(8px);
+      opacity: 0.9;
+    }
+  }
+
+  /* larger screens layout */
+  @media (min-width: 800px) {
+    .comingsoon-page {
+      padding-top: 32px;
+    }
+    .cs-card {
+      padding: 28px;
+      max-width: 540px;
+      margin-inline: auto;
+    }
+    .actions {
+      justify-content: center;
+    }
+    .cs-image {
+      width: 58%;
+      max-width: 420px;
+    }
+  }
+
+  /* pointer-coarse: slower/less micro-motion for touch devices */
+  @media (pointer: coarse) {
+    .cs-card,
+    .cs-hero,
+    .btn,
+    .chip {
+      transition-duration: 120ms;
+    }
+    .cs-card::before {
+      animation-duration: 18s;
+    }
+  }
+
+  /* reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .cs-card,
+    .cs-hero,
+    .comingsoon-page::before,
+    .comingsoon-page::after,
+    .cs-card::before {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+    .btn::after,
+    .cs-image {
+      transition: none !important;
+    }
+  }
+</style>

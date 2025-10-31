@@ -44,6 +44,7 @@ urlpatterns = [
     path("event_activity/", views.event_activity, name="event_activity"),
     path("support/", views.support, name="support"),
     path("help/", views.help, name="help"),
+    path("campus_map/", views.campus_map, name="campus_map"),
     path("logout/", views.logout_view, name="logout"),
     # ... other routes
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

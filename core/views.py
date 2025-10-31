@@ -622,6 +622,9 @@ def support(request):
 @login_required
 def help(request):
     return render_fragment_or_full(request, "pages/help.html")
+@login_required
+def campus_map(request):
+    return render_fragment_or_full(request, "pages/campus_map.html")
 
 
 @require_http_methods(["GET"])
