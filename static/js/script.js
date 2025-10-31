@@ -735,9 +735,7 @@ function initReports() {
       post.id = `post-${r.id}`; //ID to match the hash fragment
       post.innerHTML = `
             <div class="post-header">
-              <img src="${
-                r.avatar || "{% static 'images/profile.svg' %}"
-              }" class="avatar" alt="Profile">
+              <img src="${r.avatar || "{% static 'images/profile.svg' %}"}" class="avatar" alt="Profile">
               <div class="post-meta">
                 <div class="author">${r.author}</div>
                 <div class="time">${formatTimeAgo(r.time)}</div>
